@@ -11,7 +11,7 @@ export const data = {
             "numReviews": 1,
             "reviews": [
                 {
-                    "name": "cao kha hieu",
+                    "name": "Phung Khanh",
                     "star": 5,
                     "comment": "ngon",
                 }
@@ -28,7 +28,7 @@ export const data = {
             "numReviews": 1,
             "reviews": [
                 {
-                    "name": "cao kha hieu",
+                    "name": "Phung Khanh",
                     "star": 5,
                     "comment": "ngon",
                 }
@@ -45,7 +45,7 @@ export const data = {
             "numReviews": 1,
             "reviews": [
                 {
-                    "name": "cao kha hieu",
+                    "name": "Phung Khanh",
                     "star": 5,
                     "comment": "ngon",
                 }
@@ -62,7 +62,7 @@ export const data = {
             "numReviews": 1,
             "reviews": [
                 {
-                    "name": "cao kha hieu",
+                    "name": "Phung Khanh",
                     "star": 5,
                     "comment": "ngon",
                 }
@@ -79,7 +79,7 @@ export const data = {
             "numReviews": 1,
             "reviews": [
                 {
-                    "name": "cao kha hieu",
+                    "name": "Phung Khanh",
                     "star": 5,
                     "comment": "ngon",
                 }
@@ -96,7 +96,7 @@ export const data = {
             "numReviews": 1,
             "reviews": [
                 {
-                    "name": "cao kha hieu",
+                    "name": "Phung Khanh",
                     "star": 5,
                     "comment": "ngon",
                 }
@@ -113,7 +113,7 @@ export const data = {
             "numReviews": 1,
             "reviews": [
                 {
-                    "name": "cao kha hieu",
+                    "name": "Phung Khanh",
                     "star": 5,
                     "comment": "ngon",
                 }
@@ -130,7 +130,7 @@ export const data = {
             "numReviews": 1,
             "reviews": [
                 {
-                    "name": "cao kha hieu",
+                    "name": "Phung Khanh",
                     "star": 5,
                     "comment": "ngon",
                 }
@@ -147,7 +147,7 @@ export const data = {
             "numReviews": 1,
             "reviews": [
                 {
-                    "name": "cao kha hieu",
+                    "name": "Phung Khanh",
                     "star": 5,
                     "comment": "ngon",
                 }
@@ -164,7 +164,7 @@ export const data = {
             "numReviews": 1,
             "reviews": [
                 {
-                    "name": "cao kha hieu",
+                    "name": "Phung Khanh",
                     "star": 5,
                     "comment": "ngon",
                 }
@@ -181,7 +181,7 @@ export const data = {
             "numReviews": 1,
             "reviews": [
                 {
-                    "name": "cao kha hieu",
+                    "name": "Phung Khanh",
                     "star": 5,
                     "comment": "ngon",
                 }
@@ -198,7 +198,7 @@ export const data = {
             "numReviews": 1,
             "reviews": [
                 {
-                    "name": "cao kha hieu",
+                    "name": "Phung Khanh",
                     "star": 5,
                     "comment": "ngon",
                 }
@@ -215,7 +215,7 @@ export const data = {
             "numReviews": 1,
             "reviews": [
                 {
-                    "name": "cao kha hieu",
+                    "name": "Phung Khanh",
                     "star": 5,
                     "comment": "ngon",
                 }
@@ -232,7 +232,7 @@ export const data = {
             "numReviews": 1,
             "reviews": [
                 {
-                    "name": "cao kha hieu",
+                    "name": "Phung Khanh",
                     "star": 5,
                     "comment": "ngon",
                 }
@@ -249,7 +249,7 @@ export const data = {
             "numReviews": 1,
             "reviews": [
                 {
-                    "name": "cao kha hieu",
+                    "name": "Phung Khanh",
                     "star": 5,
                     "comment": "ngon",
                 }
@@ -266,7 +266,7 @@ export const data = {
             "numReviews": 1,
             "reviews": [
                 {
-                    "name": "cao kha hieu",
+                    "name": "Phung Khanh",
                     "star": 5,
                     "comment": "ngon",
                 }
@@ -283,7 +283,7 @@ export const data = {
             "numReviews": 1,
             "reviews": [
                 {
-                    "name": "cao kha hieu",
+                    "name": "Phung Khanh",
                     "star": 5,
                     "comment": "ngon",
                 }
@@ -300,7 +300,7 @@ export const data = {
             "numReviews": 1,
             "reviews": [
                 {
-                    "name": "cao kha hieu",
+                    "name": "Phung Khanh",
                     "star": 5,
                     "comment": "ngon",
                 }
@@ -317,7 +317,7 @@ export const data = {
             "numReviews": 1,
             "reviews": [
                 {
-                    "name": "cao kha hieu",
+                    "name": "Phung Khanh",
                     "star": 5,
                     "comment": "ngon",
                 }
@@ -334,7 +334,7 @@ export const data = {
             "numReviews": 1,
             "reviews": [
                 {
-                    "name": "cao kha hieu",
+                    "name": "Phung Khanh",
                     "star": 5,
                     "comment": "ngon",
                 }
@@ -351,7 +351,7 @@ export const data = {
             "numReviews": 1,
             "reviews": [
                 {
-                    "name": "cao kha hieu",
+                    "name": "Phung Khanh",
                     "star": 5,
                     "comment": "ngon",
                 }
@@ -368,7 +368,7 @@ export const data = {
             "numReviews": 1,
             "reviews": [
                 {
-                    "name": "cao kha hieu",
+                    "name": "Phung Khanh",
                     "star": 5,
                     "comment": "ngon",
                 }
@@ -385,7 +385,7 @@ export const data = {
             "numReviews": 1,
             "reviews": [
                 {
-                    "name": "cao kha hieu",
+                    "name": "Phung Khanh",
                     "star": 5,
                     "comment": "ngon",
                 }
