@@ -9,7 +9,7 @@ import ProductRouter from "./routers/ProductRouter.js";
 import UserRouter from "./routers/UserRouter.js";
 
 import { createServer } from "http";
-
+import { autoCreateAdmin } from "./controllers/AutoCreateAdmin.js";
 dotenv.config();
 process.env.TOKEN_SECRET;
 
@@ -38,5 +38,7 @@ app.post("/api/upload", async (req, res) => {
     res.status(500).json({ err: "Something went wrong" });
   }
 });
-
-server.listen(PORT, () => console.log(`server running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+  autoCreateAdmin(); // Call the function here
+});

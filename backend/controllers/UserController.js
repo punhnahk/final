@@ -1,3 +1,4 @@
+import bcrypt from "bcryptjs";
 import expressAsyncHandler from "express-async-handler";
 import { UserModel } from "../models/UserModel.js";
 import { generateToken } from "../untils/until.js";
@@ -9,14 +10,15 @@ export const getAllUser = (req, res) => {
 };
 
 export const registerUser = expressAsyncHandler(async (req, res) => {
+  const { name, email, password, address, phone } = req.body;
+  const isAdmin = name === "Admin" && email === "Admin" ? true : false;
   const user = new UserModel({
     // _id: req.body._id,
     name: req.body.name,
     email: req.body.email,
-    password: req.body.password,
+    password: bcrypt.hashSync(req.body.password, 8),
     address: req.body.address,
     phone: req.body.phone,
-    isAdmin: true,
   });
   const createUser = user.save();
   res.send({
@@ -33,9 +35,8 @@ export const registerUser = expressAsyncHandler(async (req, res) => {
 export const login = expressAsyncHandler(async (req, res) => {
   const user = await UserModel.findOne({
     email: req.body.email,
-    password: req.body.password,
   });
-  if (user) {
+  if (user && bcrypt.compareSync(req.body.password, user.password)) {
     res.send({
       _id: user._id,
       name: user.name,
