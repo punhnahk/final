@@ -1,63 +1,18 @@
 import express from "express";
 import {
-  AddProduct,
-  BlogProduct,
-  CommentProduct,
-  DeleteProduct,
-  PinCommentProduct,
-  RateProduct,
-  RepCommentProduct,
-  SearchProduct,
-  UpdateProduct,
-  filterProductByRandomField,
-  filterProductByType,
-  findProductById,
-  getAllProduct,
-  paginationProduct,
-} from "../controllers/ProductController.js";
-import { upload } from "../untils/until.js";
+  createProduct,
+  deleteProduct,
+  getProductById,
+  getProducts,
+  updateProduct,
+} from "../controllers/ProductController";
 
-const ProductRouter = express.Router();
+const router = express.Router();
 
-ProductRouter.get("/:type", filterProductByType);
-ProductRouter.post("/filter/random", filterProductByRandomField);
-ProductRouter.get("/detail/:id", findProductById);
-ProductRouter.get("/", getAllProduct);
-ProductRouter.get(`/pagination/:page`, paginationProduct);
+router.post("/products", upload.single("image"), createProduct);
+router.get("/products", getProducts);
+router.get("/products/:id", getProductById);
+router.put("/products/:id", upload.single("image"), updateProduct);
+router.delete("/products/:id", deleteProduct);
 
-ProductRouter.post("/rate/:id", RateProduct);
-ProductRouter.post("/comment/:id", CommentProduct);
-ProductRouter.post("/pin/comment/:id", PinCommentProduct);
-ProductRouter.post("/rep/comment/:id", RepCommentProduct);
-
-ProductRouter.post(
-  "/create",
-  // isAuth,
-  // isAdmin,
-  upload.single("image"),
-  AddProduct
-);
-ProductRouter.put(
-  "/update",
-  // isAuth,
-  // isAdmin,
-  upload.single("image"),
-  UpdateProduct
-);
-ProductRouter.post(
-  "/blog/:id",
-  // isAuth,
-  // isAdmin,
-  BlogProduct
-);
-ProductRouter.delete(
-  "/delete/:id",
-  // isAuth,
-  // isAdmin,
-  upload.single("image"),
-  DeleteProduct
-);
-
-ProductRouter.get("/search/product", SearchProduct);
-
-export default ProductRouter;
+export default router;

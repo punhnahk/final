@@ -4,7 +4,7 @@ import express from "express";
 
 import connectDB from "./config/db/db.js";
 
-import cloudinary from "./config/cloudinary/cloudinary.js";
+import cloudinary from "./config/cloudinary/cloudinaryConfig.js";
 import ProductRouter from "./routers/ProductRouter.js";
 import UserRouter from "./routers/UserRouter.js";
 
