@@ -1,16 +1,13 @@
 import mongoose from "mongoose";
 
 const connectDB = async () => {
+  const url = process.env.DATABASE_URL;
   try {
-    await mongoose.connect(
-      "mongodb+srv://imhnahk:Noel2003@final.m2yps6r.mongodb.net/?retryWrites=true&w=majority&appName=final",
-      {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        useCreateIndex: true,
-      }
-    );
-    console.log("MongoDB connected successfully");
+    await mongoose.connect(url, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log(`Connect DB`);
   } catch (error) {
     console.error("MongoDB connection failed", error.message);
     process.exit(1);

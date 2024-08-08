@@ -1,30 +1,17 @@
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
+import router from "./routers/index.js";
 
 import connectDB from "./config/db/db.js";
-
-import ProductRouter from "./routers/ProductRouter.js";
-import UserRouter from "./routers/UserRouter.js";
-
-import { createServer } from "http";
-import { autoCreateAdmin } from "./controllers/AutoCreateAdmin.js";
-dotenv.config();
-process.env.TOKEN_SECRET;
-
+const PORT = process.env.PORT || 4000;
 const app = express();
-const PORT = process.env.PORT || 8000;
-const server = createServer(app);
+dotenv.config();
 
-connectDB();
-
+app.use(express.json());
 app.use(cors());
-
-
-app.use("/products", ProductRouter);
-app.use("/user", UserRouter);
-
+app.use("/api", router);
+connectDB();
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
-  autoCreateAdmin(); // Call the function here
 });

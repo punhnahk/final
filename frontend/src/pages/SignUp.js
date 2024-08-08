@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { IoIosEyeOff, IoMdEye } from "react-icons/io";
 import { Link } from "react-router-dom";
 import loginIcons from "../assest/login.gif";
+import SummaryApi from "../common/index";
 import imageProfile from "../helpers/imageProfile";
 
 const Signup = () => {
@@ -23,9 +24,6 @@ const Signup = () => {
       };
     });
   };
-  const handleSubmit = (e) => {
-    e.preventDefault();
-  };
   const handleUploadPic = async (e) => {
     const file = e.target.files[0];
 
@@ -37,6 +35,22 @@ const Signup = () => {
         profilePic: imagePic,
       };
     });
+  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (data.password === data.confirmPassword) {
+      const dataResponse = await fetch(SummaryApi.signUp.url, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      const data_ = await dataResponse.json();
+      console.log("data", data_);
+    } else {
+      console.log("Please check password and confirm password");
+    }
   };
   console.log("data login", data);
 
@@ -61,18 +75,14 @@ const Signup = () => {
               </label>
             </form>
           </div>
-          <form
-            action=""
-            className="pt-6 flex flex-col gap-2"
-            onSubmit={handleSubmit}
-          >
+          <form className="pt-6 flex flex-col gap-2" onSubmit={handleSubmit}>
             <div className="grid">
               <label htmlFor="">Name: </label>
               <div className="bg-slate-100 p-2">
                 <input
                   type="text"
                   placeholder="Enter Your Name"
-                  name="nam"
+                  name="name"
                   value={data.name}
                   onChange={handleOnChange}
                   required
@@ -114,7 +124,7 @@ const Signup = () => {
                 <input
                   type="text"
                   placeholder="Enter Address"
-                  name="addresss"
+                  name="address"
                   value={data.address}
                   onChange={handleOnChange}
                   required
