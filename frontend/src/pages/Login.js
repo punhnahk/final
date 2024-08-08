@@ -5,21 +5,42 @@ import loginIcons from "../assest/login.gif";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(true);
+  const [data, setData] = useState({
+    email: "",
+    password: "",
+  });
+  const handleOnChange = (e) => {
+    const { name, value } = e.target;
+    setData((preve) => {
+      return {
+        ...preve,
+        [name]: value,
+      };
+    });
+  };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+  };
+  console.log("data login", data);
 
   return (
     <section id="login">
       <div className="max-auto container p-4">
-        <div className="bg-white p-2 py-5 w-full max-w-md mx-auto">
+        <div className="bg-white p-2 py-5 w-full max-w-sm mx-auto">
           <div className="w-20 h-20 mx-auto">
             <img src={loginIcons} alt="login-icons" />
           </div>
-          <form action="">
+          <form action="" className="pt-6" onSubmit={handleSubmit}>
             <div className="grid">
               <label htmlFor="">Email: </label>
               <div className="bg-slate-100 p-2">
                 <input
                   type="email"
                   placeholder="Enter Email"
+                  name="email"
+                  value={data.email}
+                  onChange={handleOnChange}
+                  required
                   className="w-full h-full outline-none bg-transparent"
                 />
               </div>
@@ -30,6 +51,10 @@ const Login = () => {
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter Password"
+                  name="password"
+                  value={data.password}
+                  onChange={handleOnChange}
+                  required
                   className="w-full h-full outline-none bg-transparent"
                 />
                 <div
@@ -51,6 +76,15 @@ const Login = () => {
               Login
             </button>
           </form>
+          <p className="my-5">
+            Don't have account ?{" "}
+            <Link
+              to={"/signup"}
+              className=" text-red-400 hover:text-red-500 underline "
+            >
+              Sign Up
+            </Link>
+          </p>
         </div>
       </div>
     </section>
