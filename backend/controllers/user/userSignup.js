@@ -1,4 +1,4 @@
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import userModel from "../../models/userModel.js";
 
 async function userSignupController(req, res) {
@@ -31,10 +31,11 @@ async function userSignupController(req, res) {
     }
     const payload = {
       ...req.body,
+      role: "USER",
       password: hashPassword,
     };
-    const userData = new userModel(req.body);
-    const saveUser = userData.save();
+    const userData = new userModel(payload);
+    const saveUser = await userData.save();
     res.status(201).json({
       data: saveUser,
       success: true,
@@ -45,7 +46,7 @@ async function userSignupController(req, res) {
     res.json({
       message: err.message || err,
       error: true,
-      success: true,
+      success: false,
     });
   }
 }

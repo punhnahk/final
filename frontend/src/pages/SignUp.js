@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { IoIosEyeOff, IoMdEye } from "react-icons/io";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import loginIcons from "../assest/login.gif";
 import SummaryApi from "../common/index";
 import imageProfile from "../helpers/imageProfile";
@@ -15,6 +16,7 @@ const Signup = () => {
     confirmPassword: "",
     profilePic: "",
   });
+  const navigate = useNavigate();
   const handleOnChange = (e) => {
     const { name, value } = e.target;
     setData((preve) => {
@@ -47,12 +49,17 @@ const Signup = () => {
         body: JSON.stringify(data),
       });
       const data_ = await dataResponse.json();
-      console.log("data", data_);
+      if (data_.success) {
+        toast.success(data_.message);
+        navigate("/login");
+      }
+      if (data_.error) {
+        toast.error(data_.message);
+      }
     } else {
       console.log("Please check password and confirm password");
     }
   };
-  console.log("data login", data);
 
   return (
     <section id="signup">
