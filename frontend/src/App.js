@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Outlet } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+import { Slide, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 import SummaryApi from "./common/index";
@@ -32,7 +32,7 @@ export function App() {
         fetchUserDetails, //user detail fetch request
       }}
     >
-      <ToastContainer />
+      <ToastContainer limit={5} transition={Slide} draggable stacked />
       <Header />
       <main className="min-h-[calc(100vh-110px)]">
         <Outlet />

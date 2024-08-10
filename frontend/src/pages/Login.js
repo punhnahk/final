@@ -34,12 +34,16 @@ const Login = () => {
     });
     const data_ = await dataResponse.json();
     if (data_.success) {
-      toast.success(data_.message);
+      toast.success(data_.message, {
+        position: "top-right",
+      });
       navigate("/");
       fetchUserDetails();
     }
     if (data_.error) {
-      toast.error(data_.message);
+      toast.error(data_.message, {
+        position: "top-right",
+      });
     }
   };
   console.log("data login", data);

@@ -24,13 +24,17 @@ const Header = () => {
     const data = await fetchData.json();
 
     if (data.success) {
-      toast.success(data.message);
+      toast.success(data.message, {
+        position: "bottom-right",
+      });
       dispatch(setUserDetails(null));
       navigate("/");
     }
 
     if (data.error) {
-      toast.error(data.message);
+      toast.error(data.message, {
+        position: "bottom-right",
+      });
     }
   };
   return (
