@@ -1,30 +1,25 @@
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
+import router from "./routers/index.js";
 
 import connectDB from "./config/db/db.js";
-
-import ProductRouter from "./routers/ProductRouter.js";
-import UserRouter from "./routers/UserRouter.js";
-
-import { createServer } from "http";
-import { autoCreateAdmin } from "./controllers/AutoCreateAdmin.js";
-dotenv.config();
-process.env.TOKEN_SECRET;
-
+const PORT = process.env.PORT || 4000;
 const app = express();
-const PORT = process.env.PORT || 8000;
-const server = createServer(app);
+dotenv.config();
 
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  })
+);
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb" }));
+app.use(cookieParser());
+app.use("/api", router);
 connectDB();
-
-app.use(cors());
-
-
-app.use("/products", ProductRouter);
-app.use("/user", UserRouter);
-
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
-  autoCreateAdmin(); // Call the function here
 });

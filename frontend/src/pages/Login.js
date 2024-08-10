@@ -1,14 +1,18 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { IoIosEyeOff, IoMdEye } from "react-icons/io";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import loginIcons from "../assest/login.gif";
-
+import SummaryApi from "../common/index";
+import Context from "../context/index";
 const Login = () => {
   const [showPassword, setShowPassword] = useState(true);
   const [data, setData] = useState({
     email: "",
     password: "",
   });
+  const navigate = useNavigate();
+  const { fetchUserDetails } = useContext(Context);
   const handleOnChange = (e) => {
     const { name, value } = e.target;
     setData((preve) => {
@@ -18,8 +22,29 @@ const Login = () => {
       };
     });
   };
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    const dataResponse = await fetch(SummaryApi.signIn.url, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    const data_ = await dataResponse.json();
+    if (data_.success) {
+      toast.success(data_.message, {
+        position: "top-right",
+      });
+      navigate("/");
+      fetchUserDetails();
+    }
+    if (data_.error) {
+      toast.error(data_.message, {
+        position: "top-right",
+      });
+    }
   };
   console.log("data login", data);
 

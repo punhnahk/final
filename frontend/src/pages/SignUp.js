@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { IoIosEyeOff, IoMdEye } from "react-icons/io";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import loginIcons from "../assest/login.gif";
-import imageProfile from "../helpers/imageProfile";
+import SummaryApi from "../common/index";
+import imageTobase64 from "../helpers/imageTobase64";
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(true);
@@ -14,6 +16,7 @@ const Signup = () => {
     confirmPassword: "",
     profilePic: "",
   });
+  const navigate = useNavigate();
   const handleOnChange = (e) => {
     const { name, value } = e.target;
     setData((preve) => {
@@ -23,13 +26,10 @@ const Signup = () => {
       };
     });
   };
-  const handleSubmit = (e) => {
-    e.preventDefault();
-  };
   const handleUploadPic = async (e) => {
     const file = e.target.files[0];
 
-    const imagePic = await imageProfile(file);
+    const imagePic = await imageTobase64(file);
 
     setData((preve) => {
       return {
@@ -38,7 +38,36 @@ const Signup = () => {
       };
     });
   };
-  console.log("data login", data);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (data.password === data.confirmPassword) {
+      const dataResponse = await fetch(SummaryApi.signUp.url, {
+        method: SummaryApi.signUp.method,
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const dataApi = await dataResponse.json();
+
+      if (dataApi.success) {
+        toast.success(dataApi.message, {
+          position: "bottom-right",
+        });
+        navigate("/login");
+      }
+
+      if (dataApi.error) {
+        toast.error(dataApi.message, {
+          position: "bottom-right",
+        });
+      }
+    } else {
+      toast.error("Please check password and confirm password");
+    }
+  };
 
   return (
     <section id="signup">
@@ -61,18 +90,14 @@ const Signup = () => {
               </label>
             </form>
           </div>
-          <form
-            action=""
-            className="pt-6 flex flex-col gap-2"
-            onSubmit={handleSubmit}
-          >
+          <form className="pt-6 flex flex-col gap-2" onSubmit={handleSubmit}>
             <div className="grid">
               <label htmlFor="">Name: </label>
               <div className="bg-slate-100 p-2">
                 <input
                   type="text"
                   placeholder="Enter Your Name"
-                  name="nam"
+                  name="name"
                   value={data.name}
                   onChange={handleOnChange}
                   required
@@ -114,7 +139,7 @@ const Signup = () => {
                 <input
                   type="text"
                   placeholder="Enter Address"
-                  name="addresss"
+                  name="address"
                   value={data.address}
                   onChange={handleOnChange}
                   required
