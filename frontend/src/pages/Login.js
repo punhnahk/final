@@ -1,16 +1,18 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { IoIosEyeOff, IoMdEye } from "react-icons/io";
-import { Link, useNavigation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import loginIcons from "../assest/login.gif";
 import SummaryApi from "../common/index";
+import Context from "../context/index";
 const Login = () => {
   const [showPassword, setShowPassword] = useState(true);
   const [data, setData] = useState({
     email: "",
     password: "",
   });
-  const navigate = useNavigation();
+  const navigate = useNavigate();
+  const { fetchUserDetails } = useContext(Context);
   const handleOnChange = (e) => {
     const { name, value } = e.target;
     setData((preve) => {
@@ -34,6 +36,7 @@ const Login = () => {
     if (data_.success) {
       toast.success(data_.message);
       navigate("/");
+      fetchUserDetails();
     }
     if (data_.error) {
       toast.error(data_.message);

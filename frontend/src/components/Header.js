@@ -1,10 +1,38 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaShoppingCart, FaUserAlt } from "react-icons/fa";
 import { IoSearchSharp } from "react-icons/io5";
-import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import SummaryApi from "../common";
+import { setUserDetails } from "../store/userSlice";
 import Logo from "./Logo";
 
 const Header = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [menuDisplay, setMenuDisplay] = useState(false);
+  const user = useSelector((state) => state?.user?.user);
+  console.log("user header", user);
+
+  const handleLogout = async () => {
+    const fetchData = await fetch(SummaryApi.userLogout.url, {
+      method: SummaryApi.userLogout.method,
+      credentials: "include",
+    });
+
+    const data = await fetchData.json();
+
+    if (data.success) {
+      toast.success(data.message);
+      dispatch(setUserDetails(null));
+      navigate("/");
+    }
+
+    if (data.error) {
+      toast.error(data.message);
+    }
+  };
   return (
     <header className="h-16 shadow-md bg-white">
       <div className="h-full container mx-auto flex items-center px-4 justify-between">
@@ -24,8 +52,33 @@ const Header = () => {
           </div>
         </div>
         <div className="flex items-center gap-7">
-          <div className="text-3xl cursor-pointer">
-            <FaUserAlt />
+          <div
+            className="relative flex justify-center"
+            onClick={() => setMenuDisplay((preve) => !preve)}
+          >
+            <div className="text-3xl cursor-pointer relative flex justify-center">
+              {user?.profilePic ? (
+                <img
+                  src={user?.profilePic}
+                  className="w-10 h-10 rounded-full"
+                  alt={user.name}
+                />
+              ) : (
+                <FaUserAlt />
+              )}
+            </div>
+            {menuDisplay && (
+              <div className="absolute bg-white bottom-0 top-12 h-fit p-4 shadow-lg rounded">
+                <nav>
+                  <Link
+                    to={"admin-panel"}
+                    className="whitespace-nowrap hover:bg-slate-100 p-2"
+                  >
+                    Admin Panel
+                  </Link>
+                </nav>
+              </div>
+            )}
           </div>
           <div className="text-4xl relative">
             <span>
@@ -35,13 +88,21 @@ const Header = () => {
               <p className="text-xs">0</p>
             </div>
           </div>
-
-          <Link
-            to={"/login"}
-            className="px-2 py-1 rounded-full text-white  bg-red-500 hover:bg-red-700"
-          >
-            Login
-          </Link>
+          {user?._id ? (
+            <button
+              className="text-sm px-2 py-1 rounded-full text-white  bg-red-500 hover:bg-red-700"
+              onClick={handleLogout}
+            >
+              Logout
+            </button>
+          ) : (
+            <Link
+              to={"/login"}
+              className="px-2 py-1 rounded-full text-white  bg-red-500 hover:bg-red-700"
+            >
+              Login
+            </Link>
+          )}
         </div>
       </div>
     </header>

@@ -1,6 +1,8 @@
-const imageProfile = async (image) => {
+const imageTobase64 = async (image) => {
   const reader = new FileReader();
-  reader.readAsDataURL(image);
+  if (image) {
+    reader.readAsDataURL(image);
+  }
 
   const data = await new Promise((resolve, reject) => {
     reader.onload = () => resolve(reader.result);
@@ -11,4 +13,4 @@ const imageProfile = async (image) => {
   return data;
 };
 
-export default imageProfile;
+export default imageTobase64;
