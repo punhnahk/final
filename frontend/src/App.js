@@ -32,7 +32,7 @@ export function App() {
         fetchUserDetails, //user detail fetch request
       }}
     >
-      <ToastContainer limit={5} transition={Slide} draggable stacked />
+      <ToastContainer limit={5} transition={Slide} draggable />
       <Header />
       <main className="min-h-[calc(100vh-110px)]">
         <Outlet />

@@ -7,6 +7,7 @@ const userSchema = mongoose.Schema(
     phone: { type: Number, required: true },
     password: String,
     profilePic: String,
+    role: String,
   },
   {
     timestamps: true,

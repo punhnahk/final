@@ -13,7 +13,6 @@ const Header = () => {
   const navigate = useNavigate();
   const [menuDisplay, setMenuDisplay] = useState(false);
   const user = useSelector((state) => state?.user?.user);
-  console.log("user header", user);
 
   const handleLogout = async () => {
     const fetchData = await fetch(SummaryApi.userLogout.url, {
@@ -56,11 +55,11 @@ const Header = () => {
           </div>
         </div>
         <div className="flex items-center gap-7">
-          <div
-            className="relative flex justify-center"
-            onClick={() => setMenuDisplay((preve) => !preve)}
-          >
-            <div className="text-3xl cursor-pointer relative flex justify-center">
+          <div className="relative flex justify-center">
+            <div
+              className="text-3xl cursor-pointer relative flex justify-center"
+              onClick={() => setMenuDisplay((preve) => !preve)}
+            >
               {user?.profilePic ? (
                 <img
                   src={user?.profilePic}
@@ -76,7 +75,8 @@ const Header = () => {
                 <nav>
                   <Link
                     to={"admin-panel"}
-                    className="whitespace-nowrap hover:bg-slate-100 p-2"
+                    className="whitespace-nowrap hidden md:block hover:bg-slate-100 p-2"
+                    onClick={() => setMenuDisplay((preve) => !preve)}
                   >
                     Admin Panel
                   </Link>
