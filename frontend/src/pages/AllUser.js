@@ -1,10 +1,22 @@
 import moment from "moment";
 import React, { useEffect, useState } from "react";
+import { CiEdit } from "react-icons/ci";
+import { IoIosRemoveCircleOutline } from "react-icons/io";
+import { MdLockReset } from "react-icons/md";
 import { toast } from "react-toastify";
 import SummaryApi from "../common/index";
-
+import ChangeUserRole from "../components/user/ChangeUserRole";
 const AllUser = () => {
   const [allUser, setAllUser] = useState([]);
+  const [openUpdateRole, setOpenUpdateRole] = useState(false);
+  const [updateUserDetails, setUpdateUserDetails] = useState({
+    email: "",
+    name: "",
+    phone: "",
+    address: "",
+    role: "",
+    _id: "",
+  });
   const fetchAllUser = async () => {
     const fetchData = await fetch(SummaryApi.allUser.url, {
       method: SummaryApi.allUser.method,
@@ -51,16 +63,40 @@ const AllUser = () => {
                 <td>{el?.address}</td>
                 <td>{el?.role}</td>
                 <td>{moment(el?.createdAt).format("LL")}</td>
-                <td>
-                  <button className="">Edit</button>
-                  <button>Remove</button>
-                  <button>Reset Password</button>
+                <td className="">
+                  <button
+                    className="bg-green-50 p-2 cursor-pointer hover:bg-green-300 hover:text-white rounded-full"
+                    onClick={() => {
+                      setUpdateUserDetails(el);
+                      setOpenUpdateRole(true);
+                    }}
+                  >
+                    <CiEdit />
+                  </button>
+                  <button className="bg-red-50 p-2 cursor-pointer hover:bg-red-300 hover:text-white rounded-full">
+                    <IoIosRemoveCircleOutline />
+                  </button>
+                  <button className="bg-blue-50 p-2 cursor-pointer hover:bg-blue-300 hover:text-white rounded-full">
+                    <MdLockReset />
+                  </button>
                 </td>
               </tr>
             );
           })}
         </tbody>
       </table>
+      {openUpdateRole && (
+        <ChangeUserRole
+          onClose={() => setOpenUpdateRole(false)}
+          name={updateUserDetails.name}
+          email={updateUserDetails.email}
+          phone={updateUserDetails.phone}
+          address={updateUserDetails.address}
+          role={updateUserDetails.role}
+          userId={updateUserDetails._id}
+          callFunc={fetchAllUser}
+        />
+      )}
     </div>
   );
 };
