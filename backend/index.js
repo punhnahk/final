@@ -5,6 +5,7 @@ import express from "express";
 import router from "./routers/index.js";
 
 import connectDB from "./config/db/db.js";
+import { autoCreateAdmin } from "./controllers/user/AutoCreateAdmin";
 const PORT = process.env.PORT || 4000;
 const app = express();
 dotenv.config();
@@ -22,4 +23,5 @@ app.use("/api", router);
 connectDB();
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+  autoCreateAdmin();
 });

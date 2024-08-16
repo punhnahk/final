@@ -1,46 +1,54 @@
 import bcrypt from "bcryptjs";
 import userModel from "../../models/userModel.js";
 
-async function userSignupController(req, res) {
+async function userSignUpController(req, res) {
   try {
-    const { email, password, name, address, phone } = req.body;
+    const { email, password, name, phone, address } = req.body;
+
     const user = await userModel.findOne({ email });
+
+    console.log("user", user);
+
     if (user) {
-      throw new Error(`User ${user.email} already exists`);
+      throw new Error("Already user exits.");
     }
     if (!email) {
-      throw new Error("Please enter your email address");
-    }
-    if (!password) {
-      throw new Error("Please enter your password");
-    }
-    if (!name) {
-      throw new Error("Please enter your name");
+      throw new Error("Please provide email");
     }
     if (!phone) {
-      throw new Error("Please enter your phone");
+      throw new Error("Please provide phone");
     }
     if (!address) {
-      throw new Error("Please enter your address");
+      throw new Error("Please provide address");
     }
+    if (!password) {
+      throw new Error("Please provide password");
+    }
+    if (!name) {
+      throw new Error("Please provide name");
+    }
+
     const salt = bcrypt.genSaltSync(10);
     const hashPassword = await bcrypt.hashSync(password, salt);
 
     if (!hashPassword) {
-      throw new Error("Failed to hash password");
+      throw new Error("Something is wrong");
     }
+
     const payload = {
       ...req.body,
-      role: "USER",
+      role: "user",
       password: hashPassword,
     };
+
     const userData = new userModel(payload);
     const saveUser = await userData.save();
+
     res.status(201).json({
       data: saveUser,
       success: true,
       error: false,
-      message: "User registered successfully",
+      message: "User created Successfully!",
     });
   } catch (err) {
     res.json({
@@ -51,4 +59,4 @@ async function userSignupController(req, res) {
   }
 }
 
-export default userSignupController;
+export default userSignUpController;

@@ -1,44 +1,68 @@
-import React, { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Outlet } from "react-router-dom";
-import { Slide, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
-import SummaryApi from "./common/index";
-import Footer from "./components/Footer";
-import Header from "./components/Header";
-import Context from "./context/index";
+import SummaryApi from "./common/index.js";
+import Footer from "./components/layout/Footer";
+import Header from "./components/layout/Header";
+import Context from "./context";
 import { setUserDetails } from "./store/userSlice";
 
-export function App() {
+function App() {
   const dispatch = useDispatch();
+  const [cartProductCount, setCartProductCount] = useState(0);
+
   const fetchUserDetails = async () => {
     const dataResponse = await fetch(SummaryApi.current_user.url, {
       method: SummaryApi.current_user.method,
       credentials: "include",
     });
-    const data_ = await dataResponse.json();
-    if (data_.success) {
-      dispatch(setUserDetails(data_.data));
+
+    const dataApi = await dataResponse.json();
+
+    if (dataApi.success) {
+      dispatch(setUserDetails(dataApi.data));
     }
-    console.log("data-user", dataResponse);
   };
+
+  const fetchUserAddToCart = async () => {
+    const dataResponse = await fetch(SummaryApi.addToCartProductCount.url, {
+      method: SummaryApi.addToCartProductCount.method,
+      credentials: "include",
+    });
+
+    const dataApi = await dataResponse.json();
+
+    setCartProductCount(dataApi?.data?.count);
+  };
+
   useEffect(() => {
+    /**user Details */
     fetchUserDetails();
-  });
+    /**user Details cart product */
+    fetchUserAddToCart();
+  }, []);
   return (
-    <Context.Provider
-      value={{
-        fetchUserDetails, //user detail fetch request
-      }}
-    >
-      <ToastContainer limit={5} transition={Slide} draggable />
-      <Header />
-      <main className="min-h-[calc(100vh-110px)]">
-        <Outlet />
-      </main>
-      <Footer />
-    </Context.Provider>
+    <>
+      <Context.Provider
+        value={{
+          fetchUserDetails, // user detail fetch
+          cartProductCount, // current user add to cart product count,
+          fetchUserAddToCart,
+        }}
+      >
+        <ToastContainer position="bottom-right" />
+
+        <Header />
+        <main className="min-h-[calc(100vh-120px)] pt-16">
+          <Outlet />
+        </main>
+        <Footer />
+      </Context.Provider>
+    </>
   );
 }
+
 export default App;

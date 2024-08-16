@@ -1,19 +1,24 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "../App";
 import AdminPanel from "../pages/AdminPanel";
-import AllProduct from "../pages/AllProduct";
-import AllUser from "../pages/AllUser";
-import ForgotPassword from "../pages/ForgotPassword";
+import AllProducts from "../pages/AllProduct";
+import AllUsers from "../pages/AllUser";
+import Cart from "../pages/Cart";
+import CategoryProduct from "../pages/CategoryProduct";
+import ForgotPassowrd from "../pages/ForgotPassword";
 import Home from "../pages/Home";
 import Login from "../pages/Login";
+import ProductDetails from "../pages/ProductDetails";
+import SearchProduct from "../pages/SearchProduct";
 import SignUp from "../pages/SignUp";
+
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
     children: [
       {
-        path: "/",
+        path: "",
         element: <Home />,
       },
       {
@@ -22,11 +27,27 @@ const router = createBrowserRouter([
       },
       {
         path: "forgot-password",
-        element: <ForgotPassword />,
+        element: <ForgotPassowrd />,
       },
       {
-        path: "signup",
+        path: "sign-up",
         element: <SignUp />,
+      },
+      {
+        path: "product-category",
+        element: <CategoryProduct />,
+      },
+      {
+        path: "product/:id",
+        element: <ProductDetails />,
+      },
+      {
+        path: "cart",
+        element: <Cart />,
+      },
+      {
+        path: "search",
+        element: <SearchProduct />,
       },
       {
         path: "admin-panel",
@@ -34,15 +55,14 @@ const router = createBrowserRouter([
         children: [
           {
             path: "all-users",
-            element: <AllUser />,
+            element: <AllUsers />,
           },
           {
             path: "all-products",
-            element: <AllProduct />,
+            element: <AllProducts />,
           },
         ],
       },
-      {},
     ],
   },
 ]);
