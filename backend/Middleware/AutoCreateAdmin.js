@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
-import { UserModel } from "../models/UserModel.js";
+import UserModel from "../models/userModel.js";
 
-export const autoCreateAdmin = async () => {
+const autoCreateAdmin = async () => {
   const adminEmail = "Admin@admin.com";
   const existingAdmin = await UserModel.findOne({ email: adminEmail });
 
@@ -10,9 +10,9 @@ export const autoCreateAdmin = async () => {
       name: "Admin",
       email: adminEmail,
       password: bcrypt.hashSync("Admin@123", 8), // hash the password
-      address: "",
-      phone: "",
-      isAdmin: true,
+      address: "ADMIN",
+      phone: "1234567890",
+      role: "admin",
     });
 
     await adminUser.save();
@@ -21,3 +21,4 @@ export const autoCreateAdmin = async () => {
     console.log("Admin user already exists");
   }
 };
+export default autoCreateAdmin;

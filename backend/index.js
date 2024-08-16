@@ -5,7 +5,7 @@ import express from "express";
 import router from "./routers/index.js";
 
 import connectDB from "./config/db/db.js";
-import { autoCreateAdmin } from "./controllers/user/AutoCreateAdmin";
+import autoCreateAdmin from "./Middleware/AutoCreateAdmin.js";
 const PORT = process.env.PORT || 4000;
 const app = express();
 dotenv.config();

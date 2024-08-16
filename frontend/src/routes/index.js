@@ -30,7 +30,7 @@ const router = createBrowserRouter([
         element: <ForgotPassowrd />,
       },
       {
-        path: "sign-up",
+        path: "signup",
         element: <SignUp />,
       },
       {
