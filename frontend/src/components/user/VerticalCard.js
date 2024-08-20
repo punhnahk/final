@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import Context from "../../context";
 import addToCart from "../../helpers/addToCart";
-import displayINRCurrency from "../../helpers/displayCurrency";
+import displayCurrency from "../../helpers/displayCurrency";
 import scrollTop from "../../helpers/scrollTop";
 
 const VerticalCard = ({ loading, data = [] }) => {
@@ -55,10 +55,10 @@ const VerticalCard = ({ loading, data = [] }) => {
                   </p>
                   <div className="flex gap-3">
                     <p className="text-red-600 font-medium">
-                      {displayINRCurrency(product?.sellingPrice)}
+                      {displayCurrency(product?.sellingPrice)}
                     </p>
                     <p className="text-slate-500 line-through">
-                      {displayINRCurrency(product?.price)}
+                      {displayCurrency(product?.price)}
                     </p>
                   </div>
                   <button

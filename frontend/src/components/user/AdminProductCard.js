@@ -8,8 +8,8 @@ const AdminProductCard = ({ data, fetchdata }) => {
 
   return (
     <div className="bg-white p-4 rounded ">
-      <div className="w-40">
-        <div className="w-32 h-32 flex justify-center items-center">
+      <div className="w-100 rounded-2xl">
+        <div className="w-100 h-100 flex justify-center items-center rounded-sm">
           <img
             src={data?.productImage[0]}
             className="mx-auto object-fill h-full"

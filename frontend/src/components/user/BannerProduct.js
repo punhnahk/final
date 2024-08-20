@@ -1,103 +1,96 @@
 import React, { useEffect, useState } from "react";
-import image1 from "../../assest/banner/img1.webp";
-import image2 from "../../assest/banner/img2.webp";
-import image3 from "../../assest/banner/img3.jpg";
-import image4 from "../../assest/banner/img4.jpg";
-import image5 from "../../assest/banner/img5.webp";
-
-import image1Mobile from "../../assest/banner/img1_mobile.jpg";
-import image2Mobile from "../../assest/banner/img2_mobile.webp";
-import image3Mobile from "../../assest/banner/img3_mobile.jpg";
-import image4Mobile from "../../assest/banner/img4_mobile.jpg";
-import image5Mobile from "../../assest/banner/img5_mobile.png";
-
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
+import banner1 from "../../assest/banner/banner 1.jpg";
+import banner2 from "../../assest/banner/banner 2.jpg";
+import banner3 from "../../assest/banner/banner 3.jpg";
 
 const BannerProduct = () => {
   const [currentImage, setCurrentImage] = useState(0);
 
-  const desktopImages = [image1, image2, image3, image4, image5];
+  const desktopImages = [banner1, banner2, banner3];
 
   const mobileImages = [
-    image1Mobile,
-    image2Mobile,
-    image3Mobile,
-    image4Mobile,
-    image5Mobile,
+    "https://example.com/vietnam-mobile-image1.jpg",
+    "https://example.com/vietnam-mobile-image2.jpg",
+    "https://example.com/vietnam-mobile-image3.jpg",
+    "https://example.com/vietnam-mobile-image4.jpg",
+    "https://example.com/vietnam-mobile-image5.jpg",
   ];
 
   const nextImage = () => {
-    if (desktopImages.length - 1 > currentImage) {
-      setCurrentImage((preve) => preve + 1);
-    }
+    setCurrentImage((prev) =>
+      prev === desktopImages.length - 1 ? 0 : prev + 1
+    );
   };
 
   const preveImage = () => {
-    if (currentImage != 0) {
-      setCurrentImage((preve) => preve - 1);
-    }
+    setCurrentImage((prev) =>
+      prev === 0 ? desktopImages.length - 1 : prev - 1
+    );
   };
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (desktopImages.length - 1 > currentImage) {
-        nextImage();
-      } else {
-        setCurrentImage(0);
-      }
+      nextImage();
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [currentImage]);
+  }, []);
 
   return (
-    <div className="container mx-auto px-4 rounded ">
-      <div className="h-56 md:h-72 w-full bg-slate-200 relative">
-        <div className="absolute z-10 h-full w-full md:flex items-center hidden ">
-          <div className=" flex justify-between w-full text-2xl">
-            <button
-              onClick={preveImage}
-              className="bg-white shadow-md rounded-full p-1"
-            >
-              <FaAngleLeft />
-            </button>
-            <button
-              onClick={nextImage}
-              className="bg-white shadow-md rounded-full p-1"
-            >
-              <FaAngleRight />
-            </button>
-          </div>
+    <div className="container mx-auto px-4 py-8">
+      <div className="relative h-48 md:h-96 bg-gray-100 rounded-lg shadow-lg overflow-hidden">
+        <div className="absolute inset-0 flex justify-between items-center px-4 z-10">
+          <button
+            onClick={preveImage}
+            className="bg-gray-800 text-white p-2 rounded-full hover:bg-gray-700 transition"
+            aria-label="Previous image"
+          >
+            <FaAngleLeft size={24} />
+          </button>
+          <button
+            onClick={nextImage}
+            className="bg-gray-800 text-white p-2 rounded-full hover:bg-gray-700 transition"
+            aria-label="Next image"
+          >
+            <FaAngleRight size={24} />
+          </button>
         </div>
 
-        {/**desktop and tablet version */}
-        <div className="hidden md:flex h-full w-full overflow-hidden">
-          {desktopImages.map((imageURl, index) => {
-            return (
-              <div
-                className="w-full h-full min-w-full min-h-full transition-all"
-                key={imageURl}
-                style={{ transform: `translateX(-${currentImage * 100}%)` }}
-              >
-                <img src={imageURl} className="w-full h-full" />
-              </div>
-            );
-          })}
+        {/** Desktop and tablet version */}
+        <div className="hidden md:flex h-full w-full">
+          {desktopImages.map((imageURL, index) => (
+            <div
+              key={index}
+              className={`absolute inset-0 transition-opacity duration-700 ${
+                index === currentImage ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <img
+                src={imageURL}
+                alt={`Banner ${index + 1}`}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          ))}
         </div>
 
-        {/**mobile version */}
-        <div className="flex h-full w-full overflow-hidden md:hidden">
-          {mobileImages.map((imageURl, index) => {
-            return (
-              <div
-                className="w-full h-full min-w-full min-h-full transition-all"
-                key={imageURl}
-                style={{ transform: `translateX(-${currentImage * 100}%)` }}
-              >
-                <img src={imageURl} className="w-full h-full object-cover" />
-              </div>
-            );
-          })}
+        {/** Mobile version */}
+        <div className="flex md:hidden h-full w-full">
+          {mobileImages.map((imageURL, index) => (
+            <div
+              key={index}
+              className={`absolute inset-0 transition-opacity duration-700 ${
+                index === currentImage ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <img
+                src={imageURL}
+                alt={`Banner ${index + 1}`}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          ))}
         </div>
       </div>
     </div>

@@ -3,15 +3,14 @@ import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import Context from "../../context";
 import addToCart from "../../helpers/addToCart";
-import displayUSDCurrency from "../../helpers/displayCurrency";
+import displayCurrency from "../../helpers/displayCurrency";
 import fetchCategoryWiseProduct from "../../helpers/fetchCategoryWiseProduct";
 
 const VerticalCardProduct = ({ category, heading }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const loadingList = new Array(13).fill(null);
+  const loadingList = new Array(6).fill(null);
 
-  const [scroll, setScroll] = useState(0);
   const scrollElement = useRef();
 
   const { fetchUserAddToCart } = useContext(Context);
@@ -25,8 +24,6 @@ const VerticalCardProduct = ({ category, heading }) => {
     setLoading(true);
     const categoryProduct = await fetchCategoryWiseProduct(category);
     setLoading(false);
-
-    console.log("horizontal data", categoryProduct.data);
     setData(categoryProduct?.data);
   };
 
@@ -37,85 +34,89 @@ const VerticalCardProduct = ({ category, heading }) => {
   const scrollRight = () => {
     scrollElement.current.scrollLeft += 300;
   };
+
   const scrollLeft = () => {
     scrollElement.current.scrollLeft -= 300;
   };
 
   return (
-    <div className="container mx-auto px-4 my-6 relative">
-      <h2 className="text-2xl font-semibold py-4">{heading}</h2>
+    <div className="container mx-auto px-4 my-12 relative">
+      <h2 className="text-3xl font-semibold py-6 text-gray-800">{heading}</h2>
 
-      <div
-        className="flex items-center gap-4 md:gap-6 overflow-x-scroll scrollbar-none transition-all"
-        ref={scrollElement}
-      >
+      <div className="relative flex items-center">
         <button
-          className="bg-white shadow-md rounded-full p-1 absolute left-0 text-lg hidden md:block"
+          className="absolute left-[-20px] md:left-[-40px] bg-gray-200 shadow rounded-full p-2 text-gray-600 text-lg flex items-center justify-center hover:bg-gray-300 transition"
           onClick={scrollLeft}
         >
           <FaAngleLeft />
         </button>
-        <button
-          className="bg-white shadow-md rounded-full p-1 absolute right-0 text-lg hidden md:block"
-          onClick={scrollRight}
+        <div
+          className="flex items-start gap-4 md:gap-6 overflow-x-auto no-scrollbar transition-all w-full"
+          ref={scrollElement}
         >
-          <FaAngleRight />
-        </button>
-
-        {loading
-          ? loadingList.map((product, index) => {
-              return (
-                <div className="w-full min-w-[280px]  md:min-w-[320px] max-w-[280px] md:max-w-[320px]  bg-white rounded-sm shadow ">
-                  <div className="bg-slate-200 h-48 p-4 min-w-[280px] md:min-w-[145px] flex justify-center items-center animate-pulse"></div>
-                  <div className="p-4 grid gap-3">
-                    <h2 className="font-medium text-base md:text-lg text-ellipsis line-clamp-1 text-black p-1 py-2 animate-pulse rounded-full bg-slate-200"></h2>
-                    <p className="capitalize text-slate-500 p-1 animate-pulse rounded-full bg-slate-200  py-2"></p>
-                    <div className="flex gap-3">
-                      <p className="text-red-600 font-medium p-1 animate-pulse rounded-full bg-slate-200 w-full  py-2"></p>
-                      <p className="text-slate-500 line-through p-1 animate-pulse rounded-full bg-slate-200 w-full  py-2"></p>
+          {loading
+            ? loadingList.map((_, index) => (
+                <div
+                  key={index}
+                  className="min-w-[200px] max-w-[200px] md:min-w-[280px] md:max-w-[280px] bg-gray-50 rounded-lg shadow-lg animate-pulse"
+                >
+                  <div className="bg-gray-200 h-36 md:h-48 p-4 rounded-t-lg flex justify-center items-center"></div>
+                  <div className="p-4 grid gap-2 md:gap-3">
+                    <div className="h-6 bg-gray-200 rounded"></div>
+                    <div className="h-4 bg-gray-200 rounded"></div>
+                    <div className="flex gap-2">
+                      <div className="h-6 bg-gray-200 w-1/2 rounded"></div>
+                      <div className="h-6 bg-gray-200 w-1/2 rounded"></div>
                     </div>
-                    <button className="text-sm  text-white px-3  rounded-full bg-slate-200  py-2 animate-pulse"></button>
+                    <div className="h-8 bg-gray-200 rounded mt-4"></div>
                   </div>
                 </div>
-              );
-            })
-          : data.map((product, index) => {
-              return (
+              ))
+            : data.map((product) => (
                 <Link
                   to={"product/" + product?._id}
-                  className="w-full min-w-[280px]  md:min-w-[320px] max-w-[280px] md:max-w-[320px]  bg-white rounded-sm shadow "
+                  key={product?._id}
+                  className="min-w-[200px] max-w-[200px] md:min-w-[280px] md:max-w-[280px] bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow"
                 >
-                  <div className="bg-slate-200 h-48 p-4 min-w-[280px] md:min-w-[145px] flex justify-center items-center">
+                  <div className="bg-gray-100 h-36 md:h-48 p-4 flex justify-center items-center rounded-t-lg">
                     <img
                       src={product.productImage[0]}
-                      className="object-scale-down h-full hover:scale-110 transition-all mix-blend-multiply"
+                      alt={product.productName}
+                      className="object-contain h-full transition-transform transform hover:scale-105"
                     />
                   </div>
-                  <div className="p-4 grid gap-3">
-                    <h2 className="font-medium text-base md:text-lg text-ellipsis line-clamp-1 text-black">
+
+                  <div className="p-4 grid gap-2 md:gap-3">
+                    <h2 className="font-medium text-md md:text-lg text-gray-800 text-ellipsis line-clamp-1">
                       {product?.productName}
                     </h2>
-                    <p className="capitalize text-slate-500">
+                    <p className="capitalize text-gray-500 text-sm md:text-base">
                       {product?.category}
                     </p>
-                    <div className="flex gap-3">
-                      <p className="text-red-600 font-medium">
-                        {displayUSDCurrency(product?.sellingPrice)}
+                    <div className="flex items-center gap-2">
+                      <p className="text-gray-700 font-medium text-sm md:text-base">
+                        {displayCurrency(product?.sellingPrice)}
                       </p>
-                      <p className="text-slate-500 line-through">
-                        {displayUSDCurrency(product?.price)}
+                      <p className="text-gray-400 line-through text-sm md:text-base">
+                        {displayCurrency(product?.price)}
                       </p>
                     </div>
                     <button
-                      className="text-sm bg-red-600 hover:bg-red-700 text-white px-3 py-0.5 rounded-full"
+                      className="text-xs md:text-sm bg-gray-800 hover:bg-gray-900 text-white px-3 py-1 rounded mt-2 transition-colors"
                       onClick={(e) => handleAddToCart(e, product?._id)}
                     >
                       Add to Cart
                     </button>
                   </div>
                 </Link>
-              );
-            })}
+              ))}
+        </div>
+        <button
+          className="absolute right-[-20px] md:right-[-40px] bg-gray-200 shadow rounded-full p-2 text-gray-600 text-lg flex items-center justify-center hover:bg-gray-300 transition"
+          onClick={scrollRight}
+        >
+          <FaAngleRight />
+        </button>
       </div>
     </div>
   );
