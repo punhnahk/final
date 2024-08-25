@@ -57,7 +57,8 @@ const Signup = () => {
         toast.success(dataApi.message, {
           position: "bottom-right",
         });
-        navigate("/login");
+        // Redirect to the confirm email page
+        navigate("/confirm-email");
       }
 
       if (dataApi.error) {

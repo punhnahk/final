@@ -5,13 +5,13 @@ import AllProducts from "../pages/AllProduct";
 import AllUsers from "../pages/AllUser";
 import Cart from "../pages/Cart";
 import CategoryProduct from "../pages/CategoryProduct";
+import ConfirmEmail from "../pages/ConfirmEmail";
 import ForgotPassowrd from "../pages/ForgotPassword";
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import ProductDetails from "../pages/ProductDetails";
 import SearchProduct from "../pages/SearchProduct";
 import SignUp from "../pages/SignUp";
-
 const router = createBrowserRouter([
   {
     path: "/",
@@ -60,6 +60,16 @@ const router = createBrowserRouter([
           {
             path: "all-products",
             element: <AllProducts />,
+          },
+        ],
+      },
+      {
+        path: "confirm-email",
+        element: <ConfirmEmail />,
+        children: [
+          {
+            path: ":token",
+            element: <ConfirmEmail />,
           },
         ],
       },

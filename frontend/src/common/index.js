@@ -76,5 +76,9 @@ const SummaryApi = {
     url: `${backendDomain}/api/filter-product`,
     method: "post",
   },
+  confirmEmail: {
+    url: `${backendDomain}/api/confirm-email`,
+    method: "get",
+  },
 };
 export default SummaryApi;

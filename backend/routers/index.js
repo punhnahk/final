@@ -1,4 +1,5 @@
 import express from "express";
+import emailConfirmationController from "../controllers/mail/emailConfirmationController.js";
 import filterProductController from "../controllers/product/filterProduct.js";
 import getCategoryProduct from "../controllers/product/getCategoryProductOne.js";
 import getCategoryWiseProduct from "../controllers/product/getCategoryWiseProduct.js";
@@ -25,6 +26,7 @@ router.post("/signup", userSignUpController);
 router.post("/signin", userSignInController);
 router.get("/user-details", authToken, userDetailsController);
 router.get("/userLogout", userLogout);
+router.get("/confirm-email/:token", authToken, emailConfirmationController);
 
 //admin panel
 router.get("/all-user", authToken, allUsers);

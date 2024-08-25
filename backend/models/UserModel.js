@@ -3,6 +3,7 @@ const userSchema = mongoose.Schema(
   {
     name: String,
     email: { type: String, unique: true, required: true },
+    confirmEmail: { type: Boolean, default: false },
     address: { type: String, required: true },
     phone: { type: Number, required: true },
     password: String,
