@@ -104,6 +104,15 @@ const Header = () => {
                       Admin Panel
                     </Link>
                   )}
+                  {user?.role === ROLE.USER && (
+                    <Link
+                      to={"/user-panel xc vn vc"}
+                      className="whitespace-nowrap hidden md:block hover:bg-slate-100 p-2"
+                      onClick={() => setMenuDisplay((preve) => !preve)}
+                    >
+                      User Panel
+                    </Link>
+                  )}
                 </nav>
               </div>
             )}

@@ -2,8 +2,8 @@ import React, { useContext, useState } from "react";
 import { IoIosEyeOff, IoMdEye } from "react-icons/io";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import SummaryApi from "../common/index";
-import Context from "../context/index";
+import SummaryApi from "../../common/index";
+import Context from "../../context/index";
 const Login = () => {
   const [showPassword, setShowPassword] = useState(true);
   const [data, setData] = useState({
@@ -38,6 +38,10 @@ const Login = () => {
       });
       navigate("/");
       fetchUserDetails();
+    } else if (
+      data.message === "Please confirm your email before logging in."
+    ) {
+      navigate("/otp-confirmation");
     }
     if (data_.error) {
       toast.error(data_.message, {

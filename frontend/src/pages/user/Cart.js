@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
-import SummaryApi from '../common'
-import Context from '../context'
-import displayINRCurrency from '../helpers/displayCurrency'
+import SummaryApi from '../../common'
+import Context from '../../context'
+import displayINRCurrency from '../../helpers/displayCurrency'
 import { MdDelete } from "react-icons/md";
 
 const Cart = () => {
@@ -12,7 +12,7 @@ const Cart = () => {
 
 
     const fetchData = async() =>{
-        
+
         const response = await fetch(SummaryApi.addToCartProductView.url,{
             method : SummaryApi.addToCartProductView.method,
             credentials : 'include',
@@ -20,7 +20,7 @@ const Cart = () => {
                 "content-type" : 'application/json'
             },
         })
-       
+
 
         const responseData = await response.json()
 
@@ -50,7 +50,7 @@ const Cart = () => {
                 "content-type" : 'application/json'
             },
             body : JSON.stringify(
-                {   
+                {
                     _id : id,
                     quantity : qty + 1
                 }
@@ -75,7 +75,7 @@ const Cart = () => {
                     "content-type" : 'application/json'
                 },
                 body : JSON.stringify(
-                    {   
+                    {
                         _id : id,
                         quantity : qty - 1
                     }
@@ -99,7 +99,7 @@ const Cart = () => {
                 "content-type" : 'application/json'
             },
             body : JSON.stringify(
-                {   
+                {
                     _id : id,
                 }
             )
@@ -117,7 +117,7 @@ const Cart = () => {
     const totalPrice = data.reduce((preve,curr)=> preve + (curr.quantity * curr?.productId?.sellingPrice) ,0)
   return (
     <div className='container mx-auto'>
-        
+
         <div className='text-center text-lg my-3'>
             {
                 data.length === 0 && !loading && (
@@ -126,7 +126,7 @@ const Cart = () => {
             }
         </div>
 
-        <div className='flex flex-col lg:flex-row gap-10 lg:justify-between p-4'>   
+        <div className='flex flex-col lg:flex-row gap-10 lg:justify-between p-4'>
                 {/***view product */}
                 <div className='w-full max-w-3xl'>
                     {
@@ -137,7 +137,7 @@ const Cart = () => {
                                     </div>
                                 )
                             })
-                             
+
                         ) : (
                           data.map((product,index)=>{
                            return(
@@ -162,7 +162,7 @@ const Cart = () => {
                                         <span>{product?.quantity}</span>
                                         <button className='border border-red-600 text-red-600 hover:bg-red-600 hover:text-white w-6 h-6 flex justify-center items-center rounded ' onClick={()=>increaseQty(product?._id,product?.quantity)}>+</button>
                                     </div>
-                                </div>    
+                                </div>
                             </div>
                            )
                           })
@@ -176,7 +176,7 @@ const Cart = () => {
                         {
                             loading ? (
                             <div className='h-36 bg-slate-200 border border-slate-300 animate-pulse'>
-                                
+
                             </div>
                             ) : (
                                 <div className='h-36 bg-white'>
@@ -188,7 +188,7 @@ const Cart = () => {
 
                                     <div className='flex items-center justify-between px-4 gap-2 font-medium text-lg text-slate-600'>
                                         <p>Total Price</p>
-                                        <p>{displayINRCurrency(totalPrice)}</p>    
+                                        <p>{displayINRCurrency(totalPrice)}</p>
                                     </div>
 
                                     <button className='bg-blue-600 p-2 text-white w-full mt-2'>Payment</button>

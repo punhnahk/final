@@ -1,7 +1,7 @@
 import React from "react";
-import BannerProduct from "../components/user/BannerProduct";
-import CategoryList from "../components/user/CategoryList";
-import VerticalCardProduct from "../components/user/VerticalCardProduct";
+import BannerProduct from "../../components/user/BannerProduct";
+import CategoryList from "../../components/user/CategoryList";
+import VerticalCardProduct from "../../components/user/VerticalCardProduct";
 
 const Home = () => {
   return (

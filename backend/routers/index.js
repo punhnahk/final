@@ -1,5 +1,6 @@
 import express from "express";
-import emailConfirmationController from "../controllers/mail/emailConfirmationController.js";
+
+import verifyOtpController from "../controllers/mail/otpVerification.js";
 import filterProductController from "../controllers/product/filterProduct.js";
 import getCategoryProduct from "../controllers/product/getCategoryProductOne.js";
 import getCategoryWiseProduct from "../controllers/product/getCategoryWiseProduct.js";
@@ -17,7 +18,7 @@ import updateAddToCartProduct from "../controllers/user/updateAddToCartProduct.j
 import userDetailsController from "../controllers/user/userDetails.js";
 import userLogout from "../controllers/user/userLogout.js";
 import userSignInController from "../controllers/user/userSignIn.js";
-import userSignUpController from "../controllers/user/userSignUp.js";
+import userSignUpController from "../controllers/user/userSignup.js";
 import updateUser from "../controllers/user/userUpdate.js";
 import authToken from "../Middleware/authToken.js";
 const router = express.Router();
@@ -26,7 +27,7 @@ router.post("/signup", userSignUpController);
 router.post("/signin", userSignInController);
 router.get("/user-details", authToken, userDetailsController);
 router.get("/userLogout", userLogout);
-router.get("/confirm-email/:token", authToken, emailConfirmationController);
+router.post("/verify-otp", verifyOtpController);
 
 //admin panel
 router.get("/all-user", authToken, allUsers);

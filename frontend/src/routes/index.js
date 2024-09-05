@@ -1,17 +1,18 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "../App";
-import AdminPanel from "../pages/AdminPanel";
-import AllProducts from "../pages/AllProduct";
-import AllUsers from "../pages/AllUser";
-import Cart from "../pages/Cart";
-import CategoryProduct from "../pages/CategoryProduct";
-import ConfirmEmail from "../pages/ConfirmEmail";
-import ForgotPassowrd from "../pages/ForgotPassword";
-import Home from "../pages/Home";
-import Login from "../pages/Login";
-import ProductDetails from "../pages/ProductDetails";
-import SearchProduct from "../pages/SearchProduct";
-import SignUp from "../pages/SignUp";
+import AdminPanel from "../pages/admin/AdminPanel";
+import AllProducts from "../pages/admin/AllProduct";
+import AllUsers from "../pages/admin/AllUser";
+import CategoryProduct from "../pages/admin/CategoryProduct";
+import ForgotPassowrd from "../pages/admin/ForgotPassword";
+import Cart from "../pages/user/Cart";
+import Home from "../pages/user/Home";
+import Login from "../pages/user/Login";
+import OtpConfirmation from "../pages/user/OtpConfirmation";
+import ProductDetails from "../pages/user/ProductDetails";
+import SearchProduct from "../pages/user/SearchProduct";
+import SignUp from "../pages/user/SignUp";
+import UserPanel from "../pages/user/UserPanel";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -64,12 +65,20 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: "confirm-email",
-        element: <ConfirmEmail />,
+        path: "/otp-confirmation",
+        element: <OtpConfirmation />,
+      },
+      {
+        path: "user-panel",
+        element: <UserPanel />,
         children: [
           {
-            path: ":token",
-            element: <ConfirmEmail />,
+            path: "all-users",
+            element: <UserPanel />,
+          },
+          {
+            path: "all-products",
+            element: <UserPanel />,
           },
         ],
       },

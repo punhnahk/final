@@ -1,11 +1,11 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { FaStar, FaStarHalf } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
-import SummaryApi from "../common";
-import CategroyWiseProductDisplay from "../components/user/CategoryWiseProductDisplay";
-import Context from "../context";
-import addToCart from "../helpers/addToCart";
-import displayINRCurrency from "../helpers/displayCurrency";
+import SummaryApi from "../../common";
+import CategroyWiseProductDisplay from "../../components/user/CategoryWiseProductDisplay";
+import Context from "../../context";
+import addToCart from "../../helpers/addToCart";
+import displayINRCurrency from "../../helpers/displayCurrency";
 
 const ProductDetails = () => {
   const [data, setData] = useState({

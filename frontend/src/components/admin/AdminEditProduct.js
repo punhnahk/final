@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import SummaryApi from "../../common";
 import productCategory from "../../helpers/productCategory";
 import uploadImage from "../../helpers/uploadImage";
-import DisplayImage from "./DisplayImage";
+import DisplayImage from "../user/DisplayImage";
 
 const AdminEditProduct = ({ onClose, productData, fetchdata }) => {
   const [data, setData] = useState({

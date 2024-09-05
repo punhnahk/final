@@ -4,8 +4,8 @@ import { CiEdit } from "react-icons/ci";
 import { IoIosRemoveCircleOutline } from "react-icons/io";
 import { MdLockReset } from "react-icons/md";
 import { toast } from "react-toastify";
-import SummaryApi from "../common/index";
-import ChangeUserRole from "../components/user/ChangeUserRole";
+import SummaryApi from "../../common/index";
+import ChangeUserRole from "../../components/user/ChangeUserRole";
 const AllUser = () => {
   const [allUser, setAllUser] = useState([]);
   const [openUpdateRole, setOpenUpdateRole] = useState(false);

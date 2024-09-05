@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import crypto from "crypto";
 import nodemailer from "nodemailer";
 import userModel from "../../models/userModel.js";
 
@@ -7,16 +7,14 @@ async function userSignUpController(req, res) {
   try {
     const { email, password, name, phone, address } = req.body;
 
-    // Validate the required fields
-    if (!email) throw new Error("Please provide an email");
-    if (!phone) throw new Error("Please provide a phone number");
-    if (!address) throw new Error("Please provide an address");
-    if (!password) throw new Error("Please provide a password");
-    if (!name) throw new Error("Please provide a name");
+    // Validate required fields
+    if (!email || !phone || !address || !password || !name) {
+      throw new Error("Please provide all required fields");
+    }
 
     // Check if user already exists
-    const user = await userModel.findOne({ email });
-    if (user) {
+    const existingUser = await userModel.findOne({ email });
+    if (existingUser) {
       return res.status(400).json({
         message: "User already exists.",
         error: true,
@@ -26,30 +24,31 @@ async function userSignUpController(req, res) {
 
     // Hash the password
     const salt = bcrypt.genSaltSync(10);
-    const hashPassword = await bcrypt.hashSync(password, salt);
+    const hashPassword = bcrypt.hashSync(password, salt);
 
     if (!hashPassword) {
-      throw new Error("Something is wrong");
+      throw new Error("Error in password encryption");
     }
 
-    const payload = {
-      ...req.body,
-      role: "user",
+    // Generate OTP and set expiration time
+    const otp = crypto.randomInt(100000, 999999).toString(); // 6-digit OTP
+    const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // OTP expires in 10 minutes
+
+    // Create new user payload with hashed password, OTP, and expiration time
+    const newUser = new userModel({
+      email,
       password: hashPassword,
-    };
+      name,
+      phone,
+      address,
+      role: "user",
+      otp,
+      otpExpires,
+      isEmailConfirmed: false, // Add flag for email confirmation
+    });
 
-    const userData = new userModel(payload);
-    const saveUser = await userData.save();
-
-    // Generate Email Confirmation Token
-    const token = jwt.sign(
-      { _id: saveUser._id },
-      process.env.TOKEN_SECRET_KEY,
-      { expiresIn: "1h" }
-    );
-
-    // URL to be sent in the email
-    const confirmationUrl = `${process.env.FRONTEND_URL}/confirm-email/${token}`;
+    // Save the new user to the database
+    const savedUser = await newUser.save();
 
     // Setup Nodemailer transporter
     const transporter = nodemailer.createTransport({
@@ -60,23 +59,23 @@ async function userSignUpController(req, res) {
       },
     });
 
-    // Mail options
+    // Mail options for sending OTP
     const mailOptions = {
       from: process.env.EMAIL,
-      to: saveUser.email,
-      subject: "Confirm Your Email",
-      text: `Hi ${saveUser.name},\n\nPlease confirm your email by clicking the following link: ${confirmationUrl}\n\nThank you!`,
+      to: savedUser.email,
+      subject: "Your OTP Code",
+      text: `Hi ${savedUser.name},\n\nYour OTP code is ${otp}. It will expire in 10 minutes.\n\nThank you!`,
     };
 
-    // Send the email
+    // Send the email with OTP
     await transporter.sendMail(mailOptions);
 
     res.status(201).json({
-      data: saveUser,
+      data: savedUser,
       success: true,
       error: false,
       message:
-        "User created successfully! A confirmation email has been sent to your email address.",
+        "User created successfully! An OTP has been sent to your email address.",
     });
   } catch (err) {
     console.error("Error in userSignUpController:", err);

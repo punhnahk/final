@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { IoIosEyeOff, IoMdEye } from "react-icons/io";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import pic1 from "../assest/img/pic1.gif";
-import loginIcons from "../assest/login.gif";
-import SummaryApi from "../common/index";
-import imageTobase64 from "../helpers/imageTobase64";
+import pic1 from "../../assest/img/pic1.gif";
+import loginIcons from "../../assest/login.gif";
+import SummaryApi from "../../common/index";
+import imageTobase64 from "../../helpers/imageTobase64";
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(true);
@@ -42,8 +42,16 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (data.password === data.confirmPassword) {
-      const dataResponse = await fetch(SummaryApi.signUp.url, {
+    // Password validation
+    if (data.password !== data.confirmPassword) {
+      return toast.error("Please check password and confirm password", {
+        position: "bottom-right",
+      });
+    }
+
+    try {
+      // Send signup data to backend
+      const response = await fetch(SummaryApi.signUp.url, {
         method: SummaryApi.signUp.method,
         headers: {
           "content-type": "application/json",
@@ -51,23 +59,20 @@ const Signup = () => {
         body: JSON.stringify(data),
       });
 
-      const dataApi = await dataResponse.json();
+      const responseData = await response.json();
 
-      if (dataApi.success) {
-        toast.success(dataApi.message, {
-          position: "bottom-right",
-        });
-        // Redirect to the confirm email page
-        navigate("/confirm-email");
+      // On successful signup, navigate to OTP confirmation page
+      if (responseData.success) {
+        toast.success(responseData.message, { position: "bottom-right" });
+        localStorage.setItem("userEmail", data.email);
+        navigate("/otp-confirmation", { state: { email: data.email } });
+      } else if (responseData.error) {
+        toast.error(responseData.message, { position: "bottom-right" });
       }
-
-      if (dataApi.error) {
-        toast.error(dataApi.message, {
-          position: "bottom-right",
-        });
-      }
-    } else {
-      toast.error("Please check password and confirm password");
+    } catch (error) {
+      toast.error("An error occurred. Please try again.", {
+        position: "bottom-right",
+      });
     }
   };
 
