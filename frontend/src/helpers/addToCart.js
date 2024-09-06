@@ -2,8 +2,8 @@ import { toast } from "react-toastify";
 import SummaryApi from "../common";
 
 const addToCart = async (e, id) => {
-  e?.stopPropagation();
-  e?.preventDefault();
+  // e?.stopPropagation();
+  // e?.preventDefault();
 
   const response = await fetch(SummaryApi.addToCartProduct.url, {
     method: SummaryApi.addToCartProduct.method,

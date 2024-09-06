@@ -1,5 +1,13 @@
 import express from "express";
 
+import allUsers from "../controllers/admin/allUser.js";
+import userDetailsController from "../controllers/admin/userDetails.js";
+import updateUser from "../controllers/admin/userUpdate.js";
+import addToCartController from "../controllers/cart/addToCartController.js";
+import addToCartViewProduct from "../controllers/cart/addToCartViewProduct.js";
+import countAddToCartProduct from "../controllers/cart/countAddToCartProduct.js";
+import deleteAddToCartProduct from "../controllers/cart/deleteAddToCartProduct.js";
+import updateAddToCartProduct from "../controllers/cart/updateAddToCartProduct.js";
 import verifyOtpController from "../controllers/mail/otpVerification.js";
 import filterProductController from "../controllers/product/filterProduct.js";
 import getCategoryProduct from "../controllers/product/getCategoryProductOne.js";
@@ -9,25 +17,22 @@ import getProductDetails from "../controllers/product/getProductDetails.js";
 import searchProduct from "../controllers/product/searchProduct.js";
 import updateProductController from "../controllers/product/updateProduct.js";
 import UploadProductController from "../controllers/product/uploadProduct.js";
-import addToCartController from "../controllers/user/addToCartController.js";
-import addToCartViewProduct from "../controllers/user/addToCartViewProduct.js";
-import allUsers from "../controllers/user/allUser.js";
-import countAddToCartProduct from "../controllers/user/countAddToCartProduct.js";
-import deleteAddToCartProduct from "../controllers/user/deleteAddToCartProduct.js";
-import updateAddToCartProduct from "../controllers/user/updateAddToCartProduct.js";
-import userDetailsController from "../controllers/user/userDetails.js";
+import forgotPassword from "../controllers/user/forgotPassword.js";
 import userLogout from "../controllers/user/userLogout.js";
 import userSignInController from "../controllers/user/userSignIn.js";
 import userSignUpController from "../controllers/user/userSignup.js";
-import updateUser from "../controllers/user/userUpdate.js";
+import verifyOTP from "../controllers/user/verifyOTP.js";
 import authToken from "../Middleware/authToken.js";
 const router = express.Router();
 
+//user
 router.post("/signup", userSignUpController);
 router.post("/signin", userSignInController);
 router.get("/user-details", authToken, userDetailsController);
 router.get("/userLogout", userLogout);
 router.post("/verify-otp", verifyOtpController);
+router.post("/forgot-password", forgotPassword);
+router.post("/verify-otp-password", verifyOTP);
 
 //admin panel
 router.get("/all-user", authToken, allUsers);

@@ -9,7 +9,7 @@ const autoCreateAdmin = async () => {
     const adminUser = new UserModel({
       name: "Admin",
       email: adminEmail,
-      confirmEmail: true,
+      isEmailConfirmed: true,
       password: bcrypt.hashSync("Admin@123", 8), // hash the password
       address: "ADMIN",
       phone: "1234567890",
