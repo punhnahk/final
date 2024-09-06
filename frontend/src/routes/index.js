@@ -1,16 +1,25 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "../App";
-import ForgotPassword from "../pages/ForgotPassword";
-import Home from "../pages/Home";
-import Login from "../pages/Login";
-import SignUp from "../pages/SignUp";
+import AdminPanel from "../pages/admin/AdminPanel";
+import AllProducts from "../pages/admin/AllProduct";
+import AllUsers from "../pages/admin/AllUser";
+import CategoryProduct from "../pages/admin/CategoryProduct";
+import ForgotPassowrd from "../pages/admin/ForgotPassword";
+import Cart from "../pages/user/Cart";
+import Home from "../pages/user/Home";
+import Login from "../pages/user/Login";
+import OtpConfirmation from "../pages/user/OtpConfirmation";
+import ProductDetails from "../pages/user/ProductDetails";
+import SearchProduct from "../pages/user/SearchProduct";
+import SignUp from "../pages/user/SignUp";
+import UserPanel from "../pages/user/UserPanel";
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
     children: [
       {
-        path: "/",
+        path: "",
         element: <Home />,
       },
       {
@@ -19,11 +28,59 @@ const router = createBrowserRouter([
       },
       {
         path: "forgot-password",
-        element: <ForgotPassword />,
+        element: <ForgotPassowrd />,
       },
       {
         path: "signup",
         element: <SignUp />,
+      },
+      {
+        path: "product-category",
+        element: <CategoryProduct />,
+      },
+      {
+        path: "product/:id",
+        element: <ProductDetails />,
+      },
+      {
+        path: "cart",
+        element: <Cart />,
+      },
+      {
+        path: "search",
+        element: <SearchProduct />,
+      },
+      {
+        path: "admin-panel",
+        element: <AdminPanel />,
+        children: [
+          {
+            path: "all-users",
+            element: <AllUsers />,
+          },
+          {
+            path: "all-products",
+            element: <AllProducts />,
+          },
+        ],
+      },
+      {
+        path: "/otp-confirmation",
+        element: <OtpConfirmation />,
+      },
+      {
+        path: "user-panel",
+        element: <UserPanel />,
+        children: [
+          {
+            path: "all-users",
+            element: <UserPanel />,
+          },
+          {
+            path: "all-products",
+            element: <UserPanel />,
+          },
+        ],
       },
     ],
   },
