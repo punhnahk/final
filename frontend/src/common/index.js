@@ -8,6 +8,15 @@ const SummaryApi = {
     url: `${backendDomain}/api/signin`,
     method: "POST",
   },
+  //forgot password reset
+  forgotPassword: {
+    url: `${backendDomain}/api/forgot-password`,
+    method: "POST",
+  },
+  OtpPass: {
+    url: `${backendDomain}/api/verify-otp-password`,
+    method: "POST",
+  },
   current_user: {
     url: `${backendDomain}/api/user-details`,
     method: "GET",
