@@ -78,7 +78,7 @@ async function userSignUpController(req, res) {
         "User created successfully! An OTP has been sent to your email address.",
     });
   } catch (err) {
-    console.error("Error in userSignUpController:", err);
+    console.error("Error:", err);
 
     res.status(500).json({
       message: err.message || "Internal Server Error",

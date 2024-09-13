@@ -30,7 +30,9 @@ router.post("/signup", userSignUpController);
 router.post("/signin", userSignInController);
 router.get("/user-details", authToken, userDetailsController);
 router.get("/userLogout", userLogout);
+//mail
 router.post("/verify-otp", verifyOtpController);
+//forgot password
 router.post("/forgot-password", forgotPassword);
 router.post("/verify-otp-password", verifyOTP);
 

@@ -3,7 +3,9 @@ import SummaryApi from "../common";
 
 const addToCart = async (e, id) => {
   // e?.stopPropagation();
+  //Stop cái chuyển page để tránh load lại cả page. Chỉ load lại form của page.
   // e?.preventDefault();
+  //chỉ xử lý page hiện tại
 
   const response = await fetch(SummaryApi.addToCartProduct.url, {
     method: SummaryApi.addToCartProduct.method,

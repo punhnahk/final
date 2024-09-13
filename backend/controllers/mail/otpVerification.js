@@ -36,7 +36,7 @@ async function verifyOtpController(req, res) {
       });
     }
   } catch (err) {
-    console.error("Error in verifyOtpController:", err);
+    console.error("Error:", err);
 
     res.status(500).json({
       message: err.message || "Internal Server Error",
