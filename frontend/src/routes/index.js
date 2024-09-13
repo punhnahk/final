@@ -10,8 +10,8 @@ import ForgotPassowrd from "../pages/user/ForgotPassword";
 import Home from "../pages/user/Home";
 import ProductDetails from "../pages/user/ProductDetails";
 import SearchProduct from "../pages/user/SearchProduct";
+import Login from "../pages/user/SignIn";
 import SignUp from "../pages/user/SignUp";
-import Login from "../pages/user/SingIn";
 import UserPanel from "../pages/user/UserPanel";
 import VerifyOTP from "../pages/user/VerifyOTP";
 const router = createBrowserRouter([
