@@ -4,8 +4,8 @@ import AdminPanel from "../pages/admin/AdminPanel";
 import AllProducts from "../pages/admin/AllProduct";
 import AllUsers from "../pages/admin/AllUser";
 import CategoryProduct from "../pages/admin/CategoryProduct";
-import ForgotPassowrd from "../pages/admin/ForgotPassword";
 import Cart from "../pages/user/Cart";
+import ForgotPassowrd from "../pages/user/ForgotPassword";
 import Home from "../pages/user/Home";
 import Login from "../pages/user/Login";
 import OtpConfirmation from "../pages/user/OtpConfirmation";
@@ -13,6 +13,7 @@ import ProductDetails from "../pages/user/ProductDetails";
 import SearchProduct from "../pages/user/SearchProduct";
 import SignUp from "../pages/user/SignUp";
 import UserPanel from "../pages/user/UserPanel";
+import VerifyOTP from "../pages/user/VerifyOTP";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -29,6 +30,10 @@ const router = createBrowserRouter([
       {
         path: "forgot-password",
         element: <ForgotPassowrd />,
+      },
+      {
+        path: "verify-otp-password",
+        element: <VerifyOTP />,
       },
       {
         path: "signup",
