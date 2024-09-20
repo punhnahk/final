@@ -19,7 +19,7 @@ import updateProductController from "../controllers/product/updateProduct.js";
 import UploadProductController from "../controllers/product/uploadProduct.js";
 import forgotPassword from "../controllers/user/forgotPassword.js";
 import userLogout from "../controllers/user/userLogout.js";
-import userSignInController from "../controllers/user/userSignIn.js";
+import userSignInController from "../controllers/user/userSignin.js";
 import userSignUpController from "../controllers/user/userSignup.js";
 import verifyOTP from "../controllers/user/verifyOTP.js";
 import authToken from "../Middleware/authToken.js";
