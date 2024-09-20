@@ -11,12 +11,14 @@ const forgotPassword = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Generate a 6-digit OTP using the OTPService
     const otp = crypto.randomInt(100000, 999999).toString(); // 6-digit OTP
+    const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // OTP expires in 10 minutes
 
     // Save the OTP and expiry time to the user document
-    user.passwordResetOTP = otp;
-    user.passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000); // OTP expires in 10 minutes
+    user.resetpasswordOTP = otp;
+    console.log(user.resetpasswordOTP);
+    user.otpExpires = otpExpires; // OTP expires in 10 minutes
+    console.log(user.otpExpires);
     await user.save();
 
     // Configure Nodemailer transporter
