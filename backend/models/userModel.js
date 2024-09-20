@@ -9,9 +9,8 @@ const userSchema = mongoose.Schema(
     role: { type: String, default: "user" },
     otp: { type: String },
     otpExpires: { type: Date },
+    resetpasswordOTP: { type: String },
     isEmailConfirmed: { type: Boolean, default: false },
-    passwordResetOTP: { type: String },
-    passwordResetExpires: { type: Date },
   },
   { timestamps: true }
 );
