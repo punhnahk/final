@@ -3,7 +3,11 @@ import express from "express";
 import allUsers from "../controllers/admin/allUser.js";
 import userDetailsController from "../controllers/admin/userDetails.js";
 import updateUser from "../controllers/admin/userUpdate.js";
-import addToCartController from "../controllers/cart/addToCartController.js";
+import {
+  addToCartController,
+  createPayment,
+  handleVnpayReturn,
+} from "../controllers/cart/addToCartController.js";
 import addToCartViewProduct from "../controllers/cart/addToCartViewProduct.js";
 import countAddToCartProduct from "../controllers/cart/countAddToCartProduct.js";
 import deleteAddToCartProduct from "../controllers/cart/deleteAddToCartProduct.js";
@@ -56,5 +60,9 @@ router.get("/countAddToCartProduct", authToken, countAddToCartProduct);
 router.get("/view-card-product", authToken, addToCartViewProduct);
 router.post("/update-cart-product", authToken, updateAddToCartProduct);
 router.post("/delete-cart-product", authToken, deleteAddToCartProduct);
+
+//payment
+router.post("/create_payment", authToken, createPayment);
+router.get("/vnpay_return", handleVnpayReturn);
 
 export default router;

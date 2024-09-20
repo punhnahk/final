@@ -34,9 +34,11 @@
     "npm": "^9.6.7",
     "otp-generator": "^4.0.1",
     "path": "^0.12.7",
+    "qs": "^6.13.0",
     "querystring": "^0.2.1",
     "react-router-dom": "^6.26.0",
     "sha256": "^0.2.0",
-    "socket.io": "^4.1.2"
+    "socket.io": "^4.1.2",
+    "vnpay": "^1.6.0"
   }
 }
