@@ -1,4 +1,4 @@
-const backendDomain = "http://localhost:4000";
+const backendDomain = "https://final-ze66.onrender.com";
 const SummaryApi = {
   signUp: {
     url: `${backendDomain}/api/signup`,
