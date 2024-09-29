@@ -1,10 +1,10 @@
-import User from "../models/user.js";
-import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import PasswordReset from "../models/passwordReset.js";
-import sendMail from "../utils/sendMail.js";
 import crypto from "crypto";
 import dayjs from "dayjs";
+import jwt from "jsonwebtoken";
+import PasswordReset from "../models/passwordReset.js";
+import User from "../models/user.js";
+import sendMail from "../utils/sendMail.js";
 
 const AuthController = {
   signUp: async (req, res) => {

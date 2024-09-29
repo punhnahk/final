@@ -1,12 +1,12 @@
-import cors from "cors";
-import dotenv from "dotenv";
 import express from "express";
+import dotenv from "dotenv";
 import morgan from "morgan";
+import cors from "cors";
 
 dotenv.config();
 
-import connectDB from "./config/db.js";
 import router from "./routes/index.js";
+import connectDB from "./config/db.js";
 
 const app = express();
 
@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(morgan("dev"));
 app.use(
   cors({
-    origin: ["http://localhost:3000"],
+    origin: [process.env.FRONTEND_URL],
   })
 );
 
