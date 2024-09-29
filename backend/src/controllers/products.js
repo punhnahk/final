@@ -4,7 +4,16 @@ import Category from "../models/categories.js";
 const ProductController = {
   getProducts: async (req, res) => {
     try {
-      const products = await Product.find()
+      const { search } = req.query;
+      const queryObj = {};
+      if (search) {
+        const nameRegex = new RegExp(search, "i");
+        queryObj.name = {
+          $regex: nameRegex,
+        };
+      }
+
+      const products = await Product.find(queryObj)
         .populate(["category", "posts"])
         .sort("-createdAt")
         .exec();
