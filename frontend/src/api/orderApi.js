@@ -1,13 +1,21 @@
-import axios from "axios";
-import { BASE_URL } from "./api";
-// Save the cart as an order and return the payment URL
-export const saveCartToOrder = async () => {
-  const response = await axios.post(`${BASE_URL}/api/orders/add-to-order`);
-  return response.data;
+import apiClient from "./apiClient";
+
+const orderApi = {
+  getOrders: () => {
+    return apiClient.get("/orders");
+  },
+  getOrder: (id) => {
+    return apiClient.get(`/orders/${id}`);
+  },
+  updateStatus: ({ id, ...data }) => {
+    return apiClient.put(`/orders/${id}`, data);
+  },
+  getOrdersHistory: () => {
+    return apiClient.get("/orders/my-orders");
+  },
+  createOrder: (data) => {
+    return apiClient.post("/orders", data);
+  },
 };
 
-// Fetch user orders
-export const viewOrders = async () => {
-  const response = await axios.get(`${BASE_URL}/api/orders`);
-  return response.data;
-};
+export default orderApi;
