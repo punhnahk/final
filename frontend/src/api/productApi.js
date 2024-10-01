@@ -1,13 +1,29 @@
-import axios from "axios";
+import apiClient from "./apiClient";
 
-const BASE_URL = "http://localhost:4000/api"; // Your backend URL
-
-export const fetchProducts = async () => {
-  try {
-    const { data } = await axios.get(`${BASE_URL}/products`);
-    return data;
-  } catch (error) {
-    console.error("Error fetching products:", error);
-    throw error;
-  }
+const productApi = {
+  getProducts: (params) => {
+    return apiClient.get("/products", {
+      params,
+    });
+  },
+  addProduct: (data) => {
+    return apiClient.post("/products", data);
+  },
+  getProduct: (id) => {
+    return apiClient.get(`/products/${id}`);
+  },
+  updateProduct: ({ id, ...data }) => {
+    return apiClient.put(`/products/${id}`, data);
+  },
+  deleteProduct: (id) => {
+    return apiClient.delete(`/products/${id}`);
+  },
+  getProductsHome: () => {
+    return apiClient.get("/products/home");
+  },
+  getRelatedProduct: (productId) => {
+    return apiClient.get(`/products/${productId}/related`);
+  },
 };
+
+export default productApi;
