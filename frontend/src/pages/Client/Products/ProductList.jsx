@@ -81,8 +81,8 @@ const ClientProductList = () => {
           {categoryName || "All Products"}
         </h1>
 
-        <div className="flex items-center justify-between">
-          <p className="text-sm">
+        <div className="flex flex-col sm:flex-row items-center justify-between mb-4">
+          <p className="text-sm mb-2 sm:mb-0">
             <span>Found</span>
             <strong> {data.length} </strong>
             <span>results</span>
@@ -113,12 +113,12 @@ const ClientProductList = () => {
           </Flex>
         </div>
 
-        <div className="grid pb-8 grid-cols-12 gap-3 mt-2">
+        <div className="grid pb-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-2">
           {sortedData.map((it) => (
             <ProductItem
               data={it}
               key={`product-item-${it._id}`}
-              className="col-span-3"
+              className="col-span-1" // Col-span set to 1 for smaller devices
             />
           ))}
         </div>

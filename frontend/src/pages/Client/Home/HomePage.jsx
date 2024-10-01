@@ -5,7 +5,7 @@ import ProductsList from "./ProductsList";
 
 const HomePage = () => {
   return (
-    <div className="bg-[#f3f4f6]">
+    <div className="bg-[#f3f4f6] min-h-screen">
       <Banner />
       <CategoriesList />
       <ProductsList />

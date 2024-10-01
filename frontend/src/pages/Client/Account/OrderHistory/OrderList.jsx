@@ -1,12 +1,19 @@
 import { Button } from "antd";
+import { useState } from "react"; // Import useState
 import { Link } from "react-router-dom";
-import { getOrderStatus } from "../../../../utils/order";
-import formatPrice from "../../../../utils/formatPrice";
 import { ROUTE_PATH } from "../../../../constants/routes";
+import formatPrice from "../../../../utils/formatPrice";
+import { getOrderStatus } from "../../../../utils/order";
 
 const MAX_PRODUCT = 2;
 
 const OrderCard = ({ data }) => {
+  const [showMore, setShowMore] = useState(false); // State to manage visibility of more products
+
+  const handleToggleProducts = () => {
+    setShowMore(!showMore); // Toggle the state
+  };
+
   return (
     <div className="pt-4 px-6 pb-6 rounded bg-white [&:not(:last-child)]:mb-4">
       <div className="flex items-center justify-between pb-4 border-b border-[#CFCFCF]">
@@ -18,55 +25,61 @@ const OrderCard = ({ data }) => {
       </div>
 
       <div className="py-4 mb-3 border-b border-[#CFCFCF]">
-        {data.products.slice(0, MAX_PRODUCT).map((it) => {
-          const salePrice = it.product.salePrice;
-          const productPrice = it.product.price;
-          const totalPriceSale = salePrice * it.quantity;
-          const totalPriceBeforeSale = productPrice * it.quantity;
+        {data.products
+          .slice(0, showMore ? data.products.length : MAX_PRODUCT)
+          .map((it) => {
+            const salePrice = it.product.salePrice;
+            const productPrice = it.product.price;
+            const totalPriceSale = salePrice * it.quantity;
+            const totalPriceBeforeSale = productPrice * it.quantity;
 
-          return (
-            <div
-              className="flex items-center"
-              key={`order-product-item-${it._id}`}
-            >
-              <div className="p-2 w-3/4 flex items-center gap-x-2">
-                <div className="w-[90px] h-[90px] border border-[#eee] rounded overflow-hidden relative">
-                  <img
-                    src={it.product.image[0]}
-                    alt="Product img"
-                    className="block w-full h-full object-cover"
-                  />
+            return (
+              <div
+                className="flex items-center"
+                key={`order-product-item-${it._id}`}
+              >
+                <div className="p-2 w-3/4 flex items-center gap-x-2">
+                  <div className="w-[90px] h-[90px] border border-[#eee] rounded overflow-hidden relative">
+                    <img
+                      src={it.product.image[0]}
+                      alt="Product img"
+                      className="block w-full h-full object-cover"
+                    />
 
-                  <p className="absolute bottom-0 right-0 w-6 h-6 bg-[#ececec] rounded-tl flex items-center justify-center text-[12px] text-[#6d6e72] font-semibold">
-                    x{it.quantity}
+                    <p className="absolute bottom-0 right-0 w-6 h-6 bg-[#ececec] rounded-tl flex items-center justify-center text-[12px] text-[#6d6e72] font-semibold">
+                      x{it.quantity}
+                    </p>
+                  </div>
+
+                  <div className="flex-1">
+                    <p className="text-[#111] font-semibold">
+                      {it.product.name}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="w-1/4 text-[#111] text-right">
+                  <p>
+                    {formatPrice(
+                      salePrice ? totalPriceSale : totalPriceBeforeSale
+                    )}
                   </p>
-                </div>
-
-                <div className="flex-1">
-                  <p className="text-[#111] font-semibold">{it.product.name}</p>
-                </div>
-              </div>
-
-              <div className="w-1/4 text-[#111] text-right">
-                <p>
-                  {formatPrice(
-                    salePrice ? totalPriceSale : totalPriceBeforeSale
+                  {salePrice > 0 && (
+                    <p className="line-through text-[14px]">
+                      {formatPrice(totalPriceBeforeSale)}
+                    </p>
                   )}
-                </p>
-                {salePrice > 0 && (
-                  <p className="line-through text-[14px]">
-                    {formatPrice(totalPriceBeforeSale)}
-                  </p>
-                )}
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
       </div>
 
       {data.products.length > MAX_PRODUCT && (
-        <Button className="rounded">
-          View {data.products.length - MAX_PRODUCT} more products
+        <Button className="rounded" onClick={handleToggleProducts}>
+          {showMore
+            ? "Show less products"
+            : `View ${data.products.length - MAX_PRODUCT} more products`}
         </Button>
       )}
 

@@ -42,13 +42,13 @@ const Cart = () => {
     <div className="bg-gray-100">
       <WrapperContent className="py-4">
         {isCartEmpty && (
-          <div className="rounded-2xl p-6 bg-white flex items-center justify-between">
-            <div>
+          <div className="rounded-2xl p-6 bg-white flex flex-col sm:flex-row items-center justify-between">
+            <div className="mb-4 sm:mb-0">
               <p className="text-[#090d14] font-medium text-3xl mb-2">
                 Your cart is currently empty
               </p>
               <p className="text-sm text-[#6b7280]">
-                Shop thousands of products at FPTShop now!
+                Shop thousands of products at Noel Techshop now!
               </p>
 
               <Link
@@ -62,7 +62,7 @@ const Cart = () => {
             <img
               src="/images/empty_cart.png"
               alt="Cart"
-              className="w-1/2 object-contain"
+              className="w-full sm:w-1/2 object-contain"
             />
           </div>
         )}
@@ -89,8 +89,8 @@ const Cart = () => {
               ]}
             />
 
-            <div className="grid grid-cols-12 gap-3">
-              <div className="col-span-8">
+            <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
+              <div className="col-span-12 sm:col-span-8">
                 {cart.products.map((it) => {
                   const salePrice = it.product.salePrice;
                   const originPrice = it.product.price;
@@ -112,48 +112,51 @@ const Cart = () => {
                           />
                         </div>
 
-                        <p className="font-medium text-[#090d14]">
+                        <p className="font-medium pl-6 text-[#090d14]">
                           {it.product.name}
                         </p>
                       </div>
 
-                      <div className="flex items-center gap-x-6">
+                      <div className="flex items-center gap-x-3 flex-grow justify-between">
                         <div>
-                          <p className="text-sm text-[#dc2626] font-semibold">
+                          <p className="text-sm pl-6 text-[#dc2626] font-semibold">
                             {formatPrice(totalPrice)}
                           </p>
 
                           {salePrice > 0 && (
-                            <p className="text-xs text-[#9ca3af] font-medium line-through">
+                            <p className="text-xs pl-6 text-[#9ca3af] font-medium line-through">
                               {formatPrice(originPrice * it.quantity)}
                             </p>
                           )}
                         </div>
 
-                        <InputNumber
-                          value={it.quantity}
-                          size="large"
-                          onKeyDown={(e) => e.preventDefault()}
-                          min={1}
-                          onChange={(val) =>
-                            onQuantityUpdate(it.product._id, val)
-                          }
-                        />
+                        <div className="flex items-center gap-x-2">
+                          <InputNumber
+                            value={it.quantity}
+                            size="large"
+                            onKeyDown={(e) => e.preventDefault()}
+                            min={1}
+                            className="max-w-[55px]"
+                            onChange={(val) =>
+                              onQuantityUpdate(it.product._id, val)
+                            }
+                          />
 
-                        <Popconfirm
-                          title="Remove product from cart"
-                          description="Are you sure you want to remove this product?"
-                          onConfirm={() => onDeleteProduct(it.product._id)}
-                        >
-                          <FaRegTrashAlt className="text-[#6b7280] cursor-pointer" />
-                        </Popconfirm>
+                          <Popconfirm
+                            title="Remove product from cart"
+                            description="Are you sure you want to remove this product?"
+                            onConfirm={() => onDeleteProduct(it.product._id)}
+                          >
+                            <FaRegTrashAlt className="text-[#6b7280] cursor-pointer" />
+                          </Popconfirm>
+                        </div>
                       </div>
                     </div>
                   );
                 })}
               </div>
 
-              <div className="col-span-4 bg-white rounded-[10px] p-4 self-start">
+              <div className="col-span-12 sm:col-span-4 bg-white rounded-[10px] p-4 self-start">
                 <p className="text-[#090d14] font-semibold mb-3">
                   Order Summary
                 </p>

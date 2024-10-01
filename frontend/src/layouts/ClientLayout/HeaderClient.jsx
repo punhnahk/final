@@ -4,9 +4,10 @@ import { FaShoppingCart } from "react-icons/fa";
 import { FaBarsStaggered } from "react-icons/fa6";
 import { IoSearch } from "react-icons/io5";
 import { useSelector } from "react-redux";
+import { useMediaQuery } from "react-responsive";
 import { Link, useNavigate } from "react-router-dom";
 import categoryApi from "../../api/categoryApi";
-import productApi from "../../api/productApi"; // Import product API to fetch products
+import productApi from "../../api/productApi";
 import WrapperContent from "../../components/WrapperContent/WrapperContent";
 import { ROUTE_PATH } from "../../constants/routes";
 import { selectCart } from "../../store/cartSlice";
@@ -14,17 +15,17 @@ import ProfileAvatar from "./ProfileAvatar";
 
 const HeaderClient = () => {
   const [categories, setCategories] = useState([]);
-  const [products, setProducts] = useState([]); // State to hold products based on search
+  const [products, setProducts] = useState([]);
   const [searchStr, setSearchStr] = useState("");
   const cart = useSelector(selectCart);
   const navigate = useNavigate();
   const [form] = Form.useForm();
+  const isMobile = useMediaQuery({ query: `(max-width: 768px)` });
 
   useEffect(() => {
     fetchData();
   }, []);
 
-  // Fetch categories from the API
   const fetchData = async () => {
     try {
       const res = await categoryApi.getCategories();
@@ -34,29 +35,25 @@ const HeaderClient = () => {
     }
   };
 
-  // Fetch products based on the search string
   const fetchProducts = async (query) => {
     try {
       const res = await productApi.getProducts({ search: query });
-      setProducts(res.data); // Update products state with the fetched data
+      setProducts(res.data);
     } catch (error) {
       message.error("Failed to fetch products");
     }
   };
 
-  // Handle search string change
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearchStr(value);
-
     if (value) {
-      fetchProducts(value); // Fetch products when search string changes
+      fetchProducts(value);
     } else {
-      setProducts([]); // Clear products if search string is empty
+      setProducts([]);
     }
   };
 
-  // Dropdown menu items with navigation for categories
   const menuItems = categories.map((category) => ({
     key: category._id,
     label: (
@@ -66,18 +63,17 @@ const HeaderClient = () => {
     ),
   }));
 
-  // Dropdown for displaying search results
   const productDropdown = (
     <Dropdown
       overlay={
-        <div className="bg-white p-2 rounded-md shadow-lg">
+        <div className="bg-white rounded-md shadow-lg px-4 py-2 mt-1">
           {searchStr ? (
             products.length > 0 ? (
               products.slice(0, 5).map((product) => (
                 <Link
                   key={product._id}
                   to={ROUTE_PATH.PRODUCT_DETAIL(product._id)}
-                  className="block p-2 hover:bg-gray-100"
+                  className="block p-3 transition-colors duration-200 rounded-md hover:bg-gray-200"
                   onClick={() => setSearchStr("")}
                 >
                   {product.name}
@@ -87,14 +83,14 @@ const HeaderClient = () => {
               <div className="p-2">No results found</div>
             )
           ) : (
-            <div className="p-2">No results found</div> // Message when searchStr is empty
+            <div className="p-2">No results found</div>
           )}
         </div>
       }
       trigger={["click"]}
     >
       <Input
-        className="rounded-full h-9 md:h-11 max-w-sm"
+        className="rounded-2xl h-9 md:h-11 max-w-sm px-4"
         placeholder="Search for products"
         suffix={
           <div
@@ -114,7 +110,7 @@ const HeaderClient = () => {
     <>
       <header className="bg-[#37b0a4]">
         <WrapperContent>
-          <div className="flex flex-wrap items-center justify-between min-h-[100px] py-3">
+          <div className="flex flex-col md:flex-row items-center justify-between min-h-[80px] sm:min-h-[100px] py-3">
             <div className="flex items-center gap-x-3 mb-3 sm:mb-0">
               <Link to={ROUTE_PATH.HOME}>
                 <img
@@ -124,15 +120,16 @@ const HeaderClient = () => {
                 />
               </Link>
 
-              {/* Dropdown for categories */}
-              <Dropdown menu={{ items: menuItems }} placement="bottomRight">
-                <div className="h-10 md:h-12 bg-[#090d1466] flex items-center rounded-full px-3 md:px-4 cursor-pointer gap-x-2 md:gap-x-3">
-                  <FaBarsStaggered className="text-white" />
-                  <p className="text-white font-medium text-xs md:text-base">
-                    Categories
-                  </p>
-                </div>
-              </Dropdown>
+              {!isMobile && (
+                <Dropdown menu={{ items: menuItems }} placement="bottomRight">
+                  <div className="h-10 md:h-12 bg-[#090d1466] flex items-center rounded-full px-3 md:px-4 cursor-pointer gap-x-2 md:gap-x-3">
+                    <FaBarsStaggered className="text-white" />
+                    <p className="text-white font-medium text-xs md:text-base">
+                      Categories
+                    </p>
+                  </div>
+                </Dropdown>
+              )}
             </div>
 
             <Form
@@ -140,9 +137,9 @@ const HeaderClient = () => {
               onFinish={() => {
                 navigate(ROUTE_PATH.PRODUCTS_LIST + "?search=" + searchStr);
               }}
-              className="flex-1 w-full sm:w-2/3 md:w-1/2 xl:w-1/3 max-w-full flex justify-center"
+              className="flex-1 w-full sm:w-2/3 md:w-1/2 xl:w-1/3 max-w-full flex justify-center mb-3 md:mb-0"
             >
-              {productDropdown} {/* Render the dropdown for product search */}
+              {productDropdown}
             </Form>
 
             <div className="flex gap-x-3 md:gap-x-4 ml-auto">
@@ -163,21 +160,32 @@ const HeaderClient = () => {
         </WrapperContent>
       </header>
 
-      {/* Additional Information (Responsive) */}
-      <WrapperContent>
-        <div className="flex flex-wrap items-center gap-x-3 py-2">
-          <div className="flex items-center gap-x-1.5">
-            <img
-              src="/images/header-iphone.png"
-              alt="Icon"
-              className="w-6 h-6 sm:w-8 sm:h-8"
-            />
-            <p className="text-xs sm:text-sm font-semibold">
-              iPhone 16 Pro Max starting from 31,490K at Noel Techshop
-            </p>
+      {!isMobile && (
+        <WrapperContent>
+          <div className="flex flex-wrap items-center gap-x-3 py-2">
+            <div className="flex items-center gap-x-1.5">
+              <img
+                src="/images/header-iphone.png"
+                alt="Icon"
+                className="w-6 h-6 sm:w-8 sm:h-8"
+              />
+              <p className="text-xs sm:text-sm font-semibold">
+                iPhone 16 Pro Max starting from 31,490K at Noel Techshop
+              </p>
+            </div>
+            <div className="flex items-center gap-x-1 flex-shrink-0">
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/6337/6337246.png" // Samsung logo
+                alt="Samsung Logo"
+                className="w-7 h-7 sm:w-8 sm:h-8"
+              />
+              <p className="text-xs sm:text-sm font-semibold">
+                Check out our latest offers on smartphones at Noel Techshop!
+              </p>
+            </div>
           </div>
-        </div>
-      </WrapperContent>
+        </WrapperContent>
+      )}
     </>
   );
 };

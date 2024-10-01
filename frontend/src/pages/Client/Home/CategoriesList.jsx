@@ -50,20 +50,23 @@ const CategoriesList = () => {
         arrows={true}
         infinite={true}
         className="bg-white rounded-lg"
+        itemClass="carousel-item-padding-40-px" // Add padding between items
       >
         {data.length > 0 &&
           data.map((it) => (
             <Link
               key={`category-item-${it._id}`}
-              className="flex group gap-x-6 px-3 rounded-lg justify-center items-center"
+              className="flex flex-col group gap-2 px-3 py-4 rounded-lg justify-center items-center"
               to={ROUTE_PATH.PRODUCTS_LIST + "?category=" + it._id}
             >
-              <p className="font-medium">{it.name}</p>
               <img
                 src={it.image}
                 alt="Category img"
-                className="h-[120px] w-[140px] object-contain group-hover:scale-110 transition-all"
+                className="h-[100px] w-full object-contain group-hover:scale-110 transition-transform duration-300"
               />
+              <p className="font-medium text-center text-sm md:text-base">
+                {it.name}
+              </p>
             </Link>
           ))}
       </Carousel>

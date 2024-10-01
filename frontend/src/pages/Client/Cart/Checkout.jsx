@@ -87,15 +87,15 @@ const Checkout = () => {
   return (
     <div className="bg-gray-100">
       <WrapperContent className="py-4">
-        <div onClick={() => navigate(-1)} className="cursor-pointer">
+        <div onClick={() => navigate(-1)} className="cursor-pointer mb-4">
           <div className="flex items-center gap-1.5">
             <FaAngleLeft className="text-[#1250dc]" />
             <p className="text-sm font-semibold text-[#1250dc]">Back to cart</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-12 gap-3 mt-4">
-          <div className="col-span-8">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+          <div className="md:col-span-8">
             <div className="bg-white rounded-xl p-4 mb-3">
               <p className="text-[#090d14] font-semibold">
                 Products in Order ({cart.products.length})
@@ -237,7 +237,7 @@ const Checkout = () => {
             </Form>
           </div>
 
-          <div className="col-span-4 bg-white rounded-[10px] p-4 self-start">
+          <div className="md:col-span-4 bg-white rounded-[10px] p-4 self-start">
             <p className="text-[#090d14] font-semibold mb-3">Order Summary</p>
             <div className="flex items-center justify-between mb-1">
               <p className="text-xs">Total</p>

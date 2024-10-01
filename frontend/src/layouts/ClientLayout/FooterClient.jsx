@@ -7,28 +7,24 @@ const FooterClient = () => {
   return (
     <footer className="bg-[#090d14]">
       <WrapperContent>
-        <div className="text-white py-10 grid grid-cols-12 gap-6">
-          <div className="col-span-3">
+        <div className="text-white py-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div>
             <p className="font-semibold">CONNECT WITH US</p>
-
             <div className="flex gap-4 mt-3">
               <Link to="https://facebook.com" target="_blank">
                 <FaFacebook className="text-xl" />
               </Link>
-
               <Link to="https://youtube.com" target="_blank">
                 <FaYoutube className="text-xl" />
               </Link>
-
               <Link to="https://tiktok.com" target="_blank">
                 <FaTiktok className="text-xl" />
               </Link>
             </div>
           </div>
 
-          <div className="col-span-3">
+          <div>
             <p className="font-semibold mb-3">ABOUT US</p>
-
             <p className="leading-8">
               <Link className="text-sm">Company Overview</Link>
             </p>
@@ -40,9 +36,8 @@ const FooterClient = () => {
             </p>
           </div>
 
-          <div className="col-span-3">
+          <div>
             <p className="font-semibold mb-3">POLICIES</p>
-
             <p className="leading-8">
               <Link className="text-sm">Warranty Policy</Link>
             </p>
@@ -56,9 +51,8 @@ const FooterClient = () => {
             </p>
           </div>
 
-          <div className="col-span-3">
+          <div>
             <p className="font-semibold mb-3">Payment Support</p>
-
             <div className="flex gap-1 flex-wrap">
               <img
                 src="https://cdn2.fptshop.com.vn/svg/vnpay_icon_ba16ea588c.svg"
