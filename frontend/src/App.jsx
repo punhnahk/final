@@ -12,7 +12,7 @@ import AddCategory from "./pages/Admin/CategoryManagement/AddCategory";
 import EditCategory from "./pages/Admin/CategoryManagement/EditCategory";
 import SliderList from "./pages/Admin/SliderManagement/SliderList";
 import AddSlider from "./pages/Admin/SliderManagement/AddSlider";
-import EditSlider from "./pages/Admin/SliderManagement/EditCategory";
+import EditSlider from "./pages/Admin/SliderManagement/EditSlider";
 import NewsCategoryList from "./pages/Admin/NewsCategoryManagement/NewsCategoryList";
 import AddNewsCategory from "./pages/Admin/NewsCategoryManagement/AddCategory";
 import EditNewsCategory from "./pages/Admin/NewsCategoryManagement/EditCategory";
