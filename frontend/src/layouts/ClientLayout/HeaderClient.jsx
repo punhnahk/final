@@ -57,7 +57,11 @@ const HeaderClient = () => {
   const menuItems = categories.map((category) => ({
     key: category._id,
     label: (
-      <Link to={`${ROUTE_PATH.PRODUCTS_LIST}?category=${category._id}`}>
+      <Link
+        to={`${ROUTE_PATH.PRODUCTS_LIST}?category=${category._id}`}
+        className="flex p-0 items-center gap-2 "
+      >
+        <img src={category.image} alt={category.name} className="w-7 h-7" />
         {category.name}
       </Link>
     ),
@@ -110,12 +114,12 @@ const HeaderClient = () => {
     <>
       <header className="bg-[#37b0a4]">
         <WrapperContent>
-          <div className="flex flex-col md:flex-row items-center justify-between min-h-[80px] sm:min-h-[100px] py-3">
+          <div className="flex flex-col md:flex-row items-center justify-between min-h-[80px] sm:min-h-[100px] py-2">
             <div className="flex items-center gap-x-3 mb-3 sm:mb-0">
               <Link to={ROUTE_PATH.HOME}>
                 <img
                   src="/images/logo.svg"
-                  className="h-14 md:h-16 lg:h-20"
+                  className="h-16 md:h-16 lg:h-20"
                   alt="Logo"
                 />
               </Link>

@@ -1,10 +1,10 @@
-import React, { useEffect } from "react";
-import WrapperContent from "../../../components/WrapperContent/WrapperContent";
 import { message, Spin } from "antd";
+import React, { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ROUTE_PATH } from "../../../constants/routes";
 import orderApi from "../../../api/orderApi";
+import WrapperContent from "../../../components/WrapperContent/WrapperContent";
 import { ORDER_STATUS, PAYMENT_STATUS } from "../../../constants";
+import { ROUTE_PATH } from "../../../constants/routes";
 
 const VNPayReturn = () => {
   const navigate = useNavigate();
@@ -17,17 +17,17 @@ const VNPayReturn = () => {
     if (!responseCode || !vnpayTxnRef) return;
 
     if (responseCode === "00") {
-      handleUpdateOrderStt();
+      handleUpdateOrderStatus();
     } else {
-      message.error("Thanh toán thất bại");
+      message.error("Payment failed");
       navigate(ROUTE_PATH.HOME);
     }
   }, [responseCode, vnpayTxnRef]);
 
-  const handleUpdateOrderStt = async () => {
+  const handleUpdateOrderStatus = async () => {
     try {
-      const splitTnxRef = vnpayTxnRef.split("_");
-      const orderId = splitTnxRef[splitTnxRef.length - 1];
+      const splitTxnRef = vnpayTxnRef.split("_");
+      const orderId = splitTxnRef[splitTxnRef.length - 1];
 
       await orderApi.updateStatus({
         id: orderId,
@@ -42,8 +42,8 @@ const VNPayReturn = () => {
   };
 
   return (
-    <WrapperContent className="min-h-[60vh] flex">
-      <Spin className="m-auto" />
+    <WrapperContent className="min-h-[60vh] flex justify-center items-center">
+      <Spin className="w-full h-full max-w-[400px] sm:max-w-[300px] m-auto" />
     </WrapperContent>
   );
 };
