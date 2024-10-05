@@ -17,6 +17,9 @@ export const ROUTE_PATH = {
   ORDER_SUCCESS: "/order-success",
   VNPAY_RETURN: "/vnpay-return",
 
+  OVERVIEW: "/overview",
+  PAYMENTGUIDE: "/payment-guide",
+
   // admin
   ADMIN: "/admin",
   USER_MANAGEMENT: "/admin/users",

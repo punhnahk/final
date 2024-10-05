@@ -150,7 +150,7 @@ const Dashboard = () => {
         </Col>
 
         {/* Orders Per Month (Bar Chart) */}
-        <Col span={12}>
+        <Col span={11.9}>
           <Card
             title={
               <span className="text-lg font-semibold">Orders Per Month</span>
@@ -196,7 +196,7 @@ const Dashboard = () => {
         </Col>
 
         {/* Best Products By Views */}
-        <Col span={7}>
+        <Col span={6}>
           <Card
             title={
               <span className="text-lg font-semibold">
