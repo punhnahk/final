@@ -1,44 +1,46 @@
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import PrivateRoutes from "./components/PrivateRoutes/PrivateRoutes";
 import { ROUTE_PATH } from "./constants/routes";
-import AppLayout from "./layouts/AppLayout";
+import AccountLayout from "./layouts/AccountLayout/AccountLayout";
 import AdminLayout from "./layouts/AdminLayout/AdminLayout";
+import AppLayout from "./layouts/AppLayout";
 import ClientLayout from "./layouts/ClientLayout/ClientLayout";
-import Dashboard from "./pages/Admin/Dashboard/Dashboard";
-import HomePage from "./pages/Client/Home/HomePage";
-import UserList from "./pages/Admin/UserManagement/UserList";
-import CategoryList from "./pages/Admin/CategoryManagement/CategoryList";
 import AddCategory from "./pages/Admin/CategoryManagement/AddCategory";
+import CategoryList from "./pages/Admin/CategoryManagement/CategoryList";
 import EditCategory from "./pages/Admin/CategoryManagement/EditCategory";
-import SliderList from "./pages/Admin/SliderManagement/SliderList";
-import AddSlider from "./pages/Admin/SliderManagement/AddSlider";
-import EditSlider from "./pages/Admin/SliderManagement/EditSlider";
-import NewsCategoryList from "./pages/Admin/NewsCategoryManagement/NewsCategoryList";
+import Dashboard from "./pages/Admin/Dashboard/Dashboard";
 import AddNewsCategory from "./pages/Admin/NewsCategoryManagement/AddCategory";
 import EditNewsCategory from "./pages/Admin/NewsCategoryManagement/EditCategory";
-import NewsList from "./pages/Admin/NewsManagement/NewsList";
+import NewsCategoryList from "./pages/Admin/NewsCategoryManagement/NewsCategoryList";
 import AddNews from "./pages/Admin/NewsManagement/AddNews";
 import EditNews from "./pages/Admin/NewsManagement/EditNews";
-import ProductList from "./pages/Admin/ProductManagement/ProductList";
+import NewsList from "./pages/Admin/NewsManagement/NewsList";
+import OrderDetail from "./pages/Admin/OrderManagement/OrderDetail";
+import OrderList from "./pages/Admin/OrderManagement/OrderList";
 import AddProduct from "./pages/Admin/ProductManagement/AddProduct";
 import EditProduct from "./pages/Admin/ProductManagement/EditProduct";
+import ProductList from "./pages/Admin/ProductManagement/ProductList";
+import AddSlider from "./pages/Admin/SliderManagement/AddSlider";
+import EditSlider from "./pages/Admin/SliderManagement/EditSlider";
+import SliderList from "./pages/Admin/SliderManagement/SliderList";
 import EditUser from "./pages/Admin/UserManagement/EditUser";
-import OrderList from "./pages/Admin/OrderManagement/OrderList";
-import OrderDetail from "./pages/Admin/OrderManagement/OrderDetail";
-import SignIn from "./pages/Client/SignIn/SignIn";
-import PrivateRoutes from "./components/PrivateRoutes/PrivateRoutes";
-import SignUp from "./pages/Client/SignUp/SignUp";
-import ForgotPassword from "./pages/Client/ForgotPassword/ForgotPassword";
-import AccountLayout from "./layouts/AccountLayout/AccountLayout";
-import UpdateInformation from "./pages/Client/Account/UpdateInformation/UpdateInformation";
+import UserList from "./pages/Admin/UserManagement/UserList";
+import Overview from "./pages/Client/About/Overview";
+import PaymentGuide from "./pages/Client/About/PaymentGuide";
 import ChangePassword from "./pages/Client/Account/ChangePassword/ChangePassword";
 import OrderHistory from "./pages/Client/Account/OrderHistory/OrderHistory";
 import OrderHistoryDetail from "./pages/Client/Account/OrderHistoryDetail/OrderHistoryDetail";
-import ClientProductList from "./pages/Client/Products/ProductList";
-import ProductDetail from "./pages/Client/ProductDetail/ProductDetail";
+import UpdateInformation from "./pages/Client/Account/UpdateInformation/UpdateInformation";
 import Cart from "./pages/Client/Cart/Cart";
 import Checkout from "./pages/Client/Cart/Checkout";
 import OrderSuccess from "./pages/Client/Cart/OrderSuccess";
+import ForgotPassword from "./pages/Client/ForgotPassword/ForgotPassword";
+import HomePage from "./pages/Client/Home/HomePage";
+import ProductDetail from "./pages/Client/ProductDetail/ProductDetail";
+import ClientProductList from "./pages/Client/Products/ProductList";
+import SignIn from "./pages/Client/SignIn/SignIn";
+import SignUp from "./pages/Client/SignUp/SignUp";
 import VNPayReturn from "./pages/Client/VNPayReturn/VNPayReturn";
 
 const App = () => {
@@ -90,6 +92,14 @@ const App = () => {
             {
               path: ROUTE_PATH.VNPAY_RETURN,
               element: <VNPayReturn />,
+            },
+            {
+              path: ROUTE_PATH.OVERVIEW,
+              element: <Overview />,
+            },
+            {
+              path: ROUTE_PATH.PAYMENTGUIDE,
+              element: <PaymentGuide />,
             },
 
             // account

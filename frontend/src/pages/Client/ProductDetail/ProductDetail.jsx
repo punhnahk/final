@@ -158,7 +158,6 @@ const ProductDetail = () => {
           Product Information
         </p>
         <div className="p-3 rounded-lg mt-2 shadow-lg">
-          <p className="font-semibold text-xl mb-2">Product Description</p>
           <div dangerouslySetInnerHTML={{ __html: data.description }} />
         </div>
       </div>

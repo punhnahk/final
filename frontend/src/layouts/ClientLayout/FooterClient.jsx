@@ -1,5 +1,5 @@
 import React from "react";
-import { FaFacebook, FaTiktok, FaYoutube } from "react-icons/fa";
+import { FaFacebook, FaYoutube } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import WrapperContent from "../../components/WrapperContent/WrapperContent";
 
@@ -7,32 +7,33 @@ const FooterClient = () => {
   return (
     <footer className="bg-[#090d14]">
       <WrapperContent>
-        <div className="text-white py-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="text-white py-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <div>
             <p className="font-semibold">CONNECT WITH US</p>
             <div className="flex gap-4 mt-3">
-              <Link to="https://facebook.com" target="_blank">
+              <Link to="https://facebook.com/noellll.2003" target="_blank">
                 <FaFacebook className="text-xl" />
               </Link>
               <Link to="https://youtube.com" target="_blank">
                 <FaYoutube className="text-xl" />
               </Link>
-              <Link to="https://tiktok.com" target="_blank">
+              {/* <Link to="https://tiktok.com" target="_blank">
                 <FaTiktok className="text-xl" />
-              </Link>
+              </Link> */}
             </div>
           </div>
 
           <div>
             <p className="font-semibold mb-3">ABOUT US</p>
             <p className="leading-8">
-              <Link className="text-sm">Company Overview</Link>
+              <Link className="text-sm" to="/overview">
+                Project Overview
+              </Link>
             </p>
             <p className="leading-8">
-              <Link className="text-sm">Purchase & Online Payment Guide</Link>
-            </p>
-            <p className="leading-8">
-              <Link className="text-sm">Frequently Asked Questions</Link>
+              <Link className="text-sm" to="/payment-guide">
+                Purchase & Online Payment Guide
+              </Link>
             </p>
           </div>
 
