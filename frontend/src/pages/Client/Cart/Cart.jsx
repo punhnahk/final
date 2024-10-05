@@ -112,19 +112,19 @@ const Cart = () => {
                           />
                         </div>
 
-                        <p className="font-medium pl-6 text-[#090d14]">
+                        <p className="font-medium pl-3 text-[#090d14]">
                           {it.product.name}
                         </p>
                       </div>
 
                       <div className="flex items-center gap-x-3 flex-grow justify-between">
                         <div>
-                          <p className="text-sm pl-6 text-[#dc2626] font-semibold">
+                          <p className="text-sm pl-4 text-[#dc2626] font-semibold">
                             {formatPrice(totalPrice)}
                           </p>
 
                           {salePrice > 0 && (
-                            <p className="text-xs pl-6 text-[#9ca3af] font-medium line-through">
+                            <p className="text-xs pl-4 text-[#9ca3af] font-medium line-through">
                               {formatPrice(originPrice * it.quantity)}
                             </p>
                           )}
@@ -136,7 +136,7 @@ const Cart = () => {
                             size="large"
                             onKeyDown={(e) => e.preventDefault()}
                             min={1}
-                            className="max-w-[55px]"
+                            className="max-w-[45px]"
                             onChange={(val) =>
                               onQuantityUpdate(it.product._id, val)
                             }

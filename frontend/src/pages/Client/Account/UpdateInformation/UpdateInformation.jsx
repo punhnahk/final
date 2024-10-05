@@ -119,12 +119,24 @@ const UpdateInformation = () => {
         <Form.Item
           name="birthday"
           label={<p className="text-[16px]">Birthday</p>}
-          rules={[{ required: true, message: "Please select your birthday" }]}
+          rules={[
+            {
+              required: true,
+              message: "Please select your birthday",
+            },
+            {
+              validator: (_, value) =>
+                value && value.isAfter(new Date())
+                  ? Promise.reject("The birthday cannot be in the future")
+                  : Promise.resolve(),
+            },
+          ]}
         >
           <DatePicker
             placeholder="Select Birthday"
             format="DD/MM/YYYY"
             className="w-full"
+            disabledDate={(current) => current && current > new Date()}
           />
         </Form.Item>
 

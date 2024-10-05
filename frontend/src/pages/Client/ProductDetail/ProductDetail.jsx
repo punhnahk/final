@@ -42,8 +42,7 @@ const ProductDetail = () => {
     } catch (error) {
       if (error?.response) {
         message.error(
-          error.response.data.message ||
-            "Something went wrong. Please try again."
+          error.response.data.message || "Please login and try again."
         );
       } else {
         message.error("An unexpected error occurred. Please try again.");
