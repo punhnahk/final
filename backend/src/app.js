@@ -13,7 +13,8 @@ dotenv.config();
 
 const app = express();
 const allowedOrigins = [
-  process.env.FRONTEND_URL, // Add any other allowed origins here
+  process.env.FRONTEND_URL,
+  process.env.FRONTEND_URL_DEV, // Add any other allowed origins here
 ];
 
 // Middleware

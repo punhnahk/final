@@ -34,6 +34,7 @@ const ProfileAvatar = () => {
     window.location.href = ROUTE_PATH.SIGN_IN;
   };
 
+  const isAdmin = profile.role === "admin";
   return (
     <Dropdown
       menu={{
@@ -42,6 +43,9 @@ const ProfileAvatar = () => {
             label: <Link to={ROUTE_PATH.ACCOUNT}>Account Information</Link>,
             icon: <FaRegUser />,
           },
+          ...(isAdmin
+            ? [{ label: <Link to={ROUTE_PATH.ADMIN}>Admin Panel</Link> }]
+            : []),
           {
             label: "Sign Out",
             icon: <FaSignOutAlt />,
