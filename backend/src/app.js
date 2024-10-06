@@ -1,28 +1,59 @@
-import express from "express";
-import dotenv from "dotenv";
-import morgan from "morgan";
+import cookieParser from "cookie-parser";
 import cors from "cors";
+import dotenv from "dotenv";
+import express from "express";
+import helmet from "helmet";
+import http from "http";
+import morgan from "morgan";
+import { Server } from "socket.io"; // Import Socket.IO
+import connectDB from "./config/db.js";
+import router from "./routes/index.js";
 
 dotenv.config();
 
-import router from "./routes/index.js";
-import connectDB from "./config/db.js";
-
 const app = express();
 
+// Middleware
+app.use(helmet());
 app.use(express.json());
 app.use(morgan("dev"));
+app.use(cookieParser());
 app.use(
   cors({
-    origin: [process.env.FRONTEND_URL],
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
   })
 );
 
-// connect db
+// Connect to the database
 connectDB();
 
-// router
+// Set up Socket.IO
+const server = http.createServer(app);
+const io = new Server(server);
+
+// Handle Socket.IO connections
+io.on("connection", (socket) => {
+  console.log("New client connected:", socket.id);
+
+  // Example event listener
+  socket.on("message", (data) => {
+    console.log("Message received:", data);
+    // Broadcast to all clients
+    io.emit("message", data);
+  });
+
+  // Handle disconnection
+  socket.on("disconnect", () => {
+    console.log("Client disconnected:", socket.id);
+  });
+});
+
+// Routes
 app.use("/api", router);
 
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => console.log("Server is running on port", PORT));
+// Start server
+const PORT = process.env.PORT || 4000;
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});

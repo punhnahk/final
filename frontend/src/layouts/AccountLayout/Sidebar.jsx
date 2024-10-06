@@ -22,7 +22,6 @@ const Sidebar = () => {
           alt="Avatar"
           className="w-[48px] h-[48px] rounded-full object-cover"
         />
-
         <p className="text-[18px] font-semibold text-[#111]">{profile.name}</p>
       </header>
 
@@ -33,26 +32,25 @@ const Sidebar = () => {
           end
         >
           <FaUser />
-
           <p>Account Information</p>
         </NavLink>
 
-        <NavLink
-          to={ROUTE_PATH.CHANGE_PASSWORD}
-          className="flex items-center py-3 px-5 gap-x-3 text-[#111] hover:text-[#e30019] transition-all [&.active]:text-[#e30019]"
-          end
-        >
-          <FaKey />
-
-          <p>Change Password</p>
-        </NavLink>
+        {profile.password && (
+          <NavLink
+            to={ROUTE_PATH.CHANGE_PASSWORD}
+            className="flex items-center py-3 px-5 gap-x-3 text-[#111] hover:text-[#e30019] transition-all [&.active]:text-[#e30019]"
+            end
+          >
+            <FaKey />
+            <p>Change Password</p>
+          </NavLink>
+        )}
 
         <NavLink
           to={ROUTE_PATH.ORDERS_HISTORY}
           className="flex items-center py-3 px-5 gap-x-3 text-[#111] hover:text-[#e30019] transition-all [&.active]:text-[#e30019]"
         >
           <FaCartShopping />
-
           <p>Order Management</p>
         </NavLink>
 
@@ -61,7 +59,6 @@ const Sidebar = () => {
           className="flex items-center py-3 px-5 gap-x-3 text-[#111] hover:text-[#e30019] transition-all cursor-pointer"
         >
           <FaSignOutAlt />
-
           <p>Sign Out</p>
         </div>
       </div>

@@ -1,20 +1,55 @@
+import { GoogleLogin } from "@react-oauth/google"; // Import Google Login
 import { Button, Checkbox, Flex, Form, Input, message } from "antd";
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react"; // Import useState
+import { Link, useNavigate } from "react-router-dom"; // Use useNavigate for better navigation
 import authApi from "../../../api/authApi";
 import WrapperContent from "../../../components/WrapperContent/WrapperContent";
 import { TOKEN_STORAGE_KEY } from "../../../constants";
 import { ROUTE_PATH } from "../../../constants/routes";
 
 const SignIn = () => {
+  const [loading, setLoading] = useState(false); // State for loading
+  const navigate = useNavigate(); // Initialize useNavigate
+
   const onSignIn = async ({ confirm, remember, ...values }) => {
+    setLoading(true); // Set loading to true when the sign-in process starts
     try {
       const { data } = await authApi.signIn(values);
       localStorage.setItem(TOKEN_STORAGE_KEY, data.token);
-      window.location.href = ROUTE_PATH.HOME;
+      message.success("Logged in successfully");
+      navigate(ROUTE_PATH.HOME); // Use navigate for redirect
     } catch (error) {
-      message.error(error?.response?.data?.message);
+      // Improved error handling
+      const errorMessage =
+        error?.response?.data?.message ||
+        "An error occurred during sign-in. Please try again.";
+      message.error(errorMessage);
+    } finally {
+      setLoading(false); // Set loading to false after the sign-in process
     }
+  };
+
+  const handleGoogleLoginSuccess = async (response) => {
+    setLoading(true); // Set loading to true when the Google sign-in process starts
+    try {
+      const token = response.credential;
+      const res = await authApi.googleSignUp({ token });
+      localStorage.setItem(TOKEN_STORAGE_KEY, res.data.token); // Store token
+      message.success("Logged in with Google successfully");
+      navigate(ROUTE_PATH.HOME); // Use navigate for redirect
+    } catch (error) {
+      // Improved error handling for Google sign-in
+      const errorMessage =
+        error?.response?.data?.message ||
+        "Google login failed. Please try again.";
+      message.error(errorMessage);
+    } finally {
+      setLoading(false); // Set loading to false after the Google sign-in process
+    }
+  };
+
+  const handleGoogleLoginFailure = () => {
+    message.error("Google login failed. Please try again.");
   };
 
   return (
@@ -78,12 +113,22 @@ const SignIn = () => {
 
           <Button
             htmlType="submit"
+            loading={loading} // Show loading spinner on button
             className="!bg-red-600 hover:!bg-red-600 h-12 rounded w-full mt-2"
           >
             <p className="uppercase text-white text-base font-semibold">
               Sign In
             </p>
           </Button>
+
+          {/* Google Login Button */}
+          <div className="my-4 text-center">
+            <GoogleLogin
+              onSuccess={handleGoogleLoginSuccess}
+              onError={handleGoogleLoginFailure}
+              useOneTap
+            />
+          </div>
 
           <div className="text-center mt-3 text-base">
             <span className="text-[#626579]">Don't have an account? </span>

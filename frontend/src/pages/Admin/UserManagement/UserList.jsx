@@ -96,6 +96,12 @@ const UserList = () => {
       render: (role) => (role === "ADMIN" ? "Administrator" : "User"),
     },
     {
+      title: "Login Method", // New column for login method
+      key: "loginMethod",
+      dataIndex: "loginMethod", // This field should be returned by your API
+      render: (method) => (method === "google" ? "Google" : "Password"), // Display login method
+    },
+    {
       title: "Created At",
       key: "createdAt",
       dataIndex: "createdAt",

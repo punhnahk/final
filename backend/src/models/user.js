@@ -13,7 +13,7 @@ const userSchema = new Schema(
     },
     password: {
       type: String,
-      required: true,
+      required: false,
     },
     avatar: {
       type: String,
@@ -21,7 +21,7 @@ const userSchema = new Schema(
     },
     phone: {
       type: String,
-      required: true,
+      required: false,
       unique: true,
     },
     address: {
@@ -40,6 +40,11 @@ const userSchema = new Schema(
       type: String,
       enum: ["ADMIN", "USER"],
       default: "USER",
+    },
+    loginMethod: {
+      type: String,
+      enum: ["password", "google"],
+      default: "password",
     },
   },
   { timestamps: true }

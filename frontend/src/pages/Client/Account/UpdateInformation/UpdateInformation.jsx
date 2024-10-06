@@ -22,7 +22,7 @@ const UpdateInformation = () => {
         previewUrl: profile.avatar || DEFAULT_AVATAR_PATH,
       },
       name: profile.name,
-      phone: profile.phone,
+      phone: profile.phone || "", // Ensure phone is initialized as an empty string if undefined
       email: profile.email,
       address: profile.address,
       gender: profile.gender,
@@ -82,8 +82,11 @@ const UpdateInformation = () => {
           name="phone"
           label={<p className="text-[16px]">Phone Number</p>}
           className="mb-6"
+          rules={[
+            { required: true, message: "Please enter your phone number" },
+          ]}
         >
-          <Input placeholder="Phone Number" className="rounded" disabled />
+          <Input placeholder="Phone Number" className="rounded" />
         </Form.Item>
 
         <Form.Item

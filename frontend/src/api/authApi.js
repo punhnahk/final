@@ -13,6 +13,9 @@ const authApi = {
   resetPassword: (data) => {
     return apiClient.post("/auth/reset-password", data);
   },
+  googleSignUp: (data) => {
+    return apiClient.post("/auth/google-signup", data); // Assuming the route is /auth/google-signup
+  },
 };
 
 export default authApi;

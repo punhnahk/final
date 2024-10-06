@@ -1,13 +1,50 @@
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 import dayjs from "dayjs";
+import { OAuth2Client } from "google-auth-library"; // Import Google OAuth client
+import Joi from "joi"; // Import Joi
 import jwt from "jsonwebtoken";
 import PasswordReset from "../models/passwordReset.js";
 import User from "../models/user.js";
 import sendMail from "../utils/sendMail.js";
 
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID); // Initialize Google client
+
+const signUpSchema = Joi.object({
+  name: Joi.string().min(3).required(),
+  email: Joi.string().email().required(),
+  phone: Joi.string()
+    .pattern(/^[0-9]{10}$/)
+    .required(),
+  password: Joi.string().min(8).required(),
+});
+
+const signInSchema = Joi.object({
+  email: Joi.string().email().required(),
+  password: Joi.string().min(8).required(),
+});
+
+const forgotPasswordSchema = Joi.object({
+  email: Joi.string().email().required(),
+});
+
+const resetPasswordSchema = Joi.object({
+  email: Joi.string().email().required(),
+  otp: Joi.string().length(6).required(),
+  newPassword: Joi.string().min(8).required(),
+});
+
+const googleSignUpSchema = Joi.object({
+  token: Joi.string().required(),
+});
+
 const AuthController = {
   signUp: async (req, res) => {
+    const { error } = signUpSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
+    }
+
     const { name, email, phone, password } = req.body;
 
     try {
@@ -26,18 +63,36 @@ const AuthController = {
 
       const userCount = await User.countDocuments();
       const role = userCount > 0 ? "USER" : "ADMIN";
-
-      await new User({
+      const newUser = await new User({
         name,
         email,
         phone,
         password: hashedPassword,
         role,
+        loginMethod: "password",
       }).save();
+
+      const token = jwt.sign(
+        {
+          id: newUser._id,
+          email: newUser.email,
+        },
+        process.env.JWT_SECRET_KEY,
+        { expiresIn: "30d" }
+      );
 
       res.status(201).json({
         status: true,
         message: "Register successfully",
+        user: {
+          id: newUser._id,
+          name: newUser.name,
+          email: newUser.email,
+          phone: newUser.phone,
+          role: newUser.role,
+          loginMethod: newUser.loginMethod,
+        },
+        token,
       });
     } catch (error) {
       res.status(500).json({
@@ -48,17 +103,20 @@ const AuthController = {
   },
 
   signIn: async (req, res) => {
+    const { error } = signInSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
+    }
+
     const { email, password } = req.body;
 
     try {
-      // check email registered
       const findUser = await User.findOne({ email }).exec();
 
       if (!findUser) {
         return res.status(404).json({ message: "Unregistered account!" });
       }
 
-      // check password
       const isPasswordValid = await bcrypt.compare(password, findUser.password);
 
       if (!isPasswordValid) {
@@ -75,7 +133,13 @@ const AuthController = {
       );
 
       res.json({
-        user: findUser,
+        user: {
+          id: findUser._id,
+          name: findUser.name,
+          email: findUser.email,
+          phone: findUser.phone,
+          role: findUser.role,
+        },
         token,
       });
     } catch (error) {
@@ -87,6 +151,11 @@ const AuthController = {
   },
 
   forgotPassword: async (req, res) => {
+    const { error } = forgotPasswordSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
+    }
+
     try {
       const { email } = req.body;
       const user = await User.findOne({ email }).exec();
@@ -134,6 +203,11 @@ const AuthController = {
   },
 
   resetPassword: async (req, res) => {
+    const { error } = resetPasswordSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
+    }
+
     try {
       const { email, otp, newPassword } = req.body;
 
@@ -152,13 +226,6 @@ const AuthController = {
         });
       }
 
-      // change password
-      if (!newPassword) {
-        return res.status(400).json({
-          message: "Password is required",
-        });
-      }
-
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(newPassword, salt);
       await User.findOneAndUpdate({ email }, { password: hashedPassword });
@@ -171,6 +238,63 @@ const AuthController = {
     } catch (error) {
       res.status(500).json({
         message: "Internal server error",
+        error: error.message,
+      });
+    }
+  },
+
+  googleSignUp: async (req, res) => {
+    const { error } = googleSignUpSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
+    }
+
+    const { token } = req.body;
+
+    try {
+      const ticket = await client.verifyIdToken({
+        idToken: token,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
+      const { name, email, picture } = ticket.getPayload();
+
+      let user = await User.findOne({ email }).exec();
+
+      if (!user) {
+        user = new User({
+          name,
+          email,
+          avatar: picture,
+          password: "", // No password needed for social login
+          loginMethod: "google", // Set login method to google
+        });
+        await user.save();
+      }
+
+      const jwtToken = jwt.sign(
+        {
+          id: user._id,
+          email: user.email,
+        },
+        process.env.JWT_SECRET_KEY,
+        { expiresIn: "30d" }
+      );
+
+      res.status(200).json({
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          role: user.role,
+          loginMethod: user.loginMethod,
+        },
+        token: jwtToken,
+      });
+    } catch (error) {
+      console.error("Google login error:", error);
+      res.status(500).json({
+        message: "Google login failed",
         error: error.message,
       });
     }

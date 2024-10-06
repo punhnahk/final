@@ -1,5 +1,5 @@
-import User from "../models/user.js";
 import bcrypt from "bcrypt";
+import User from "../models/user.js";
 
 const UserController = {
   getUsers: async (req, res) => {
@@ -14,20 +14,6 @@ const UserController = {
       });
     }
   },
-
-  // createCategory: async (req, res) => {
-  //   try {
-  //     const { name, image } = req.body;
-  //     const category = await new Category({ name, image }).save();
-
-  //     res.status(201).json(category);
-  //   } catch (error) {
-  //     res.status(500).json({
-  //       message: "Internal server error",
-  //       error: error.message,
-  //     });
-  //   }
-  // },
 
   getUser: async (req, res) => {
     try {
@@ -89,7 +75,7 @@ const UserController = {
   updateProfile: async (req, res) => {
     try {
       const userId = req.user.id;
-      const { name, avatar, address, gender, birthday } = req.body;
+      const { name, avatar, address, gender, birthday, phone } = req.body; // Add phone to the destructuring
 
       const user = await User.findByIdAndUpdate(
         userId,
@@ -99,6 +85,7 @@ const UserController = {
           address,
           gender,
           birthday,
+          phone,
         },
         { new: true }
       ).exec();

@@ -3,6 +3,7 @@ export const ROUTE_PATH = {
   SIGN_IN: "/auth/sign-in",
   SIGN_UP: "/auth/sign-up",
   FORGOT_PASSWORD: "/auth/forgot-password",
+  LOGIN_GOOGLE: "/auth/google-signup",
 
   ACCOUNT: "/account",
   CHANGE_PASSWORD: "/account/change-password",
