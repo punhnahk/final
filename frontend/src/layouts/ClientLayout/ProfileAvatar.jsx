@@ -34,7 +34,7 @@ const ProfileAvatar = () => {
     window.location.href = ROUTE_PATH.SIGN_IN;
   };
 
-  const isAdmin = profile.role === "admin";
+  const isAdmin = profile.role === "ADMIN";
   return (
     <Dropdown
       menu={{
