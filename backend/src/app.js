@@ -12,6 +12,9 @@ import router from "./routes/index.js";
 dotenv.config();
 
 const app = express();
+const allowedOrigins = [
+  process.env.FRONTEND_URL, // Add any other allowed origins here
+];
 
 // Middleware
 app.use(helmet());
@@ -20,7 +23,7 @@ app.use(morgan("dev"));
 app.use(cookieParser());
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: allowedOrigins,
     credentials: true,
   })
 );
