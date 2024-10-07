@@ -1,7 +1,7 @@
 import { UserOutlined } from "@ant-design/icons";
 import { Avatar, Dropdown } from "antd";
 import React from "react";
-import { FaRegUser, FaSignOutAlt } from "react-icons/fa";
+import { FaRegUser, FaSignOutAlt, FaUserShield } from "react-icons/fa"; // Importing a new icon for Admin
 import { Link } from "react-router-dom";
 import { TOKEN_STORAGE_KEY } from "../../constants";
 import { ROUTE_PATH } from "../../constants/routes";
@@ -44,7 +44,12 @@ const ProfileAvatar = () => {
             icon: <FaRegUser />,
           },
           ...(isAdmin
-            ? [{ label: <Link to={ROUTE_PATH.ADMIN}>Admin Panel</Link> }]
+            ? [
+                {
+                  label: <Link to={ROUTE_PATH.ADMIN}>Admin Panel</Link>,
+                  icon: <FaUserShield />,
+                },
+              ]
             : []),
           {
             label: "Sign Out",
