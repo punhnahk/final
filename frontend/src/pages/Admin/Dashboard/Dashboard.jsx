@@ -54,7 +54,6 @@ const Dashboard = () => {
 
   const limitedProducts = bestProducts.slice(0, 5);
 
-  // Utility functions
   const calculateTotalSales = (orders) => {
     return orders.reduce((sum, order) => sum + order.totalPrice, 0);
   };
@@ -62,13 +61,15 @@ const Dashboard = () => {
   const calculateOrdersPerMonth = (orders) => {
     const ordersByMonth = [];
     orders.forEach((order) => {
-      const month = new Date(order.createdAt).getMonth();
-      if (!ordersByMonth[month]) {
-        ordersByMonth[month] = { month: month + 1, orders: 0 };
+      if (order.status !== "canceled") {
+        const month = new Date(order.createdAt).getMonth();
+        if (!ordersByMonth[month]) {
+          ordersByMonth[month] = { month: month + 1, orders: 0 };
+        }
+        ordersByMonth[month].orders += 1;
       }
-      ordersByMonth[month].orders += 1;
     });
-    return ordersByMonth.filter(Boolean); // Filter out undefined months
+    return ordersByMonth.filter(Boolean);
   };
 
   const fetchCashOrders = (orders) => {
@@ -209,29 +210,11 @@ const Dashboard = () => {
           >
             <ul className="space-y-2">
               {limitedProducts
-                .sort((a, b) => b.view - a.view) // Sort products by view in descending order
-                .map((product, index) => (
-                  <li
-                    key={index}
-                    className="flex items-center justify-between p-2 rounded-lg bg-gray-50"
-                  >
-                    <span className="text-gray-700 font-medium">
-                      {product.name}
-                    </span>
-                    <span
-                      className="text-white text-sm px-3 py-1 rounded-full"
-                      style={{
-                        backgroundColor:
-                          CUSTOM_COLORS[index % CUSTOM_COLORS.length],
-                      }}
-                    >
-                      {(
-                        (product.view /
-                          bestProducts.reduce((sum, p) => sum + p.view, 0)) *
-                        100
-                      ).toFixed(2)}
-                      %
-                    </span>
+                .sort((a, b) => b.view - a.view)
+                .map((product) => (
+                  <li key={product._id} className="flex justify-between">
+                    <span>{product.name}</span>
+                    <span>{product.view}</span>
                   </li>
                 ))}
             </ul>
@@ -239,18 +222,20 @@ const Dashboard = () => {
         </Col>
       </Row>
 
-      <Row gutter={24} className="mt-6">
-        <Col span={24}>
-          <Card title="Recent Orders" bordered={false}>
-            <Table
-              columns={columns}
-              dataSource={recentOrders}
-              rowKey="order_number"
-              pagination={recentOrders.length > 5 ? { pageSize: 5 } : false}
-            />
-          </Card>
-        </Col>
-      </Row>
+      {/* Recent Orders Table */}
+      <Card
+        title={
+          <span className="font-semibold text-gray-800">Recent Orders</span>
+        }
+        bordered={false}
+        className="mt-5 shadow-lg rounded-lg"
+      >
+        <Table
+          columns={columns}
+          dataSource={recentOrders.slice(0, 5)}
+          pagination={false}
+        />
+      </Card>
     </div>
   );
 };
