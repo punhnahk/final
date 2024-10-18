@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import dateFormat from "dayjs";
+import moment from "moment-timezone";
 import querystring from "qs";
 import Cart from "../models/carts.js";
 import Order, {
@@ -172,10 +172,11 @@ const createVNPayPaymentUrl = async ({ req, orderId, amount, orderInfo }) => {
     let vnpUrl = process.env.VNPAY_VNP_URL;
     const returnUrl = process.env.VNPAY_RETURN_URL;
 
-    const date = new Date();
-
-    const createDate = dateFormat(date).format("YYYYMMDDHHmmss");
-    const expiredDate = dateFormat(date).add(10, "m").format("YYYYMMDDHHmmss");
+    const createDate = moment().tz("Asia/Ho_Chi_Minh").format("YYYYMMDDHHmmss");
+    const expiredDate = moment()
+      .tz("Asia/Ho_Chi_Minh")
+      .add(10, "minutes")
+      .format("YYYYMMDDHHmmss");
 
     const currCode = "VND";
     let vnp_Params = {};
