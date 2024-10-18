@@ -164,8 +164,7 @@ const createVNPayPaymentUrl = async ({ req, orderId, amount, orderInfo }) => {
     const ipAddr =
       req.headers["x-forwarded-for"] ||
       req.connection.remoteAddress ||
-      req.socket.remoteAddress ||
-      req.connection.socket.remoteAddress;
+      req.socket.remoteAddress;
 
     const tmnCode = process.env.VNPAY_TMN_CODE;
     const secretKey = process.env.VNPAY_SECRET_KEY;
@@ -179,35 +178,34 @@ const createVNPayPaymentUrl = async ({ req, orderId, amount, orderInfo }) => {
       .format("YYYYMMDDHHmmss");
 
     const currCode = "VND";
-    let vnp_Params = {};
-    vnp_Params["vnp_Version"] = "2.1.0";
-    vnp_Params["vnp_Command"] = "pay";
-    vnp_Params["vnp_TmnCode"] = tmnCode;
-    vnp_Params["vnp_Locale"] = "vn";
-    vnp_Params["vnp_CurrCode"] = currCode;
-    vnp_Params["vnp_TxnRef"] = orderId;
-    vnp_Params["vnp_OrderInfo"] = orderInfo;
-    vnp_Params["vnp_OrderType"] = "other";
-    vnp_Params["vnp_Amount"] = amount * 100;
-    vnp_Params["vnp_ReturnUrl"] = returnUrl;
-    vnp_Params["vnp_IpAddr"] = ipAddr;
-    vnp_Params["vnp_CreateDate"] = createDate;
-    vnp_Params["vnp_ExpireDate"] = expiredDate;
+    let vnp_Params = {
+      vnp_Version: "2.1.0",
+      vnp_Command: "pay",
+      vnp_TmnCode: tmnCode,
+      vnp_Amount: amount * 100,
+      vnp_CurrCode: currCode,
+      vnp_TxnRef: orderId,
+      vnp_OrderInfo: orderInfo,
+      vnp_OrderType: "other",
+      vnp_ReturnUrl: returnUrl,
+      vnp_IpAddr: ipAddr,
+      vnp_CreateDate: createDate,
+      vnp_ExpireDate: expiredDate,
+      vnp_Locale: "vn",
+    };
 
     vnp_Params = sortObject(vnp_Params);
 
     const signData = querystring.stringify(vnp_Params, { encode: false });
     const hmac = crypto.createHmac("sha512", secretKey);
-    const signed = hmac.update(new Buffer(signData, "utf-8")).digest("hex");
+    const signed = hmac.update(Buffer.from(signData, "utf-8")).digest("hex");
     vnp_Params["vnp_SecureHash"] = signed;
     vnpUrl += "?" + querystring.stringify(vnp_Params, { encode: false });
 
     return vnpUrl;
   } catch (error) {
-    res.status(500).json({
-      error: error.message,
-      message: "Internal server error",
-    });
+    console.error("Error generating VNPay URL:", error.message);
+    throw new Error("Failed to create VNPay payment URL");
   }
 };
 
