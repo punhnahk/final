@@ -1,8 +1,9 @@
+import { Analytics } from "@vercel/analytics/react"; // Import Vercel Analytics
 import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { Outlet, useLocation } from "react-router-dom";
 import { TOKEN_STORAGE_KEY } from "../constants";
 import useProfileInitial from "../hooks/useProfileInitial";
-import { useDispatch } from "react-redux";
 import { getMyCarts } from "../store/cartSlice";
 
 const AppLayout = () => {
@@ -10,7 +11,6 @@ const AppLayout = () => {
   const { fetchProfile } = useProfileInitial();
 
   const location = useLocation();
-
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -29,6 +29,7 @@ const AppLayout = () => {
 
   return (
     <div className="font-inter">
+      <Analytics /> {/* Include the Analytics component here */}
       <Outlet />
     </div>
   );

@@ -37,6 +37,7 @@ import Checkout from "./pages/Client/Cart/Checkout";
 import OrderSuccess from "./pages/Client/Cart/OrderSuccess";
 import ForgotPassword from "./pages/Client/ForgotPassword/ForgotPassword";
 import HomePage from "./pages/Client/Home/HomePage";
+import Policies from "./pages/Client/Policy/Policies";
 import ProductDetail from "./pages/Client/ProductDetail/ProductDetail";
 import ClientProductList from "./pages/Client/Products/ProductList";
 import SignIn from "./pages/Client/SignIn/SignIn";
@@ -100,6 +101,10 @@ const App = () => {
             {
               path: ROUTE_PATH.PAYMENTGUIDE,
               element: <PaymentGuide />,
+            },
+            {
+              path: ROUTE_PATH.POLICIES,
+              element: <Policies />,
             },
 
             // account

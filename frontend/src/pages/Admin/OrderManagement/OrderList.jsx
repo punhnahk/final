@@ -1,5 +1,5 @@
 import { EyeFilled } from "@ant-design/icons";
-import { message, Table, Tag } from "antd";
+import { message, Select, Table, Tag } from "antd";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -11,18 +11,47 @@ import { getOrderPaymentStatus, getOrderStatus } from "../../../utils/order";
 
 const OrderList = () => {
   const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [paymentStatusFilter, setPaymentStatusFilter] = useState(null);
+  const [orderStatusFilter, setOrderStatusFilter] = useState(null); // New state for order status
 
   useEffect(() => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    // Filter data based on payment status and order status
+    const filtered = data.filter((order) => {
+      const matchesPaymentStatus = paymentStatusFilter
+        ? order.paymentStatus === paymentStatusFilter
+        : true;
+
+      const matchesOrderStatus = orderStatusFilter
+        ? order.status === orderStatusFilter
+        : true;
+
+      return matchesPaymentStatus && matchesOrderStatus;
+    });
+
+    setFilteredData(filtered);
+  }, [data, paymentStatusFilter, orderStatusFilter]);
+
   const fetchData = async () => {
     try {
       const { data } = await orderApi.getOrders();
       setData(data);
+      setFilteredData(data); // Set initial filtered data
     } catch (error) {
       message.error("Failed to fetch");
     }
+  };
+
+  const handlePaymentStatusChange = (value) => {
+    setPaymentStatusFilter(value);
+  };
+
+  const handleOrderStatusChange = (value) => {
+    setOrderStatusFilter(value);
   };
 
   const columns = [
@@ -107,9 +136,35 @@ const OrderList = () => {
     <>
       <h1 className="font-semibold text-2xl mb-3">Orders Management</h1>
 
+      <Select
+        placeholder="Select Payment Status"
+        onChange={handlePaymentStatusChange}
+        style={{ width: 200, marginBottom: 16 }}
+        allowClear
+      >
+        <Select.Option value="PAID">Paid</Select.Option>
+        <Select.Option value="UNPAID">Unpaid</Select.Option>
+        <Select.Option value="CANCELED">Canceled</Select.Option>
+      </Select>
+
+      <Select
+        placeholder="Select Order Status"
+        onChange={handleOrderStatusChange}
+        style={{ width: 200, marginBottom: 16, marginLeft: 16 }} // Add margin for separation
+        allowClear
+      >
+        <Select.Option value={ORDER_STATUS.INITIAL}>Initial</Select.Option>
+        <Select.Option value={ORDER_STATUS.CONFIRMED}>Confirmed</Select.Option>
+        <Select.Option value={ORDER_STATUS.DELIVERING}>
+          Delivering
+        </Select.Option>
+        <Select.Option value={ORDER_STATUS.DELIVERED}>Delivered</Select.Option>
+        <Select.Option value={ORDER_STATUS.CANCELED}>Canceled</Select.Option>
+      </Select>
+
       <Table
         columns={columns}
-        dataSource={data}
+        dataSource={filteredData}
         rowKey="_id"
         scroll={{ x: 900 }}
       />

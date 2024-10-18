@@ -40,14 +40,8 @@ const FooterClient = () => {
           <div>
             <p className="font-semibold mb-3">POLICIES</p>
             <p className="leading-8">
-              <Link className="text-sm">Warranty Policy</Link>
-            </p>
-            <p className="leading-8">
-              <Link className="text-sm">Privacy Policy</Link>
-            </p>
-            <p className="leading-8">
-              <Link className="text-sm">
-                Personal Data Collection & Processing Policy
+              <Link className="text-sm" to="/policies">
+                View All Policies
               </Link>
             </p>
           </div>

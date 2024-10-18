@@ -10,6 +10,7 @@ import categoryApi from "../../api/categoryApi";
 import productApi from "../../api/productApi";
 import WrapperContent from "../../components/WrapperContent/WrapperContent";
 import { ROUTE_PATH } from "../../constants/routes";
+import useProfile from "../../hooks/useProfile"; // Import useProfile hook
 import { selectCart } from "../../store/cartSlice";
 import ProfileAvatar from "./ProfileAvatar";
 
@@ -21,6 +22,7 @@ const HeaderClient = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const isMobile = useMediaQuery({ query: `(max-width: 768px)` });
+  const { profile } = useProfile(); // Get user profile to check authentication
 
   useEffect(() => {
     fetchData();
@@ -148,17 +150,19 @@ const HeaderClient = () => {
 
             <div className="flex gap-x-3 md:gap-x-4 ml-auto">
               <ProfileAvatar />
-              <Link
-                to={ROUTE_PATH.CART}
-                className="h-9 md:h-12 bg-[#0b3024] flex items-center rounded-full px-3 md:px-4 cursor-pointer gap-x-2 md:gap-x-3"
-              >
-                <Badge count={cart?.products.length}>
-                  <FaShoppingCart className="text-white text-lg md:text-xl" />
-                </Badge>
-                <p className="text-white font-medium text-xs md:text-base">
-                  Cart
-                </p>
-              </Link>
+              {profile && ( // Check if user is logged in
+                <Link
+                  to={ROUTE_PATH.CART}
+                  className="h-9 md:h-12 bg-[#0b3024] flex items-center rounded-full px-3 md:px-4 cursor-pointer gap-x-2 md:gap-x-3"
+                >
+                  <Badge count={cart?.products.length}>
+                    <FaShoppingCart className="text-white text-lg md:text-xl" />
+                  </Badge>
+                  <p className="text-white font-medium text-xs md:text-base">
+                    Cart
+                  </p>
+                </Link>
+              )}
             </div>
           </div>
         </WrapperContent>

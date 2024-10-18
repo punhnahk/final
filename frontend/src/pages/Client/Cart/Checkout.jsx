@@ -20,6 +20,9 @@ const Checkout = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
 
+  const FREE_SHIPPING_THRESHOLD = 5000000; // Define the threshold for free shipping
+  const SHIPPING_FEE = 20000; // Define the shipping fee
+
   // Fetch user information when the component mounts
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -83,6 +86,12 @@ const Checkout = () => {
     }
     return total;
   }, 0);
+
+  // Calculate total price including shipping fee
+  const totalPriceWithoutShipping = cart.totalPrice;
+  const shippingCost =
+    totalPriceWithoutShipping < FREE_SHIPPING_THRESHOLD ? SHIPPING_FEE : 0; // Determine shipping cost
+  const totalPrice = totalPriceWithoutShipping + shippingCost;
 
   return (
     <div className="bg-gray-100">
@@ -241,7 +250,9 @@ const Checkout = () => {
             <p className="text-[#090d14] font-semibold mb-3">Order Summary</p>
             <div className="flex items-center justify-between mb-1">
               <p className="text-xs">Total</p>
-              <p className="font-medium">{formatPrice(cart.totalPrice)}</p>
+              <p className="font-medium">
+                {formatPrice(totalPriceWithoutShipping)}
+              </p>
             </div>
             <hr className="my-2" />
 
@@ -252,7 +263,13 @@ const Checkout = () => {
 
             <div className="flex items-center justify-between mb-1">
               <p className="text-xs">Shipping Fee</p>
-              <p className="font-medium text-xs">Free</p>
+              <p className="font-medium">{formatPrice(shippingCost)}</p>
+            </div>
+
+            <hr className="my-2" />
+            <div className="flex items-center justify-between">
+              <p className="font-semibold">Total Amount</p>
+              <p className="font-semibold">{formatPrice(totalPrice)}</p>
             </div>
             <button
               onClick={form.submit}

@@ -200,40 +200,46 @@ const Dashboard = () => {
         <Col span={6}>
           <Card
             title={
-              <span className="text-lg font-semibold">
+              <span className="text-lg font-semibold text-white">
                 Best Products by Views
               </span>
             }
             bordered={false}
-            className="shadow-lg rounded-lg"
-            style={{ width: 300, height: 400 }}
+            className="shadow-lg rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white"
+            style={{ width: 300, height: 400 }} // Adjust height for better fit
           >
-            <ul className="space-y-2">
+            <div className="grid grid-cols-1 gap-2">
               {limitedProducts
                 .sort((a, b) => b.view - a.view)
+                .slice(0, 5) // Only take the top three products
                 .map((product) => (
-                  <li key={product._id} className="flex justify-between">
-                    <span>{product.name}</span>
-                    <span>{product.view}</span>
-                  </li>
+                  <div
+                    key={product._id}
+                    className="flex justify-between items-center bg-white text-black rounded-lg p-2 pr-3 shadow-md"
+                  >
+                    <span className="flex-grow pr-4 ">{product.name}</span>
+                    <span className="font-bold text-red-500 text-lg flex-shrink-0">
+                      {product.view}
+                      <span className="text-gray-500 text-sm"> views</span>
+                    </span>
+                  </div>
                 ))}
-            </ul>
+            </div>
           </Card>
         </Col>
       </Row>
 
       {/* Recent Orders Table */}
       <Card
-        title={
-          <span className="font-semibold text-gray-800">Recent Orders</span>
-        }
+        title={<span className="text-lg font-semibold">Recent Orders</span>}
         bordered={false}
-        className="mt-5 shadow-lg rounded-lg"
+        className="shadow-lg mt-4 rounded-lg"
       >
         <Table
           columns={columns}
-          dataSource={recentOrders.slice(0, 5)}
+          dataSource={recentOrders}
           pagination={false}
+          rowKey="_id"
         />
       </Card>
     </div>

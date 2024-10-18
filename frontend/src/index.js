@@ -10,7 +10,7 @@ import store from "./store/store";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <Provider store={store}>
-    <GoogleOAuthProvider clientId="603939768276-jfvdviqbu9m9krbcbo1339bcvp8hlhd3.apps.googleusercontent.com">
+    <GoogleOAuthProvider clientId="1013298330073-057u4c45bj90o463me8s1lddhtcj17n6.apps.googleusercontent.com">
       <App />
     </GoogleOAuthProvider>
   </Provider>

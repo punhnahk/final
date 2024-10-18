@@ -20,6 +20,7 @@ export const ROUTE_PATH = {
 
   OVERVIEW: "/overview",
   PAYMENTGUIDE: "/payment-guide",
+  POLICIES: "/policies",
 
   // admin
   ADMIN: "/admin",

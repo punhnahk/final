@@ -15,7 +15,7 @@ import formatPrice from "../../../utils/formatPrice";
 
 const Cart = () => {
   const dispatch = useDispatch();
-  const cart = useSelector(selectCart);
+  const cart = useSelector(selectCart) || { products: [], totalPrice: 0 };
 
   const isCartEmpty = !cart?.products.length;
 
@@ -37,6 +37,9 @@ const Cart = () => {
       message.error("Failed to remove product");
     }
   };
+
+  const shippingCost = cart && cart.totalPrice < 5000000 ? 20000 : 0;
+  const totalPrice = (cart ? cart.totalPrice : 0) + shippingCost;
 
   return (
     <div className="bg-gray-100">
@@ -177,8 +180,16 @@ const Cart = () => {
 
                 <div className="flex items-center justify-between mb-1">
                   <p className="text-xs">Shipping</p>
+                  <p className="font-medium">
+                    {formatPrice(shippingCost)}
+                  </p>{" "}
+                </div>
 
-                  <p className="font-medium text-xs">Free</p>
+                <div className="flex items-center justify-between mb-1">
+                  <p className="text-xs font-semibold">
+                    Total (including shipping)
+                  </p>
+                  <p className="font-medium">{formatPrice(totalPrice)}</p>{" "}
                 </div>
 
                 <Link
