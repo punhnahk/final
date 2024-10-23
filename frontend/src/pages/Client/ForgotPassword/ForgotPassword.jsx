@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
-import WrapperContent from "../../../components/WrapperContent/WrapperContent";
 import { useNavigate } from "react-router-dom";
+import WrapperContent from "../../../components/WrapperContent/WrapperContent";
 import EnterEmail from "./EnterEmail";
 import EnterOtp from "./EnterOtp";
 import ResetPassword from "./ResetPassword";
@@ -24,7 +24,7 @@ const ForgotPassword = () => {
     <div className="bg-gray-100 py-11 px-8">
       <WrapperContent className="bg-white py-11 rounded px-4">
         <h1 className="text-center font-semibold text-2xl uppercase mb-6">
-          Quên mật khẩu
+          Forgot Password
         </h1>
 
         {step === STEP.ENTER_EMAIL && (

@@ -1,9 +1,10 @@
-import { Breadcrumb, Carousel, Empty, message, Spin } from "antd";
+import { Breadcrumb, Carousel, Empty, message, Pagination, Spin } from "antd";
 import React, { useEffect, useState } from "react";
 import { FaCartArrowDown, FaPhoneAlt } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import cartApi from "../../../api/cartApi";
+import commentApi from "../../../api/commentApi"; // Import the comment API
 import productApi from "../../../api/productApi";
 import ProductItem from "../../../components/ProductItem/ProductItem";
 import WrapperContent from "../../../components/WrapperContent/WrapperContent";
@@ -14,6 +15,10 @@ import formatPrice from "../../../utils/formatPrice";
 const ProductDetail = () => {
   const [data, setData] = useState();
   const [relatedProduct, setRelatedProduct] = useState([]);
+  const [comments, setComments] = useState([]); // State for comments
+  const [loadingComments, setLoadingComments] = useState(false); // Loading state for comments
+  const [currentPage, setCurrentPage] = useState(1); // State for current page
+  const [commentsPerPage] = useState(5); // Number of comments per page
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { id } = useParams();
@@ -52,16 +57,42 @@ const ProductDetail = () => {
 
   const fetchData = async (productId) => {
     try {
-      const [product, relatedProduct] = await Promise.all([
+      const [product, relatedProductResponse] = await Promise.all([
         productApi.getProduct(productId),
         productApi.getRelatedProduct(productId),
       ]);
       setData(product.data);
-      setRelatedProduct(relatedProduct.data);
+      setRelatedProduct(relatedProductResponse.data);
+      fetchComments(productId); // Fetch comments separately
     } catch (error) {
       message.error("Failed to fetch product data.");
     }
   };
+
+  const fetchComments = async (productId) => {
+    setLoadingComments(true);
+    try {
+      const commentsResponse = await commentApi.getCommentsByProductId(
+        productId
+      );
+      setComments(commentsResponse.data);
+    } catch (error) {
+      console.error("Error fetching comments:", error); // Log the error for debugging
+    } finally {
+      setLoadingComments(false);
+    }
+  };
+
+  // Calculate total number of pages
+  const totalPages = Math.ceil(comments.length / commentsPerPage);
+
+  // Get comments for the current page
+  const indexOfLastComment = currentPage * commentsPerPage;
+  const indexOfFirstComment = indexOfLastComment - commentsPerPage;
+  const currentComments = comments.slice(
+    indexOfFirstComment,
+    indexOfLastComment
+  );
 
   if (!data) {
     return (
@@ -206,6 +237,53 @@ const ProductDetail = () => {
         {!relatedProduct.length && (
           <Empty className="mt-3" description="No related products available" />
         )}
+      </div>
+      <div className="mb-6">
+        <p className="font-bold text-2xl uppercase text-[#444]">
+          Customer Feedback
+        </p>
+        <div className="p-3 rounded-lg mt-2 shadow-lg">
+          {loadingComments ? (
+            <Spin />
+          ) : currentComments.length > 0 ? (
+            currentComments.map((comment, index) => (
+              <div
+                key={`comment-${index}`}
+                className="border-b py-2 flex gap-4"
+              >
+                {/* User Avatar */}
+                <img
+                  src={
+                    comment.userId?.avatar ||
+                    "https://icons.veryicon.com/png/o/miscellaneous/common-icons-31/default-avatar-2.png"
+                  }
+                  alt={`${comment.userId?.name || "User"}'s avatar`}
+                  className="w-10 h-10 rounded-full"
+                />
+                <div>
+                  {/* User Name */}
+                  <p className="font-semibold">{comment.userId.name}</p>
+                  {/* Comment Content */}
+                  <p className="text-gray-700">{comment.content}</p>
+                  {/* Comment Timestamp */}
+                  <p className="text-gray-500 text-sm">
+                    Commented on: {new Date(comment.createdAt).toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            ))
+          ) : (
+            <Empty description="No customer feedback available" />
+          )}
+        </div>
+        {/* Pagination */}
+        <Pagination
+          current={currentPage}
+          onChange={(page) => setCurrentPage(page)}
+          total={comments.length}
+          pageSize={commentsPerPage}
+          className="mt-4 justify-end"
+        />
       </div>
     </WrapperContent>
   );
