@@ -1,7 +1,15 @@
-import { CreditCardOutlined, DollarCircleOutlined } from "@ant-design/icons"; // Import icons
 import { Card, Col, Row, Table, message } from "antd";
 import React, { useEffect, useState } from "react";
-import { Bar, BarChart, Tooltip, XAxis, YAxis } from "recharts";
+import {
+  Bar,
+  BarChart,
+  Cell,
+  Pie,
+  PieChart,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import orderApi from "../../../api/orderApi";
 import productApi from "../../../api/productApi";
 import formatPrice from "../../../utils/formatPrice";
@@ -11,8 +19,7 @@ const Dashboard = () => {
   const [ordersPerMonth, setOrdersPerMonth] = useState([]);
   const [totalSales, setTotalSales] = useState(0);
   const [recentOrders, setRecentOrders] = useState([]);
-  const [totalCashOrders, setTotalCashOrders] = useState(0);
-  const [totalVnPayOrders, setTotalVnPayOrders] = useState(0);
+  const [cityDistribution, setCityDistribution] = useState([]); // State for city distribution
 
   const CUSTOM_COLORS = ["#FF6B6B", "#4ECDC4", "#1A535C", "#FFE66D", "#FF924C"];
 
@@ -41,11 +48,9 @@ const Dashboard = () => {
       const recentOrdersRes = await orderApi.getOrders();
       setRecentOrders(recentOrdersRes.data); // Displaying top 5 recent orders
 
-      const cashOrders = await fetchCashOrders(orderRes.data);
-      setTotalCashOrders(cashOrders);
-
-      const vnPayOrders = await fetchVnPayOrders(orderRes.data);
-      setTotalVnPayOrders(vnPayOrders);
+      // Fetch city distribution
+      const cityDist = await fetchCityDistribution(orderRes.data);
+      setCityDistribution(cityDist);
     } catch (error) {
       message.error("Failed to fetch dashboard data");
       console.error(error);
@@ -80,26 +85,83 @@ const Dashboard = () => {
     return orders.filter((order) => order.paymentMethod === "VNPAY").length;
   };
 
+  // Function to fetch city distribution
+  const fetchCityDistribution = (orders) => {
+    const cityCount = {};
+    orders.forEach((order) => {
+      const addressParts = order.address.split(",").map((part) => part.trim());
+      if (addressParts.length > 1) {
+        const city = addressParts[addressParts.length - 1]; // Get the last part as the city
+        cityCount[city] = (cityCount[city] || 0) + 1;
+      }
+    });
+    return Object.entries(cityCount).map(([city, count]) => ({
+      name: city,
+      value: count,
+    }));
+  };
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "INITIAL":
+        return "text-gray-400"; // Gray for initial status
+      case "CONFIRMED":
+        return "text-blue-600"; // Blue for confirmed status
+      case "DELIVERING":
+        return "text-orange-600"; // Orange for delivering status
+      case "DELIVERED":
+        return "text-green-600"; // Green for delivered status
+      case "CANCELED":
+        return "text-red-600"; // Red for canceled status
+      default:
+        return "text-gray-500"; // Default gray color for other statuses
+    }
+  };
+
   // Table columns for recent orders
   const columns = [
     {
-      title: "Order Num",
+      title: <div className="text-center">Order Num</div>,
       dataIndex: "order_number",
       render: (_, __, index) => ++index,
     },
-    { title: "User", dataIndex: "customerName", key: "customerName" },
-    { title: "Phone", dataIndex: "customerPhone", key: "customerPhone" },
-    { title: "Address", dataIndex: "address", key: "address" },
-    { title: "Note", dataIndex: "message", key: "message" },
     {
-      title: "Total Amount",
+      title: <div className="text-center">User</div>,
+      dataIndex: "customerName",
+      key: "customerName",
+    },
+    {
+      title: <div className="text-center">Phone</div>,
+      dataIndex: "customerPhone",
+      key: "customerPhone",
+    },
+    {
+      title: <div className="text-center">Address</div>,
+      dataIndex: "address",
+      key: "address",
+    },
+    {
+      title: <div className="text-center">Note</div>,
+      dataIndex: "message",
+      key: "message",
+    },
+    {
+      title: <div className="text-center">Total Amount</div>,
       dataIndex: "totalPrice",
       key: "totalPrice",
       render: (text) => formatPrice(text),
     },
-    { title: "Status", dataIndex: "status", key: "status" },
     {
-      title: "Payment",
+      title: <div className="text-center">Status</div>,
+      dataIndex: "status",
+      key: "status",
+      render: (status) => (
+        <span className={`font-semibold ${getStatusColor(status)}`}>
+          {status}
+        </span>
+      ),
+    },
+    {
+      title: <div className="text-center">Payment</div>,
       dataIndex: "paymentMethod",
       key: "paymentMethod",
     },
@@ -114,39 +176,11 @@ const Dashboard = () => {
               <span className="font-semibold text-gray-800">Total Sales</span>
             }
             bordered={false}
-            className="shadow-lg rounded-lg bg-gradient-to-r from-green-400 to-blue-500 text-white"
+            className="shadow-lg rounded-lg bg-green-300 text-white"
           >
-            <h2 className="font-bold text-red-600">
+            <h2 className="font-bold text-red-600 text-lg">
               {formatPrice(totalSales)}
             </h2>
-          </Card>
-          <Card
-            title={
-              <span className="font-semibold text-gray-800">
-                Total Orders (VNPay)
-              </span>
-            }
-            bordered={false}
-            className="shadow-lg mt-3 rounded-lg bg-gradient-to-r from-green-400 to-blue-500 text-white"
-          >
-            <div className="flex items-center">
-              <CreditCardOutlined className="text-2xl mr-2" />
-              <h3 className="font-bold text-red-600">{totalVnPayOrders}</h3>
-            </div>
-          </Card>
-          <Card
-            title={
-              <span className="font-semibold text-gray-800">
-                Total Orders (COD)
-              </span>
-            }
-            bordered={false}
-            className="shadow-lg mt-3 rounded-lg bg-gradient-to-r from-green-400 to-blue-500 text-white"
-          >
-            <div className="flex items-center">
-              <DollarCircleOutlined className="text-2xl mr-2" />
-              <h3 className="font-bold text-red-600">{totalCashOrders}</h3>
-            </div>
           </Card>
         </Col>
 
@@ -162,8 +196,8 @@ const Dashboard = () => {
             <BarChart width={450} height={300} data={ordersPerMonth}>
               <defs>
                 <linearGradient id="colorOrders" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#4F46E5" stopOpacity={0.8} />
-                  <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.8} />
+                  <stop offset="5%" stopColor="#C9E9D2" stopOpacity={0.8} />
+                  <stop offset="95%" stopColor="#8ABFA3" stopOpacity={0.8} />
                 </linearGradient>
               </defs>
               <XAxis
@@ -200,12 +234,12 @@ const Dashboard = () => {
         <Col span={6}>
           <Card
             title={
-              <span className="text-lg font-semibold text-white">
+              <span className="text-lg font-semibold text-black">
                 Best Products by Views
               </span>
             }
             bordered={false}
-            className="shadow-lg rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white"
+            className="shadow-lg rounded-lg bg-emerald-300"
             style={{ width: 300, height: 400 }} // Adjust height for better fit
           >
             <div className="grid grid-cols-1 gap-2">
@@ -230,17 +264,59 @@ const Dashboard = () => {
       </Row>
 
       {/* Recent Orders Table */}
-      <Card
-        title={<span className="text-lg font-semibold">Recent Orders</span>}
-        bordered={false}
-        className="shadow-lg mt-4 rounded-lg"
-      >
+      <Card title="Recent Orders" className="mt-4">
         <Table
           columns={columns}
-          dataSource={recentOrders}
+          dataSource={recentOrders.slice(0, 4)}
           pagination={false}
-          rowKey="_id"
         />
+      </Card>
+
+      {/* City Distribution Card */}
+      <Card
+        title="City Distribution"
+        className="mt-4 shadow-lg rounded-lg bg-white"
+        bordered={false}
+      >
+        <div className="flex flex-col md:flex-row items-center justify-between">
+          {/* Pie Chart */}
+          <PieChart width={600} height={300} className="">
+            <Pie
+              data={cityDistribution}
+              cx={400}
+              cy={150}
+              labelLine={false}
+              label={({ name, percent }) =>
+                `${name} (${(percent * 100).toFixed(0)}%)`
+              }
+              outerRadius={80}
+              dataKey="value"
+            >
+              {cityDistribution.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={CUSTOM_COLORS[index % CUSTOM_COLORS.length]}
+                />
+              ))}
+            </Pie>
+            <Tooltip />
+          </PieChart>
+
+          {/* City Details */}
+          <div className="ml-0 md:ml-8 mb-56 md:mt-0">
+            <h3 className="text-gray-800 text-lg font-medium mb-2">
+              City Order Counts
+            </h3>
+            <ul className="list-none">
+              {cityDistribution.map((city, index) => (
+                <li key={index} className="text-gray-600 mb-1">
+                  <span className="font-semibold">{city.name}</span>:{" "}
+                  <span>{city.value} orders</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       </Card>
     </div>
   );

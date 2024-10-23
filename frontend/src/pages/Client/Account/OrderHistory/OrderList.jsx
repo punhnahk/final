@@ -1,5 +1,5 @@
-import { Button } from "antd";
-import { useState } from "react"; // Import useState
+import { Button, Input, message } from "antd";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ROUTE_PATH } from "../../../../constants/routes";
 import formatPrice from "../../../../utils/formatPrice";
@@ -7,11 +7,42 @@ import { getOrderStatus } from "../../../../utils/order";
 
 const MAX_PRODUCT = 2;
 
-const OrderCard = ({ data }) => {
-  const [showMore, setShowMore] = useState(false); // State to manage visibility of more products
+const OrderCard = ({ data, onCommentSubmit, hasCommentedMap }) => {
+  const [showMore, setShowMore] = useState(false);
+  const [comments, setComments] = useState({});
 
   const handleToggleProducts = () => {
-    setShowMore(!showMore); // Toggle the state
+    setShowMore(!showMore);
+  };
+
+  const handleCommentChange = (productId, e) => {
+    setComments({
+      ...comments,
+      [productId]: e.target.value,
+    });
+  };
+
+  const handleCommentSubmit = async (productId) => {
+    if (!comments[productId]) {
+      message.error("Comment cannot be empty.");
+      return;
+    }
+
+    if (hasCommentedMap[`${data._id}_${productId}`]) {
+      message.error("You have already commented on this product.");
+      return;
+    }
+
+    try {
+      await onCommentSubmit(data._id, productId, comments[productId]);
+      // Reset the comment input after submission
+      setComments((prev) => ({
+        ...prev,
+        [productId]: "",
+      }));
+    } catch {
+      message.error("Failed to submit comment.");
+    }
   };
 
   return (
@@ -39,23 +70,26 @@ const OrderCard = ({ data }) => {
                 key={`order-product-item-${it._id}`}
               >
                 <div className="p-2 w-3/4 flex items-center gap-x-2">
-                  <div className="w-[90px] h-[90px] border border-[#eee] rounded overflow-hidden relative">
-                    <img
-                      src={it.product.image[0]}
-                      alt="Product img"
-                      className="block w-full h-full object-cover"
-                    />
-
-                    <p className="absolute bottom-0 right-0 w-6 h-6 bg-[#ececec] rounded-tl flex items-center justify-center text-[12px] text-[#6d6e72] font-semibold">
-                      x{it.quantity}
-                    </p>
-                  </div>
-
-                  <div className="flex-1">
-                    <p className="text-[#111] font-semibold">
-                      {it.product.name}
-                    </p>
-                  </div>
+                  <Link
+                    to={ROUTE_PATH.PRODUCT_DETAIL(it.product._id)}
+                    className="flex items-center"
+                  >
+                    <div className="w-[90px] h-[90px] border border-[#eee] rounded overflow-hidden relative">
+                      <img
+                        src={it.product.image[0]}
+                        alt="Product img"
+                        className="block w-full h-full object-cover"
+                      />
+                      <p className="absolute bottom-0 right-0 w-6 h-6 bg-[#ececec] rounded-tl flex items-center justify-center text-[12px] text-[#6d6e72] font-semibold">
+                        x{it.quantity}
+                      </p>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-[#111] font-semibold ml-5">
+                        {it.product.name}
+                      </p>
+                    </div>
+                  </Link>
                 </div>
 
                 <div className="w-1/4 text-[#111] text-right">
@@ -70,6 +104,35 @@ const OrderCard = ({ data }) => {
                     </p>
                   )}
                 </div>
+
+                {data.status === "DELIVERED" && (
+                  <>
+                    {hasCommentedMap[`${data._id}_${it.product._id}`] ? (
+                      <p className="text-gray-500">
+                        You have commented on this product.
+                      </p>
+                    ) : (
+                      <div className="w-full p-2 pl-10 pr-6">
+                        <Input.TextArea
+                          value={comments[it.product._id] || ""}
+                          onChange={(e) =>
+                            handleCommentChange(it.product._id, e)
+                          }
+                          rows={2}
+                          placeholder="Leave a comment..."
+                          className="border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-[#dc2626] transition duration-150 ease-in-out"
+                        />
+                        <Button
+                          type="primary"
+                          onClick={() => handleCommentSubmit(it.product._id)}
+                          className="mt-2 w-full bg-[#dc2626] hover:bg-[#b91c1c] text-white font-semibold rounded-lg transition duration-150 ease-in-out"
+                        >
+                          Submit Comment
+                        </Button>
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
             );
           })}
@@ -102,11 +165,16 @@ const OrderCard = ({ data }) => {
   );
 };
 
-const OrderList = ({ data }) => {
+const OrderList = ({ data, onCommentSubmit, hasCommentedMap }) => {
   return (
     <div className="bg-[#ececec]">
       {data.map((it) => (
-        <OrderCard key={`order-item-${it._id}`} data={it} />
+        <OrderCard
+          key={`order-item-${it._id}`}
+          data={it}
+          onCommentSubmit={onCommentSubmit}
+          hasCommentedMap={hasCommentedMap}
+        />
       ))}
     </div>
   );

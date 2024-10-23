@@ -11,7 +11,7 @@ import {
   UnorderedListOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Dropdown, Layout, Menu, Spin } from "antd";
+import { Dropdown, Layout, Menu, Spin, Switch } from "antd";
 import { DEFAULT_AVATAR_PATH, ROLE, TOKEN_STORAGE_KEY } from "../../constants";
 import { ROUTE_PATH } from "../../constants/routes";
 import useProfile from "../../hooks/useProfile";
@@ -136,6 +136,7 @@ const AdminLayout = () => {
   const { profile } = useProfile();
   const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState(new Date()); // Initialize state for current time
+  const [isDarkMode, setIsDarkMode] = useState(false); // State for dark mode
 
   const onSignOut = () => {
     localStorage.removeItem(TOKEN_STORAGE_KEY);
@@ -176,16 +177,31 @@ const AdminLayout = () => {
     return date.toLocaleTimeString("vi-VN", options);
   };
 
+  // Toggle dark mode
+  const toggleDarkMode = () => {
+    setIsDarkMode((prev) => !prev);
+  };
+
   return (
-    <Layout hasSider className="min-h-screen">
-      <Sider style={siderStyle} width={256}>
+    <Layout hasSider className={`min-h-screen ${isDarkMode ? "dark" : ""}`}>
+      <Sider
+        style={{
+          ...siderStyle,
+          backgroundColor: isDarkMode ? "#001529" : "#f9f9f9",
+        }}
+        width={256}
+      >
         <Link to={ROUTE_PATH.HOME}>
-          <h1 className="text-white font-semibold text-xl text-center py-4">
+          <h1
+            className={`text-${
+              isDarkMode ? "white" : "black"
+            } font-semibold text-xl text-center py-4`}
+          >
             Noel Techshop
           </h1>
         </Link>
         <Menu
-          theme="dark"
+          theme={isDarkMode ? "dark" : "light"}
           mode="inline"
           defaultSelectedKeys={["1"]}
           items={MENUS}
@@ -193,13 +209,26 @@ const AdminLayout = () => {
       </Sider>
 
       <Layout className="pl-64 h-full">
-        <Header className="p-0 bg-white px-6 text-right">
+        <Header
+          className={`p-0 ${
+            isDarkMode ? "bg-gray-800" : "bg-white"
+          } px-6 text-right shadow-md`}
+        >
           <div className="inline-flex items-center ml-auto gap-x-3 justify-end">
-            <p className="text-gray-600 font-semibold mr-5">
+            <p
+              className={`text-${
+                isDarkMode ? "white" : "gray-600"
+              } font-semibold mr-5`}
+            >
               {formatVietnamTime(currentTime)}
             </p>{" "}
-            <p className="font-semibold">{profile.name}</p>
-            {/* Display formatted time */}
+            <p
+              className={`font-semibold ${
+                isDarkMode ? "text-white" : "text-black"
+              }`}
+            >
+              {profile.name}
+            </p>
             <Dropdown
               trigger="click"
               menu={{
@@ -218,9 +247,21 @@ const AdminLayout = () => {
                 className="size-11 rounded-full cursor-pointer object-cover"
               />
             </Dropdown>
+            <Switch
+              checked={isDarkMode}
+              onChange={toggleDarkMode}
+              checkedChildren="Dark"
+              unCheckedChildren="Light"
+              className="ml-4"
+            />
           </div>
         </Header>
-        <Content className="p-6">
+        <Content
+          className={`p-6 ${
+            isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-black"
+          } h-full`}
+          style={{ minHeight: "calc(100vh - 64px)" }} // Adjust to account for header height
+        >
           <Outlet />
         </Content>
       </Layout>

@@ -56,13 +56,13 @@ const NewsList = () => {
       title: "Category",
       key: "category",
       dataIndex: "category",
-      render: (category) => category.name,
+      render: (category) => (category ? category.name : "N/A"),
     },
     {
       title: "Author",
       key: "author",
       dataIndex: "author",
-      render: (author) => author.name,
+      render: (author) => (author ? author.name : "N/A"),
     },
     {
       title: "Created At",

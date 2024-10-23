@@ -1,6 +1,8 @@
+import { CommentOutlined, DeleteOutlined } from "@ant-design/icons";
 import { Button, Card, message, Popconfirm, Table } from "antd";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import commentApi from "../../../api/commentApi";
 import orderApi from "../../../api/orderApi";
 import {
   ORDER_STATUS,
@@ -24,12 +26,16 @@ const ConfirmPopup = ({ children, onConfirm }) => {
 
 const OrderDetail = () => {
   const [data, setData] = useState();
+  const [comments, setComments] = useState([]); // State for comments
 
   const params = useParams();
   const orderId = params.id;
 
   useEffect(() => {
-    orderId && fetchData(orderId);
+    if (orderId) {
+      fetchData(orderId);
+      fetchComments(orderId); // Fetch comments for the order
+    }
   }, [orderId]);
 
   const fetchData = async (orderId) => {
@@ -39,6 +45,40 @@ const OrderDetail = () => {
     } catch (error) {
       message.error("Failed to fetch");
     }
+  };
+
+  const fetchComments = async (orderId) => {
+    try {
+      const { data } = await commentApi.getCommentsByOrderId(orderId); // Adjust your API call
+      setComments(data); // Set comments in state
+    } catch (error) {
+      message.error("Failed to fetch comments");
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    try {
+      await commentApi.deleteComment(commentId); // Ensure this calls the correct endpoint
+      message.success("Comment deleted successfully.");
+      fetchComments(orderId); // Refresh comments after deletion
+    } catch (error) {
+      message.error("Failed to delete comment. Please try again.");
+    }
+  };
+
+  const confirmDeleteComment = (commentId) => {
+    return (
+      <Popconfirm
+        title="Are you sure you want to delete this comment?"
+        onConfirm={() => handleDeleteComment(commentId)}
+        okText="Yes"
+        cancelText="No"
+      >
+        <Button type="link" danger>
+          Delete
+        </Button>
+      </Popconfirm>
+    );
   };
 
   const columns = [
@@ -215,6 +255,33 @@ const OrderDetail = () => {
       <p className="text-2xl mt-4 text-center font-semibold">
         Total Amount: {formatPrice(data?.totalPrice)}
       </p>
+      <h2 className="font-semibold text-2xl mb-3 mt-6">Comments</h2>
+      {comments.length === 0 ? (
+        <div className="flex items-center text-gray-500 italic">
+          <CommentOutlined style={{ fontSize: "24px", marginRight: "8px" }} />
+          <span>No comments</span>
+        </div>
+      ) : (
+        comments.map((comment) => (
+          <div
+            key={comment._id}
+            className="border border-gray-300 p-4 mb-4 rounded-lg shadow-sm flex justify-between items-start"
+          >
+            <div className="flex-1">
+              <p className="font-semibold text-lg">{comment.userId.name}:</p>
+              <p className="text-gray-700 mt-1">{comment.content}</p>
+              <p className="text-gray-500 text-sm mt-1">
+                Commented on: {new Date(comment.createdAt).toLocaleString()}
+              </p>
+            </div>
+            <DeleteOutlined
+              className="text-red-500 cursor-pointer"
+              style={{ fontSize: "24px" }}
+              onClick={() => handleDeleteComment(comment._id)}
+            />
+          </div>
+        ))
+      )}
     </>
   );
 };

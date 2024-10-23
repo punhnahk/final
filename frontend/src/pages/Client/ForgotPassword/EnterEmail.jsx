@@ -34,33 +34,33 @@ const EnterEmail = ({ onStepChange, onBack, valuesRef }) => {
         rules={[
           {
             required: true,
-            message: "Vui lòng nhập email",
+            message: "Please enter your email",
           },
           {
             type: "email",
-            message: "Email không đúng định dạng",
+            message: "Invalid email format",
           },
         ]}
       >
-        <Input placeholder="Nhập email" className="h-12 text-base" />
+        <Input placeholder="Enter email" className="h-12 text-base" />
       </Form.Item>
 
       <p className="mb-6">
-        Vui lòng sử dụng email đã đăng ký với FPT Shop để nhận OTP
+        Please use the email registered with Noel TechShop to receive the OTP
       </p>
 
       <Button
         htmlType="submit"
         className="!bg-red-600 hover:!bg-red-600 h-12 rounded w-full mt-2"
       >
-        <p className="uppercase text-white text-base font-semibold">Tiếp tục</p>
+        <p className="uppercase text-white text-base font-semibold">Continue</p>
       </Button>
 
       <p
         className="text-center mt-3 text-base text-blue-500 cursor-pointer"
         onClick={onBack}
       >
-        Quay lại đăng nhập
+        Back to login
       </p>
     </Form>
   );

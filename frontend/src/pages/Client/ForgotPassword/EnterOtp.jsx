@@ -27,25 +27,25 @@ const EnterOtp = ({ onStepChange, valuesRef }) => {
         rules={[
           {
             required: true,
-            message: "Vui lòng nhập OTP",
+            message: "Please enter the OTP",
           },
         ]}
       >
-        <Input placeholder="Nhập OTP" className="h-12 text-base" />
+        <Input placeholder="Enter OTP" className="h-12 text-base" />
       </Form.Item>
 
       <Button
         htmlType="submit"
         className="!bg-red-600 hover:!bg-red-600 h-12 rounded w-full mt-2"
       >
-        <p className="uppercase text-white text-base font-semibold">Tiếp tục</p>
+        <p className="uppercase text-white text-base font-semibold">Continue</p>
       </Button>
 
       <p
         className="text-center mt-3 text-base text-blue-500 cursor-pointer"
         onClick={() => onStepChange(STEP.ENTER_EMAIL)}
       >
-        Quay lại
+        Go back
       </p>
     </Form>
   );
