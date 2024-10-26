@@ -9,6 +9,7 @@ import { ROUTE_PATH } from "../../../constants/routes";
 const ProductsList = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true); // State to track loading status
+  const [productCount, setProductCount] = useState(5); // Default to show 5 products
 
   useEffect(() => {
     const fetchData = async () => {
@@ -23,6 +24,26 @@ const ProductsList = () => {
     };
 
     fetchData();
+  }, []);
+
+  useEffect(() => {
+    // Function to handle resizing and set product count
+    const handleResize = () => {
+      if (window.innerWidth < 640) {
+        setProductCount(4); // 4 products on mobile
+      } else {
+        setProductCount(5); // 5 products on larger screens
+      }
+    };
+
+    // Initial check
+    handleResize();
+
+    // Add event listener for resize
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize); // Cleanup listener
+    };
   }, []);
 
   if (loading) {
@@ -61,13 +82,17 @@ const ProductsList = () => {
 
           {/* Responsive grid layout */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-2">
-            {category.products.slice(0, 8).map((product) => (
-              <ProductItem
-                key={`product-item-${product._id}`}
-                className="col-span-1" // Adjust this class based on grid setup
-                data={product}
-              />
-            ))}
+            {category.products.slice(0, productCount).map(
+              (
+                product // Use productCount for slicing
+              ) => (
+                <ProductItem
+                  key={`product-item-${product._id}`}
+                  className="col-span-1"
+                  data={product}
+                />
+              )
+            )}
           </div>
         </div>
       ))}

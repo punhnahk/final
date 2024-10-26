@@ -40,12 +40,14 @@ const ProductItem = ({ className, data }) => {
         </p>
       )}
 
-      <Link
-        to={ROUTE_PATH.PRODUCT_DETAIL(data._id)}
-        className="text-[#090d14] line-clamp-2 leading-5 mt-3 text-sm"
-      >
-        {data.name}
-      </Link>
+      <div className="text-[#090d14] mt-3 text-sm h-[40px] overflow-hidden text-ellipsis whitespace-wrap">
+        <Link
+          to={ROUTE_PATH.PRODUCT_DETAIL(data._id)}
+          aria-label={`View details for ${data.name}`}
+        >
+          {data.name}
+        </Link>
+      </div>
 
       <div className="mt-2 pt-3 border-t border-[#e5e7eb]">
         <div className="flex gap-1 mb-2">

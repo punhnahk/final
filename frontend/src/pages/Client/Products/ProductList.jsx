@@ -113,12 +113,13 @@ const ClientProductList = () => {
           </Flex>
         </div>
 
-        <div className="grid pb-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-2">
+        {/* Responsive grid layout */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-2">
           {sortedData.map((it) => (
             <ProductItem
               data={it}
               key={`product-item-${it._id}`}
-              className="col-span-1" // Col-span set to 1 for smaller devices
+              className="col-span-1"
             />
           ))}
         </div>

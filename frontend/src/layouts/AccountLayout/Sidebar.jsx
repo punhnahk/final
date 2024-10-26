@@ -28,7 +28,7 @@ const Sidebar = () => {
       <div className="pb-6">
         <NavLink
           to={ROUTE_PATH.ACCOUNT}
-          className="flex items-center py-3 px-5 gap-x-3 text-[#111] hover:text-[#e30019] transition-all [&.active]:text-[#e30019]"
+          className="flex items-center py-3 px-5 gap-x-3 text-[#111] hover:text-[#E8B86D] transition-all [&.active]:text-[#A1D6B2]"
           end
         >
           <FaUser />
@@ -38,7 +38,7 @@ const Sidebar = () => {
         {profile.password && (
           <NavLink
             to={ROUTE_PATH.CHANGE_PASSWORD}
-            className="flex items-center py-3 px-5 gap-x-3 text-[#111] hover:text-[#e30019] transition-all [&.active]:text-[#e30019]"
+            className="flex items-center py-3 px-5 gap-x-3 text-[#111] hover:text-[#E8B86D] transition-all [&.active]:text-[#A1D6B2]"
             end
           >
             <FaKey />
@@ -48,7 +48,7 @@ const Sidebar = () => {
 
         <NavLink
           to={ROUTE_PATH.ORDERS_HISTORY}
-          className="flex items-center py-3 px-5 gap-x-3 text-[#111] hover:text-[#e30019] transition-all [&.active]:text-[#e30019]"
+          className="flex items-center py-3 px-5 gap-x-3 text-[#111] hover:text-[#E8B86D] transition-all [&.active]:text-[#A1D6B2]"
         >
           <FaCartShopping />
           <p>Order Management</p>
@@ -56,7 +56,7 @@ const Sidebar = () => {
 
         <div
           onClick={onSignOut}
-          className="flex items-center py-3 px-5 gap-x-3 text-[#111] hover:text-[#e30019] transition-all cursor-pointer"
+          className="flex items-center py-3 px-5 gap-x-3 text-[#111] hover:text-[#E8B86D] transition-all cursor-pointer"
         >
           <FaSignOutAlt />
           <p>Sign Out</p>

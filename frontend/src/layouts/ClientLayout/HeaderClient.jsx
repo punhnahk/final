@@ -1,6 +1,6 @@
 import { Badge, Dropdown, Form, Input, message } from "antd";
 import React, { useEffect, useState } from "react";
-import { FaShoppingCart } from "react-icons/fa";
+import { FaPhoneAlt, FaShoppingCart } from "react-icons/fa";
 import { FaBarsStaggered } from "react-icons/fa6";
 import { IoSearch } from "react-icons/io5";
 import { useSelector } from "react-redux";
@@ -79,7 +79,7 @@ const HeaderClient = () => {
                 <Link
                   key={product._id}
                   to={ROUTE_PATH.PRODUCT_DETAIL(product._id)}
-                  className="block p-3 transition-colors duration-200 rounded-md hover:bg-gray-200"
+                  className="block p-3 transition-colors duration-200 rounded-md hover:bg-[#C9E9D2]"
                   onClick={() => setSearchStr("")}
                 >
                   {product.name}
@@ -114,55 +114,69 @@ const HeaderClient = () => {
 
   return (
     <>
-      <header className="bg-[#37b0a4]">
+      <header className="bg-[#C9E9D2] sticky top-0 z-50 shadow-md">
         <WrapperContent>
-          <div className="flex flex-col md:flex-row items-center justify-between min-h-[80px] sm:min-h-[100px] py-2">
-            <div className="flex items-center gap-x-3 mb-3 sm:mb-0">
+          <div className="flex flex-col md:flex-row items-center justify-between min-h-[70px] py-1">
+            {/* Logo and Categories */}
+            <div className="flex items-center gap-x-2 mb-2 md:mb-0">
               <Link to={ROUTE_PATH.HOME}>
                 <img
                   src="/images/logo.svg"
-                  className="h-16 md:h-16 lg:h-20"
+                  className="h-12 md:h-14"
                   alt="Logo"
                 />
               </Link>
 
+              {/* Categories Dropdown */}
               {!isMobile && (
                 <Dropdown menu={{ items: menuItems }} placement="bottomRight">
-                  <div className="h-10 md:h-12 bg-[#090d1466] flex items-center rounded-full px-3 md:px-4 cursor-pointer gap-x-2 md:gap-x-3">
-                    <FaBarsStaggered className="text-white" />
-                    <p className="text-white font-medium text-xs md:text-base">
-                      Categories
-                    </p>
+                  <div className="bg-[#FEF9F2] ml-12 flex items-center rounded-full px-3 h-8 md:h-10 cursor-pointer">
+                    <FaBarsStaggered className=" text-sm" />
+                    <p className=" text-xs font-medium ml-2">Categories</p>
                   </div>
                 </Dropdown>
               )}
             </div>
 
+            {/* Search Form */}
             <Form
               form={form}
-              onFinish={() => {
-                navigate(ROUTE_PATH.PRODUCTS_LIST + "?search=" + searchStr);
-              }}
-              className="flex-1 w-full sm:w-2/3 md:w-1/2 xl:w-1/3 max-w-full flex justify-center mb-3 md:mb-0"
+              onFinish={() =>
+                navigate(ROUTE_PATH.PRODUCTS_LIST + "?search=" + searchStr)
+              }
+              className="flex-1 w-full sm:w-2/3 md:w-1/2 max-w-lg flex justify-end mb-2 md:mb-0"
             >
               {productDropdown}
             </Form>
+            <div className="flex items-center gap-4 ml-12">
+              <a
+                href="tel:18001291"
+                className="flex items-center gap-1 p-2 bg-red-200 border-red-200  border-4 rounded-xl cursor-pointer text-sm"
+              >
+                <FaPhoneAlt className="mr-1" /> 1800.1291
+              </a>
+            </div>
 
-            <div className="flex gap-x-3 md:gap-x-4 ml-auto">
-              <ProfileAvatar />
-              {profile && ( // Check if user is logged in
+            {/* Profile and Cart */}
+            <div className="flex items-center gap-2 ml-auto">
+              {profile && (
                 <Link
                   to={ROUTE_PATH.CART}
-                  className="h-9 md:h-12 bg-[#0b3024] flex items-center rounded-full px-3 md:px-4 cursor-pointer gap-x-2 md:gap-x-3"
+                  className="flex items-center gap-1 p-2 bg-red-200 border-red-200  border-4 rounded-xl cursor-pointer"
                 >
-                  <Badge count={cart?.products.length}>
-                    <FaShoppingCart className="text-white text-lg md:text-xl" />
+                  <Badge
+                    count={cart?.products.length}
+                    offset={[0, -4]}
+                    color="#FF5733"
+                  >
+                    <FaShoppingCart className=" text-xl" />
                   </Badge>
-                  <p className="text-white font-medium text-xs md:text-base">
+                  <span className="hidden md:inline text-xs font-medium">
                     Cart
-                  </p>
+                  </span>
                 </Link>
               )}
+              <ProfileAvatar />
             </div>
           </div>
         </WrapperContent>

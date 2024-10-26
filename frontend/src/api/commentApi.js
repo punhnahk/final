@@ -13,7 +13,6 @@ const commentApi = {
   checkComment: (data) => {
     return apiClient.get("/comments/check", data);
   },
-  // New deleteComment method
   deleteComment: (commentId) => {
     return apiClient.delete(`/comments/${commentId}`);
   },

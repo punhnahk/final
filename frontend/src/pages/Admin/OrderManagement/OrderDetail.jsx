@@ -1,5 +1,5 @@
 import { CommentOutlined, DeleteOutlined } from "@ant-design/icons";
-import { Button, Card, message, Popconfirm, Table } from "antd";
+import { Button, Card, message, Modal, Popconfirm, Table } from "antd";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import commentApi from "../../../api/commentApi";
@@ -56,29 +56,24 @@ const OrderDetail = () => {
     }
   };
 
-  const handleDeleteComment = async (commentId) => {
-    try {
-      await commentApi.deleteComment(commentId); // Ensure this calls the correct endpoint
-      message.success("Comment deleted successfully.");
-      fetchComments(orderId); // Refresh comments after deletion
-    } catch (error) {
-      message.error("Failed to delete comment. Please try again.");
-    }
-  };
-
-  const confirmDeleteComment = (commentId) => {
-    return (
-      <Popconfirm
-        title="Are you sure you want to delete this comment?"
-        onConfirm={() => handleDeleteComment(commentId)}
-        okText="Yes"
-        cancelText="No"
-      >
-        <Button type="link" danger>
-          Delete
-        </Button>
-      </Popconfirm>
-    );
+  const handleDeleteComment = (commentId) => {
+    Modal.confirm({
+      title: "Are you sure you want to delete this comment?",
+      content: "This action cannot be undone.",
+      onOk: async () => {
+        try {
+          await commentApi.deleteComment(commentId);
+          message.success("Comment deleted successfully.");
+          fetchComments(orderId);
+        } catch (error) {
+          message.error("Failed to delete comment. Please try again.");
+          console.error(error); // Log the error for debugging
+        }
+      },
+      onCancel() {
+        // Optional: You can handle cancellation here if needed
+      },
+    });
   };
 
   const columns = [
@@ -274,11 +269,17 @@ const OrderDetail = () => {
                 Commented on: {new Date(comment.createdAt).toLocaleString()}
               </p>
             </div>
-            <DeleteOutlined
-              className="text-red-500 cursor-pointer"
-              style={{ fontSize: "24px" }}
-              onClick={() => handleDeleteComment(comment._id)}
-            />
+            <Popconfirm
+              title="Are you sure you want to delete this comment?"
+              onConfirm={() => handleDeleteComment(comment._id)}
+              okText="Yes"
+              cancelText="No"
+            >
+              <DeleteOutlined
+                className="text-red-500 cursor-pointer"
+                style={{ fontSize: "24px" }}
+              />
+            </Popconfirm>
           </div>
         ))
       )}

@@ -46,6 +46,9 @@ const CategoriesList = () => {
   return (
     <WrapperContent className="pb-4">
       <Carousel
+        removeArrowOnDeviceType={["tablet", "mobile"]}
+        autoPlay={true}
+        autoPlaySpeed={2000}
         responsive={responsive}
         arrows={true}
         infinite={true}
@@ -57,7 +60,7 @@ const CategoriesList = () => {
             <Link
               key={`category-item-${it._id}`}
               className="flex flex-col group gap-2 px-3 py-4 rounded-lg justify-center items-center"
-              to={ROUTE_PATH.PRODUCTS_LIST + "?category=" + it._id}
+              to={`${ROUTE_PATH.PRODUCTS_LIST}?category=${it._id}`}
             >
               <img
                 src={it.image}
