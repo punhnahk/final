@@ -120,11 +120,7 @@ const HeaderClient = () => {
             {/* Logo and Categories */}
             <div className="flex items-center gap-x-2 mb-2 md:mb-0">
               <Link to={ROUTE_PATH.HOME}>
-                <img
-                  src="/images/logo.svg"
-                  className="h-12 md:h-14"
-                  alt="Logo"
-                />
+                <img src="/svg/logo.svg" className="h-12 md:h-14" alt="Logo" />
               </Link>
 
               {/* Categories Dropdown */}
@@ -148,14 +144,16 @@ const HeaderClient = () => {
             >
               {productDropdown}
             </Form>
-            <div className="flex items-center gap-4 ml-12">
-              <a
-                href="tel:18001291"
-                className="flex items-center gap-1 p-2 bg-red-200 border-red-200  border-4 rounded-xl cursor-pointer text-sm"
-              >
-                <FaPhoneAlt className="mr-1" /> 1800.1291
-              </a>
-            </div>
+            {!isMobile && (
+              <div className="flex items-center gap-4 ml-12">
+                <a
+                  href="tel:18001291"
+                  className="flex items-center gap-1 p-2 bg-red-200 border-red-200  border-4 rounded-xl cursor-pointer text-sm"
+                >
+                  <FaPhoneAlt className="mr-1" /> 1800.1291
+                </a>
+              </div>
+            )}
 
             {/* Profile and Cart */}
             <div className="flex items-center gap-2 ml-auto">

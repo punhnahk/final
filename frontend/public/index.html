@@ -5,6 +5,7 @@
     <link rel="icon" href="images/logo.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
+    <meta name="referenced" content="no-referrer" />
     <meta
       name="description"
       content="Noel Techshop - Your one-stop shop for authentic phones, laptops, and accessories at the best prices."
@@ -48,3 +49,57 @@
     -->
   </body>
 </html>
+<script>
+  !(function (s, u, b, i, z) {
+    var o, t, r, y;
+    s[i] ||
+      ((s._sbzaccid = z),
+      (s[i] = function () {
+        s[i].q.push(arguments);
+      }),
+      (s[i].q = []),
+      s[i]("setAccount", z),
+      (r = [
+        "widget.subiz.net",
+        "storage.googleapis" + (t = ".com"),
+        "app.sbz.workers.dev",
+        i +
+          "a" +
+          (o = function (k, t) {
+            var n = t <= 6 ? 5 : o(k, t - 1) + o(k, t - 3);
+            return k !== t ? n : n.toString(32);
+          })(20, 20) +
+          t,
+        i + "b" + o(30, 30) + t,
+        i + "c" + o(40, 40) + t,
+      ]),
+      (y = function (k) {
+        var t, n;
+        s._subiz_init_2094850928430 ||
+          (r[k] &&
+            ((t = u.createElement(b)),
+            (n = u.getElementsByTagName(b)[0]),
+            (t.async = 1),
+            (t.src = "https://" + r[k] + "/sbz/app.js?accid=" + z),
+            n.parentNode.insertBefore(t, n),
+            setTimeout(y, 2e3, k + 1)));
+      })(0));
+  })(window, document, "script", "subiz", "acsdibhfvnjaormkgtqw");
+
+  // After the Subiz widget is initialized, fetch user attributes
+  window.subiz = window.subiz || {};
+  window.subiz("onReady", function () {
+    window.subiz("getUserAttributes", function (response) {
+      if (response && response.name && response.email) {
+        // Show user info on the page
+        document.getElementById("user-name").innerText =
+          "Name: " + response.name;
+        document.getElementById("user-email").innerText =
+          "Email: " + response.email;
+        document.getElementById("user-info").classList.remove("hidden");
+      } else {
+        console.log("User attributes not available");
+      }
+    });
+  });
+</script>

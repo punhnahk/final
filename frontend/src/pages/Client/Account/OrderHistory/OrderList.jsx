@@ -35,7 +35,6 @@ const OrderCard = ({ data, onCommentSubmit, hasCommentedMap }) => {
 
     try {
       await onCommentSubmit(data._id, productId, comments[productId]);
-      // Reset the comment input after submission
       setComments((prev) => ({
         ...prev,
         [productId]: "",
@@ -46,13 +45,14 @@ const OrderCard = ({ data, onCommentSubmit, hasCommentedMap }) => {
   };
 
   return (
-    <div className="pt-4 px-6 pb-6 rounded bg-white [&:not(:last-child)]:mb-4">
-      <div className="flex items-center justify-between pb-4 border-b border-[#CFCFCF]">
-        <p className="text-[#6d6e72] text-[14px] font-semibold">
+    <div className="pt-4 px-4 md:px-6 pb-6 rounded bg-white [&:not(:last-child)]:mb-4">
+      <div className="flex flex-col md:flex-row items-center justify-between pb-4 border-b border-[#CFCFCF]">
+        <p className="text-[#6d6e72] text-sm md:text-[14px] font-semibold">
           {getOrderStatus(data.status)}
         </p>
-
-        <p className="text-[14px] text-[#111] font-semibold">#{data._id}</p>
+        <p className="text-sm md:text-[14px] text-[#111] font-semibold mt-2 md:mt-0">
+          #{data._id}
+        </p>
       </div>
 
       <div className="py-4 mb-3 border-b border-[#CFCFCF]">
@@ -66,53 +66,53 @@ const OrderCard = ({ data, onCommentSubmit, hasCommentedMap }) => {
 
             return (
               <div
-                className="flex items-center"
+                className="flex flex-col md:flex-row items-start md:items-center"
                 key={`order-product-item-${it._id}`}
               >
-                <div className="p-2 w-3/4 flex items-center gap-x-2">
+                <div className="p-2 w-full md:w-3/4 flex items-center gap-x-2">
                   <Link
                     to={ROUTE_PATH.PRODUCT_DETAIL(it.product._id)}
-                    className="flex items-center"
+                    className="flex items-center w-full"
                   >
-                    <div className="w-[90px] h-[90px] border border-[#eee] rounded overflow-hidden relative">
+                    <div className="w-[70px] md:w-[90px] h-[70px] md:h-[90px] border border-[#eee] rounded overflow-hidden relative">
                       <img
                         src={it.product.image[0]}
                         alt="Product img"
                         className="block w-full h-full object-cover"
                       />
-                      <p className="absolute bottom-0 right-0 w-6 h-6 bg-[#ececec] rounded-tl flex items-center justify-center text-[12px] text-[#6d6e72] font-semibold">
+                      <p className="absolute bottom-0 right-0 w-6 h-6 bg-[#ececec] rounded-tl flex items-center justify-center text-[10px] md:text-[12px] text-[#6d6e72] font-semibold">
                         x{it.quantity}
                       </p>
                     </div>
-                    <div className="flex-1">
-                      <p className="text-[#111] font-semibold ml-5">
+                    <div className="flex-1 ml-2 md:ml-5">
+                      <p className="text-sm md:text-[14px] text-[#111] font-semibold">
                         {it.product.name}
                       </p>
                     </div>
                   </Link>
                 </div>
 
-                <div className="w-1/4 text-[#111] text-right">
+                <div className="w-full md:w-1/4 text-right text-[#111] mt-2 md:mt-0">
                   <p>
                     {formatPrice(
                       salePrice ? totalPriceSale : totalPriceBeforeSale
                     )}
                   </p>
                   {salePrice > 0 && (
-                    <p className="line-through text-[14px]">
+                    <p className="line-through text-[12px] md:text-[14px]">
                       {formatPrice(totalPriceBeforeSale)}
                     </p>
                   )}
                 </div>
 
                 {data.status === "DELIVERED" && (
-                  <>
+                  <div className="w-full mt-2">
                     {hasCommentedMap[`${data._id}_${it.product._id}`] ? (
-                      <p className="text-gray-500">
+                      <p className="text-gray-500 text-xs md:text-sm">
                         You have commented on this product.
                       </p>
                     ) : (
-                      <div className="w-full p-2 pl-10 pr-6">
+                      <div className="p-2">
                         <Input.TextArea
                           value={comments[it.product._id] || ""}
                           onChange={(e) =>
@@ -120,18 +120,18 @@ const OrderCard = ({ data, onCommentSubmit, hasCommentedMap }) => {
                           }
                           rows={2}
                           placeholder="Leave a comment..."
-                          className="border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-[#dc2626] transition duration-150 ease-in-out"
+                          className="border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-[#dc2626] transition duration-150 ease-in-out text-xs md:text-sm"
                         />
                         <Button
                           type="primary"
                           onClick={() => handleCommentSubmit(it.product._id)}
-                          className="mt-2 w-full bg-[#dc2626] hover:bg-[#b91c1c] text-white font-semibold rounded-lg transition duration-150 ease-in-out"
+                          className="mt-2 w-full bg-[#dc2626] hover:bg-[#b91c1c] text-white font-semibold rounded-lg transition duration-150 ease-in-out text-xs md:text-sm"
                         >
                           Submit Comment
                         </Button>
                       </div>
                     )}
-                  </>
+                  </div>
                 )}
               </div>
             );
@@ -139,15 +139,18 @@ const OrderCard = ({ data, onCommentSubmit, hasCommentedMap }) => {
       </div>
 
       {data.products.length > MAX_PRODUCT && (
-        <Button className="rounded" onClick={handleToggleProducts}>
+        <Button
+          className="rounded w-full text-xs md:text-sm"
+          onClick={handleToggleProducts}
+        >
           {showMore
             ? "Show less products"
             : `View ${data.products.length - MAX_PRODUCT} more products`}
         </Button>
       )}
 
-      <div className="text-right">
-        <p>
+      <div className="text-right mt-4">
+        <p className="text-sm md:text-base">
           <span>Total: </span>
           <span className="text-[#e30019] font-semibold">
             {formatPrice(data.totalPrice)}
@@ -156,7 +159,7 @@ const OrderCard = ({ data, onCommentSubmit, hasCommentedMap }) => {
 
         <Link
           to={ROUTE_PATH.ORDER_HISTORY_DETAIL(data._id)}
-          className="border border-[#1982f9] rounded px-3 h-9 text-[14px] text-[#1982f9] inline-flex items-center mt-2"
+          className="border border-[#1982f9] rounded px-2 md:px-3 h-8 md:h-9 text-xs md:text-[14px] text-[#1982f9] inline-flex items-center mt-2"
         >
           View details
         </Link>

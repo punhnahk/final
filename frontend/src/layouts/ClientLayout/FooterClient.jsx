@@ -17,9 +17,16 @@ const FooterClient = () => {
               <Link to="https://youtube.com" target="_blank">
                 <FaYoutube className="text-xl" />
               </Link>
-              {/* <Link to="https://tiktok.com" target="_blank">
-                <FaTiktok className="text-xl" />
-              </Link> */}
+            </div>
+            <p className="font-semibold mt-4 mb-2">Our Store Location</p>
+            <div className="h-[180px] w-full">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15337.013754847163!2d108.22588995!3d16.052332999999997!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31421827a3c439f5%3A0xdec2fb897aa16a90!2sGreenwich%20Vi%E1%BB%87t%20Nam!5e0!3m2!1svi!2s!4v1730205961534!5m2!1svi!2s"
+                width="70%"
+                height="70%"
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+              ></iframe>
             </div>
           </div>
 

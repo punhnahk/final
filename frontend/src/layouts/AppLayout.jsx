@@ -1,4 +1,3 @@
-import { Analytics } from "@vercel/analytics/react"; // Import Vercel Analytics
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Outlet, useLocation } from "react-router-dom";
@@ -29,7 +28,6 @@ const AppLayout = () => {
 
   return (
     <div className="font-inter">
-      <Analytics /> {/* Include the Analytics component here */}
       <Outlet />
     </div>
   );

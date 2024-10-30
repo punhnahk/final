@@ -138,7 +138,11 @@ const ProductDetail = () => {
             {data.name}
           </h1>
           <p className="text-sm text-[#6b7280]">#{data._id}</p>
-          <img src="/images/ads.webp" alt="Ads" className="block mt-3" />
+          <img
+            src="/images/ads.webp"
+            alt="ads"
+            className="block mt-3 rounded-xl"
+          />
 
           <div className="mt-4 border border-[#fde68a] rounded-md p-3">
             <div className="flex justify-between items-center">

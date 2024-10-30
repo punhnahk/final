@@ -12,8 +12,8 @@ const App = lazy(() => import("./App"));
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <Provider store={store}>
-    <GoogleOAuthProvider clientId="your-client-id">
-      <Suspense fallback={<div>Loading...</div>}>
+    <GoogleOAuthProvider clientId="1013298330073-057u4c45bj90o463me8s1lddhtcj17n6.apps.googleusercontent.com">
+      <Suspense>
         <App />
       </Suspense>
     </GoogleOAuthProvider>
