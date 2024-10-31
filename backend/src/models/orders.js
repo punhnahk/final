@@ -73,6 +73,14 @@ const orderSchema = new Schema(
       enum: Object.values(PAYMENT_METHOD),
       required: true,
     },
+    voucherCode: {
+      type: String,
+      default: "", // Optional voucher code
+    },
+    discountAmount: {
+      type: Number,
+      default: 0, // Discount amount based on the voucher
+    },
   },
   { timestamps: true }
 );

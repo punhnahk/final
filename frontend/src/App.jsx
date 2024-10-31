@@ -1,4 +1,4 @@
-import React, { lazy } from "react";
+import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import PrivateRoutes from "./components/PrivateRoutes/PrivateRoutes";
 import { ROUTE_PATH } from "./constants/routes";
@@ -6,87 +6,43 @@ import AccountLayout from "./layouts/AccountLayout/AccountLayout";
 import AdminLayout from "./layouts/AdminLayout/AdminLayout";
 import AppLayout from "./layouts/AppLayout";
 import ClientLayout from "./layouts/ClientLayout/ClientLayout";
-
-// Lazy load pages
-const HomePage = lazy(() => import("./pages/Client/Home/HomePage"));
-const SignIn = lazy(() => import("./pages/Client/SignIn/SignIn"));
-const SignUp = lazy(() => import("./pages/Client/SignUp/SignUp"));
-const ForgotPassword = lazy(() =>
-  import("./pages/Client/ForgotPassword/ForgotPassword")
-);
-const ClientProductList = lazy(() =>
-  import("./pages/Client/Products/ProductList")
-);
-const ProductDetail = lazy(() =>
-  import("./pages/Client/ProductDetail/ProductDetail")
-);
-const Cart = lazy(() => import("./pages/Client/Cart/Cart"));
-const Checkout = lazy(() => import("./pages/Client/Cart/Checkout"));
-const OrderSuccess = lazy(() => import("./pages/Client/Cart/OrderSuccess"));
-const VNPayReturn = lazy(() =>
-  import("./pages/Client/VNPayReturn/VNPayReturn")
-);
-const Overview = lazy(() => import("./pages/Client/About/Overview"));
-const PaymentGuide = lazy(() => import("./pages/Client/About/PaymentGuide"));
-const Policies = lazy(() => import("./pages/Client/Policy/Policies"));
-const ChangePassword = lazy(() =>
-  import("./pages/Client/Account/ChangePassword/ChangePassword")
-);
-const OrderHistory = lazy(() =>
-  import("./pages/Client/Account/OrderHistory/OrderHistory")
-);
-const OrderHistoryDetail = lazy(() =>
-  import("./pages/Client/Account/OrderHistoryDetail/OrderHistoryDetail")
-);
-const UpdateInformation = lazy(() =>
-  import("./pages/Client/Account/UpdateInformation/UpdateInformation")
-);
-const Dashboard = lazy(() => import("./pages/Admin/Dashboard/Dashboard"));
-const UserList = lazy(() => import("./pages/Admin/UserManagement/UserList"));
-const EditUser = lazy(() => import("./pages/Admin/UserManagement/EditUser"));
-const CategoryList = lazy(() =>
-  import("./pages/Admin/CategoryManagement/CategoryList")
-);
-const AddCategory = lazy(() =>
-  import("./pages/Admin/CategoryManagement/AddCategory")
-);
-const EditCategory = lazy(() =>
-  import("./pages/Admin/CategoryManagement/EditCategory")
-);
-const SliderList = lazy(() =>
-  import("./pages/Admin/SliderManagement/SliderList")
-);
-const AddSlider = lazy(() =>
-  import("./pages/Admin/SliderManagement/AddSlider")
-);
-const EditSlider = lazy(() =>
-  import("./pages/Admin/SliderManagement/EditSlider")
-);
-const NewsCategoryList = lazy(() =>
-  import("./pages/Admin/NewsCategoryManagement/NewsCategoryList")
-);
-const AddNewsCategory = lazy(() =>
-  import("./pages/Admin/NewsCategoryManagement/AddCategory")
-);
-const EditNewsCategory = lazy(() =>
-  import("./pages/Admin/NewsCategoryManagement/EditCategory")
-);
-const NewsList = lazy(() => import("./pages/Admin/NewsManagement/NewsList"));
-const AddNews = lazy(() => import("./pages/Admin/NewsManagement/AddNews"));
-const EditNews = lazy(() => import("./pages/Admin/NewsManagement/EditNews"));
-const ProductList = lazy(() =>
-  import("./pages/Admin/ProductManagement/ProductList")
-);
-const AddProduct = lazy(() =>
-  import("./pages/Admin/ProductManagement/AddProduct")
-);
-const EditProduct = lazy(() =>
-  import("./pages/Admin/ProductManagement/EditProduct")
-);
-const OrderList = lazy(() => import("./pages/Admin/OrderManagement/OrderList"));
-const OrderDetail = lazy(() =>
-  import("./pages/Admin/OrderManagement/OrderDetail")
-);
+import AddCategory from "./pages/Admin/CategoryManagement/AddCategory";
+import CategoryList from "./pages/Admin/CategoryManagement/CategoryList";
+import EditCategory from "./pages/Admin/CategoryManagement/EditCategory";
+import Dashboard from "./pages/Admin/Dashboard/Dashboard";
+import AddNewsCategory from "./pages/Admin/NewsCategoryManagement/AddCategory";
+import EditNewsCategory from "./pages/Admin/NewsCategoryManagement/EditCategory";
+import NewsCategoryList from "./pages/Admin/NewsCategoryManagement/NewsCategoryList";
+import AddNews from "./pages/Admin/NewsManagement/AddNews";
+import EditNews from "./pages/Admin/NewsManagement/EditNews";
+import NewsList from "./pages/Admin/NewsManagement/NewsList";
+import OrderDetail from "./pages/Admin/OrderManagement/OrderDetail";
+import OrderList from "./pages/Admin/OrderManagement/OrderList";
+import AddProduct from "./pages/Admin/ProductManagement/AddProduct";
+import EditProduct from "./pages/Admin/ProductManagement/EditProduct";
+import ProductList from "./pages/Admin/ProductManagement/ProductList";
+import AddSlider from "./pages/Admin/SliderManagement/AddSlider";
+import EditSlider from "./pages/Admin/SliderManagement/EditSlider";
+import SliderList from "./pages/Admin/SliderManagement/SliderList";
+import EditUser from "./pages/Admin/UserManagement/EditUser";
+import UserList from "./pages/Admin/UserManagement/UserList";
+import Overview from "./pages/Client/About/Overview";
+import PaymentGuide from "./pages/Client/About/PaymentGuide";
+import ChangePassword from "./pages/Client/Account/ChangePassword/ChangePassword";
+import OrderHistory from "./pages/Client/Account/OrderHistory/OrderHistory";
+import OrderHistoryDetail from "./pages/Client/Account/OrderHistoryDetail/OrderHistoryDetail";
+import UpdateInformation from "./pages/Client/Account/UpdateInformation/UpdateInformation";
+import Cart from "./pages/Client/Cart/Cart";
+import Checkout from "./pages/Client/Cart/Checkout";
+import OrderSuccess from "./pages/Client/Cart/OrderSuccess";
+import ForgotPassword from "./pages/Client/ForgotPassword/ForgotPassword";
+import HomePage from "./pages/Client/Home/HomePage";
+import Policies from "./pages/Client/Policy/Policies";
+import ProductDetail from "./pages/Client/ProductDetail/ProductDetail";
+import ClientProductList from "./pages/Client/Products/ProductList";
+import SignIn from "./pages/Client/SignIn/SignIn";
+import SignUp from "./pages/Client/SignUp/SignUp";
+import VNPayReturn from "./pages/Client/VNPayReturn/VNPayReturn";
 
 const App = () => {
   const router = createBrowserRouter([

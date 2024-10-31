@@ -8,6 +8,7 @@ import Order, {
   STATUS_ORDER,
 } from "../models/orders.js";
 import Product from "../models/products.js";
+import Voucher from "../models/voucher.js";
 import sortObject from "../utils/sortObject.js";
 
 const OrderController = {
@@ -22,6 +23,7 @@ const OrderController = {
         address,
         message,
         paymentMethod,
+        voucherCode,
       } = req.body;
 
       const cart = await Cart.findOne({ user: orderBy }).exec();
@@ -48,6 +50,27 @@ const OrderController = {
         return total;
       }, 0);
 
+      // Kiểm tra mã voucher
+      let discount = 0;
+
+      if (voucherCode) {
+        const voucher = await Voucher.findOne({ code: voucherCode }).exec();
+
+        if (
+          !voucher ||
+          !voucher.isActive ||
+          moment().isAfter(voucher.expirationDate)
+        ) {
+          return res
+            .status(400)
+            .json({ message: "Voucher không hợp lệ hoặc đã hết hạn." });
+        }
+
+        discount = (totalPrice * voucher.discountPercentage) / 100; // Tính toán giảm giá
+      }
+
+      const finalPrice = totalPrice - discount; // Cập nhật giá trị cuối cùng
+
       const order = await new Order({
         customerName,
         customerEmail,
@@ -55,9 +78,11 @@ const OrderController = {
         address,
         message,
         orderBy,
-        totalPrice,
+        totalPrice: finalPrice, // Sử dụng finalPrice
         products: productsOrder,
         paymentMethod,
+        voucherCode,
+        discountAmount: discount,
       }).save();
 
       // remove cart
@@ -69,7 +94,7 @@ const OrderController = {
         const paymentUrl = await createVNPayPaymentUrl({
           req,
           orderId,
-          amount: totalPrice,
+          amount: finalPrice, // Sử dụng finalPrice
           orderInfo: `Thanh toan don hang ${orderId}`,
         });
 

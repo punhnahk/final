@@ -9,6 +9,7 @@ import postRouter from "./posts.js";
 import productRouter from "./products.js";
 import sliderRouter from "./sliders.js";
 import userRouter from "./users.js";
+import voucherRouter from "./voucher.js";
 
 const router = express.Router();
 
@@ -22,4 +23,5 @@ router.use("/sliders", sliderRouter);
 router.use("/carts", cartRouter);
 router.use("/orders", orderRouter);
 router.use("/comments", CommentRouter);
+router.use("/vouchers", voucherRouter);
 export default router;
