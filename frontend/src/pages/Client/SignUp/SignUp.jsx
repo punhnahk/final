@@ -20,81 +20,60 @@ const SignUp = () => {
   };
 
   return (
-    <div className="bg-gray-100 px-8 py-11">
-      <WrapperContent className="bg-white py-11 rounded px-4">
-        <h1 className="text-center font-semibold text-2xl uppercase mb-6">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 py-6 px-4 sm:px-6 lg:px-8">
+      <WrapperContent className="w-full max-w-md bg-white rounded-lg shadow-md p-8 space-y-6">
+        <h1 className="text-center font-bold text-2xl uppercase text-gray-800">
           Sign Up
         </h1>
 
-        <Form
-          onFinish={onSubmit}
-          layout="vertical"
-          className="w-[500px] max-w-full mx-auto"
-        >
+        <Form onFinish={onSubmit} layout="vertical" className="space-y-4">
           <Form.Item
             name="name"
             label={
-              <p className="text-[#090d14] font-bold text-base">Full Name</p>
+              <span className="text-gray-700 font-semibold">Full Name</span>
             }
             rules={[{ required: true, message: "Please enter your full name" }]}
           >
-            <Input placeholder="Enter full name" className="h-12 text-base" />
+            <Input placeholder="Enter full name" className="h-12 rounded-md" />
           </Form.Item>
 
           <Form.Item
             name="email"
-            label={<p className="text-[#090d14] font-bold text-base">Email</p>}
+            label={<span className="text-gray-700 font-semibold">Email</span>}
             rules={[
-              {
-                required: true,
-                message: "Please enter your email",
-              },
-              {
-                type: "email",
-                message: "Invalid email format",
-              },
+              { required: true, message: "Please enter your email" },
+              { type: "email", message: "Invalid email format" },
             ]}
           >
-            <Input placeholder="Enter email" className="h-12 text-base" />
+            <Input placeholder="Enter email" className="h-12 rounded-md" />
           </Form.Item>
 
           <Form.Item
             name="phone"
             label={
-              <p className="text-[#090d14] font-bold text-base">Phone Number</p>
+              <span className="text-gray-700 font-semibold">Phone Number</span>
             }
             rules={[
-              {
-                required: true,
-                message: "Please enter your phone number",
-              },
-              {
-                pattern: PHONE_REG,
-                message: "Invalid phone number format",
-              },
+              { required: true, message: "Please enter your phone number" },
+              { pattern: PHONE_REG, message: "Invalid phone number format" },
             ]}
           >
             <Input
               placeholder="Enter phone number"
-              className="h-12 text-base"
+              className="h-12 rounded-md"
             />
           </Form.Item>
 
           <Form.Item
             name="password"
             label={
-              <p className="text-[#090d14] font-bold text-base">Password</p>
+              <span className="text-gray-700 font-semibold">Password</span>
             }
-            rules={[
-              {
-                required: true,
-                message: "Please enter your password",
-              },
-            ]}
+            rules={[{ required: true, message: "Please enter your password" }]}
           >
             <Input.Password
               placeholder="Enter password"
-              className="h-12 text-base"
+              className="h-12 rounded-md"
             />
           </Form.Item>
 
@@ -102,47 +81,42 @@ const SignUp = () => {
             name="confirm"
             dependencies={["password"]}
             label={
-              <p className="text-[#090d14] font-bold text-base">
+              <span className="text-gray-700 font-semibold">
                 Confirm Password
-              </p>
+              </span>
             }
             rules={[
-              {
-                required: true,
-                message: "Please confirm your password",
-              },
+              { required: true, message: "Please confirm your password" },
               ({ getFieldValue }) => ({
-                validator: (_, value) => {
+                validator(_, value) {
                   const password = getFieldValue("password");
-
-                  if (value && password !== value) {
-                    return Promise.reject("Passwords do not match");
-                  }
-
-                  return Promise.resolve();
+                  return value && password !== value
+                    ? Promise.reject("Passwords do not match")
+                    : Promise.resolve();
                 },
               }),
             ]}
           >
             <Input.Password
               placeholder="Confirm password"
-              className="h-12 text-base"
+              className="h-12 rounded-md"
             />
           </Form.Item>
 
           <Button
-            className="!bg-red-600 hover:!bg-red-600 h-12 rounded w-full mt-4"
+            type="primary"
             htmlType="submit"
+            className="w-full h-12 rounded-md text-base font-semibold bg-blue-600 hover:bg-blue-700"
           >
-            <p className="uppercase text-white text-base font-semibold">
-              Sign Up
-            </p>
+            Sign Up
           </Button>
 
-          <div className="text-center mt-3 text-base">
-            <span className="text-[#626579]">Already have an account? </span>
-
-            <Link to={ROUTE_PATH.SIGN_IN} className="text-blue-500">
+          <div className="text-center text-sm">
+            <span className="text-gray-600">Already have an account? </span>
+            <Link
+              to={ROUTE_PATH.SIGN_IN}
+              className="text-blue-500 hover:underline"
+            >
               Sign In
             </Link>
           </div>

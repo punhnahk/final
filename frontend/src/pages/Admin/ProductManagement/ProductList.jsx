@@ -66,6 +66,11 @@ const ProductList = () => {
       render: (category) => category?.name,
     },
     {
+      title: "Brand",
+      key: "brand",
+      dataIndex: "brand",
+    },
+    {
       title: "Product Price",
       key: "price",
       dataIndex: "price",

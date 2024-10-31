@@ -20,6 +20,7 @@ const commentSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "orders",
     },
+    rating: { type: Number, min: 0, max: 5, required: true },
   },
   { timestamps: true }
 );

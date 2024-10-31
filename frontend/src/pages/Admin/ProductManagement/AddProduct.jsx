@@ -127,6 +127,14 @@ const AddProduct = () => {
             placeholder="Select a product category"
           />
         </Form.Item>
+        <Form.Item
+          name="brand"
+          label="Brand"
+          rules={[
+            { required: true, message: "Please select a product brand" },
+          ]}
+        >
+        </Form.Item>
 
         <Form.Item name="posts" label="Related Articles">
           <Select

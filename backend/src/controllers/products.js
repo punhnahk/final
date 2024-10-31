@@ -1,5 +1,5 @@
-import Product from "../models/products.js";
 import Category from "../models/categories.js";
+import Product from "../models/products.js";
 
 const ProductController = {
   getProducts: async (req, res) => {
@@ -85,8 +85,16 @@ const ProductController = {
 
   createProduct: async (req, res) => {
     try {
-      const { name, image, price, salePrice, category, description, posts } =
-        req.body;
+      const {
+        name,
+        image,
+        price,
+        salePrice,
+        category,
+        description,
+        brand,
+        posts,
+      } = req.body;
       const product = await new Product({
         name,
         image,
@@ -94,6 +102,7 @@ const ProductController = {
         salePrice,
         category,
         description,
+        brand,
         posts,
       }).save();
 
@@ -132,8 +141,16 @@ const ProductController = {
   updateProduct: async (req, res) => {
     try {
       const { id } = req.params;
-      const { name, image, price, salePrice, category, description, posts } =
-        req.body;
+      const {
+        name,
+        image,
+        price,
+        salePrice,
+        category,
+        description,
+        brand,
+        posts,
+      } = req.body;
 
       const product = await Product.findByIdAndUpdate(
         id,
@@ -144,6 +161,7 @@ const ProductController = {
           salePrice,
           category,
           description,
+          brand,
           posts,
         },
         { new: true }

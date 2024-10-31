@@ -3,29 +3,34 @@ import comment from "../models/comment.js";
 const CommentController = {
   // Add a new comment
   addComment: async (req, res) => {
-    const { productId, content, orderId } = req.body; // Include orderId in request body
+    const { productId, content, orderId, rating } = req.body; // Include rating in request body
 
-    if (!productId || !content || !orderId) {
-      return res
-        .status(400)
-        .json({ message: "Product ID, content, and order ID are required." });
+    if (!productId || !content || !orderId || !rating) {
+      return res.status(400).json({
+        message: "Product ID, content, order ID, and rating are required.",
+      });
     }
 
     try {
       const existingComment = await comment.findOne({
         productId,
         userId: req.user.id,
+        orderId,
       });
 
       if (existingComment) {
-        return res.status(400).json({ message: "You can only comment once." });
+        return res.status(400).json({
+          message: "You can only comment on this product once per order.",
+        });
       }
 
+      // Create and save the new comment
       const newComment = await comment.create({
         productId,
         userId: req.user.id,
         content,
-        orderId, // Save the order ID when creating the comment
+        orderId,
+        rating, // Save the rating when creating the comment
       });
 
       res.status(201).json(newComment);

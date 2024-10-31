@@ -1,50 +1,48 @@
-import { GoogleLogin } from "@react-oauth/google"; // Import Google Login
-import { Button, Checkbox, Flex, Form, Input, message } from "antd";
-import React, { useState } from "react"; // Import useState
-import { Link, useNavigate } from "react-router-dom"; // Use useNavigate for better navigation
+import { GoogleLogin } from "@react-oauth/google"; // Google Login Import
+import { Button, Checkbox, Form, Input, message } from "antd";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import authApi from "../../../api/authApi";
 import WrapperContent from "../../../components/WrapperContent/WrapperContent";
 import { TOKEN_STORAGE_KEY } from "../../../constants";
 import { ROUTE_PATH } from "../../../constants/routes";
 
 const SignIn = () => {
-  const [loading, setLoading] = useState(false); // State for loading
-  const navigate = useNavigate(); // Initialize useNavigate
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const onSignIn = async ({ confirm, remember, ...values }) => {
-    setLoading(true); // Set loading to true when the sign-in process starts
+    setLoading(true);
     try {
       const { data } = await authApi.signIn(values);
       localStorage.setItem(TOKEN_STORAGE_KEY, data.token);
       message.success("Logged in successfully");
-      navigate(ROUTE_PATH.HOME); // Use navigate for redirect
+      navigate(ROUTE_PATH.HOME);
     } catch (error) {
-      // Improved error handling
       const errorMessage =
         error?.response?.data?.message ||
         "An error occurred during sign-in. Please try again.";
       message.error(errorMessage);
     } finally {
-      setLoading(false); // Set loading to false after the sign-in process
+      setLoading(false);
     }
   };
 
   const handleGoogleLoginSuccess = async (response) => {
-    setLoading(true); // Set loading to true when the Google sign-in process starts
+    setLoading(true);
     try {
       const token = response.credential;
       const res = await authApi.googleSignUp({ token });
-      localStorage.setItem(TOKEN_STORAGE_KEY, res.data.token); // Store token
+      localStorage.setItem(TOKEN_STORAGE_KEY, res.data.token);
       message.success("Logged in with Google successfully");
-      navigate(ROUTE_PATH.HOME); // Use navigate for redirect
+      navigate(ROUTE_PATH.HOME);
     } catch (error) {
-      // Improved error handling for Google sign-in
       const errorMessage =
         error?.response?.data?.message ||
         "Google login failed. Please try again.";
       message.error(errorMessage);
     } finally {
-      setLoading(false); // Set loading to false after the Google sign-in process
+      setLoading(false);
     }
   };
 
@@ -53,20 +51,16 @@ const SignIn = () => {
   };
 
   return (
-    <div className="bg-gray-100 py-11 px-8">
-      <WrapperContent className="bg-white py-11 rounded px-4">
-        <h1 className="text-center font-semibold text-2xl uppercase mb-6">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 py-6 px-4 sm:px-6 lg:px-8">
+      <WrapperContent className="w-full max-w-md bg-white rounded-lg shadow-md p-8 space-y-6">
+        <h1 className="text-center font-bold text-2xl uppercase text-gray-800">
           Sign In
         </h1>
 
-        <Form
-          onFinish={onSignIn}
-          layout="vertical"
-          className="w-[500px] max-w-full mx-auto"
-        >
+        <Form onFinish={onSignIn} layout="vertical" className="space-y-4">
           <Form.Item
             name="email"
-            label={<p className="text-[#090d14] font-bold text-base">Email</p>}
+            label={<p className="text-gray-700 font-semibold">Email</p>}
             rules={[
               {
                 required: true,
@@ -78,14 +72,12 @@ const SignIn = () => {
               },
             ]}
           >
-            <Input placeholder="Enter email" className="h-12 text-base" />
+            <Input placeholder="Enter email" className="h-12 rounded-md" />
           </Form.Item>
 
           <Form.Item
             name="password"
-            label={
-              <p className="text-[#090d14] font-bold text-base">Password</p>
-            }
+            label={<p className="text-gray-700 font-semibold">Password</p>}
             rules={[
               {
                 required: true,
@@ -95,45 +87,47 @@ const SignIn = () => {
           >
             <Input.Password
               placeholder="Enter password"
-              className="h-12 text-base"
+              className="h-12 rounded-md"
             />
           </Form.Item>
 
-          <Form.Item>
-            <Flex justify="space-between" align="center">
-              <Form.Item name="remember" valuePropName="checked" noStyle>
-                <Checkbox>Remember me</Checkbox>
-              </Form.Item>
-
-              <Link className="text-blue-500" to={ROUTE_PATH.FORGOT_PASSWORD}>
-                Forgot password?
-              </Link>
-            </Flex>
+          <Form.Item className="flex justify-between items-center">
+            <Checkbox name="remember" valuePropName="checked">
+              Remember me
+            </Checkbox>
+            <Link
+              to={ROUTE_PATH.FORGOT_PASSWORD}
+              className="text-blue-500 hover:underline"
+            >
+              Forgot password?
+            </Link>
           </Form.Item>
 
           <Button
+            type="primary"
             htmlType="submit"
-            loading={loading} // Show loading spinner on button
-            className="!bg-red-600 hover:!bg-red-600 h-12 rounded w-full mt-2"
+            loading={loading}
+            className="w-full h-12 rounded-md text-base font-semibold bg-blue-600 hover:bg-blue-700"
           >
-            <p className="uppercase text-white text-base font-semibold">
-              Sign In
-            </p>
+            Sign In
           </Button>
 
-          {/* Google Login Button */}
-          <div className="my-4 text-center">
+          <div className="flex items-center justify-center my-4">
             <GoogleLogin
               onSuccess={handleGoogleLoginSuccess}
               onError={handleGoogleLoginFailure}
               useOneTap
+              className="w-full"
+              ux_mode="popup"
             />
           </div>
 
-          <div className="text-center mt-3 text-base">
-            <span className="text-[#626579]">Don't have an account? </span>
-
-            <Link to={ROUTE_PATH.SIGN_UP} className="text-blue-500">
+          <div className="text-center text-sm">
+            <span className="text-gray-600">Don't have an account? </span>
+            <Link
+              to={ROUTE_PATH.SIGN_UP}
+              className="text-blue-500 hover:underline"
+            >
               Sign Up
             </Link>
           </div>

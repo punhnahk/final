@@ -1,13 +1,4 @@
-import {
-  Button,
-  Col,
-  DatePicker,
-  Form,
-  Input,
-  message,
-  Row,
-  Select,
-} from "antd";
+import { Button, Col, Form, Input, message, Row, Select } from "antd";
 import dayjs from "dayjs";
 import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -89,70 +80,24 @@ const EditUser = () => {
           <Input disabled />
         </Form.Item>
 
-        <Form.Item
-          name="name"
-          label="Account Name"
-          rules={[
-            {
-              required: true,
-              message: "Please enter account name",
-            },
-          ]}
-        >
-          <Input placeholder="Enter account name" />
+        <Form.Item name="name" label="Account Name">
+          <Input disabled />
         </Form.Item>
 
-        <Form.Item
-          name="address"
-          label="Address"
-          rules={[
-            {
-              required: true,
-              message: "Please enter address",
-            },
-          ]}
-        >
-          <Input placeholder="Enter address" />
+        <Form.Item name="address" label="Address">
+          <Input disabled />
         </Form.Item>
 
         <Row gutter={[12, 12]}>
           <Col span={8}>
-            <Form.Item
-              name="birthday"
-              label="Birthday"
-              rules={[
-                {
-                  required: true,
-                  message: "Please select birthday",
-                },
-              ]}
-            >
-              <DatePicker
-                placeholder="Select birthday"
-                className="w-full"
-                format="DD/MM/YYYY"
-              />
+            <Form.Item name="birthday" label="Birthday">
+              <Input disabled />
             </Form.Item>
           </Col>
 
           <Col span={8}>
-            <Form.Item
-              name="gender"
-              label="Gender"
-              rules={[
-                {
-                  required: true,
-                  message: "Please select gender",
-                },
-              ]}
-            >
-              <Select
-                options={[
-                  { label: "Male", value: "MALE" },
-                  { label: "Female", value: "FEMALE" },
-                ]}
-                placeholder="Select gender"
-              />
+            <Form.Item name="gender" label="Gender">
+              <Input disabled />
             </Form.Item>
           </Col>
 

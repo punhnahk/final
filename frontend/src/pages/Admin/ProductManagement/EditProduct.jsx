@@ -34,6 +34,7 @@ const EditProduct = () => {
         price: data.price,
         salePrice: data.salePrice,
         category: data.category._id,
+        brand: data.brand,
         posts: data.posts.map((it) => it._id),
         description: data.description,
         image: data.image.map((it) => ({ previewUrl: it })),
@@ -94,14 +95,17 @@ const EditProduct = () => {
         <Form.Item
           name="name"
           label="Product Name"
-          rules={[
-            {
-              required: true,
-              message: "Please enter the product name",
-            },
-          ]}
+          rules={[{ required: true, message: "Please enter the product name" }]}
         >
           <Input placeholder="Enter product name" />
+        </Form.Item>
+
+        <Form.Item
+          name="brand" // New brand field
+          label="Brand"
+          rules={[{ required: true, message: "Please enter the brand" }]}
+        >
+          <Input placeholder="Enter brand" />
         </Form.Item>
 
         <div className="grid grid-cols-12 gap-3">
@@ -110,10 +114,7 @@ const EditProduct = () => {
             label="Product Price"
             className="col-span-6"
             rules={[
-              {
-                required: true,
-                message: "Please enter the product price",
-              },
+              { required: true, message: "Please enter the product price" },
             ]}
           >
             <InputNumber
@@ -132,10 +133,7 @@ const EditProduct = () => {
           name="category"
           label="Product Category"
           rules={[
-            {
-              required: true,
-              message: "Please select a product category",
-            },
+            { required: true, message: "Please select a product category" },
           ]}
         >
           <Select
@@ -162,10 +160,7 @@ const EditProduct = () => {
           name="description"
           label="Product Description"
           rules={[
-            {
-              required: true,
-              message: "Please enter the product description",
-            },
+            { required: true, message: "Please enter the product description" },
           ]}
         >
           <SunEditorFormItem placeholder="Product description" height={400} />
@@ -174,12 +169,7 @@ const EditProduct = () => {
         <Form.Item
           label="Product Image"
           name="image"
-          rules={[
-            {
-              required: true,
-              message: "Please select a product image",
-            },
-          ]}
+          rules={[{ required: true, message: "Please select a product image" }]}
         >
           <ImageFormItem />
         </Form.Item>

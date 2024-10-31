@@ -137,7 +137,20 @@ const ProductDetail = () => {
           <h1 className="text-[#090d14] font-semibold text-2xl lg:text-3xl">
             {data.name}
           </h1>
-          <p className="text-sm text-[#6b7280]">#{data._id}</p>
+          <p className="text-sm text-[#6b7280] font-medium">
+            Category:
+            <Link
+              to={`${ROUTE_PATH.PRODUCTS_LIST}?category=${data.category._id}`} // Using the category ID for routing
+              className="font-semibold text-[#6b7280] pl-1" // Add padding-left
+              aria-label={`${data.category.name}`} // Improved accessibility
+            >
+              {data.category.name}
+            </Link>
+          </p>
+          <p className="text-sm text-[#6b7280] font-medium">
+            Brand:{" "}
+            <span className="font-semibold text-[#6b7280]">{data.brand}</span>
+          </p>
           <img
             src="/images/ads.webp"
             alt="ads"
@@ -267,6 +280,31 @@ const ProductDetail = () => {
                 <div>
                   {/* User Name */}
                   <p className="font-semibold">{comment.userId.name}</p>
+                  {/* Rating Display */}
+                  <div className="flex items-center mb-1">
+                    {[...Array(5)].map((_, starIndex) => {
+                      // Determine if it's a full, half, or empty star
+                      const isFullStar = starIndex < Math.floor(comment.rating);
+                      const isHalfStar =
+                        starIndex === Math.floor(comment.rating) &&
+                        comment.rating % 1 !== 0;
+
+                      return (
+                        <span
+                          key={starIndex}
+                          className={`text-xl ${
+                            isFullStar
+                              ? "text-yellow-500"
+                              : isHalfStar
+                              ? "text-yellow-500"
+                              : "text-gray-300"
+                          }`}
+                        >
+                          {isFullStar ? "★" : isHalfStar ? "☆" : "☆"}
+                        </span>
+                      );
+                    })}
+                  </div>
                   {/* Comment Content */}
                   <p className="text-gray-700">{comment.content}</p>
                   {/* Comment Timestamp */}

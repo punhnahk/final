@@ -197,6 +197,10 @@ const OrderDetail = () => {
         return "";
     }
   };
+  const groupedComments = comments.reduce((acc, comment) => {
+    (acc[comment.productId] = acc[comment.productId] || []).push(comment);
+    return acc;
+  }, {});
 
   return (
     <>
@@ -251,35 +255,80 @@ const OrderDetail = () => {
         Total Amount: {formatPrice(data?.totalPrice)}
       </p>
       <h2 className="font-semibold text-2xl mb-3 mt-6">Comments</h2>
-      {comments.length === 0 ? (
+      {Object.keys(groupedComments).length === 0 ? (
         <div className="flex items-center text-gray-500 italic">
           <CommentOutlined style={{ fontSize: "24px", marginRight: "8px" }} />
           <span>No comments</span>
         </div>
       ) : (
-        comments.map((comment) => (
-          <div
-            key={comment._id}
-            className="border border-gray-300 p-4 mb-4 rounded-lg shadow-sm flex justify-between items-start"
-          >
-            <div className="flex-1">
-              <p className="font-semibold text-lg">{comment.userId.name}:</p>
-              <p className="text-gray-700 mt-1">{comment.content}</p>
-              <p className="text-gray-500 text-sm mt-1">
-                Commented on: {new Date(comment.createdAt).toLocaleString()}
-              </p>
-            </div>
-            <Popconfirm
-              title="Are you sure you want to delete this comment?"
-              onConfirm={() => handleDeleteComment(comment._id)}
-              okText="Yes"
-              cancelText="No"
-            >
-              <DeleteOutlined
-                className="text-red-500 cursor-pointer"
-                style={{ fontSize: "24px" }}
-              />
-            </Popconfirm>
+        Object.keys(groupedComments).map((productId) => (
+          <div key={productId}>
+            <h3 className="font-semibold text-lg">
+              Comments for Product ID: {productId}
+            </h3>
+            {groupedComments[productId].map((comment) => (
+              <div
+                key={comment._id}
+                className="border border-gray-300 p-4 mb-4 rounded-lg shadow-sm flex justify-between items-start"
+              >
+                <div className="flex-1">
+                  <p className="font-semibold text-lg">
+                    {comment.userId.name}:
+                  </p>
+                  <div className="flex items-center mb-1">
+                    {Array.from({ length: 5 }, (_, starIndex) => {
+                      if (starIndex < Math.floor(comment.rating)) {
+                        return (
+                          <span
+                            key={starIndex}
+                            className="text-xl text-yellow-500"
+                          >
+                            ★
+                          </span>
+                        ); // Full star
+                      } else if (
+                        starIndex === Math.floor(comment.rating) &&
+                        comment.rating % 1 !== 0
+                      ) {
+                        return (
+                          <span
+                            key={starIndex}
+                            className="text-xl text-yellow-500"
+                          >
+                            ☆{" "}
+                            {/* Half star can be represented as an empty star icon */}
+                          </span>
+                        ); // Half star
+                      } else {
+                        return (
+                          <span
+                            key={starIndex}
+                            className="text-xl text-gray-300"
+                          >
+                            ★
+                          </span>
+                        ); // Empty star
+                      }
+                    })}
+                  </div>
+                  <p className="text-gray-700 mt-1">{comment.content}</p>
+                  <p className="text-gray-500 text-sm mt-1">
+                    Commented on: {new Date(comment.createdAt).toLocaleString()}
+                  </p>
+                </div>
+                <Popconfirm
+                  title="Are you sure you want to delete this comment?"
+                  onConfirm={() => handleDeleteComment(comment._id)}
+                  okText="Yes"
+                  cancelText="No"
+                >
+                  <DeleteOutlined
+                    className="text-red-500 cursor-pointer"
+                    style={{ fontSize: "24px" }}
+                  />
+                </Popconfirm>
+              </div>
+            ))}
           </div>
         ))
       )}

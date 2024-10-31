@@ -27,6 +27,10 @@ const productSchema = new Schema(
       ref: "categories",
       required: true,
     },
+    brand: {
+      type: [String],
+      required: true,
+    },
     description: {
       type: String,
       required: true,

@@ -1,4 +1,4 @@
-import { Button, Input, message } from "antd";
+import { Button, Input, message, Rate } from "antd"; // Import Rate from Ant Design
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ROUTE_PATH } from "../../../../constants/routes";
@@ -10,6 +10,7 @@ const MAX_PRODUCT = 2;
 const OrderCard = ({ data, onCommentSubmit, hasCommentedMap }) => {
   const [showMore, setShowMore] = useState(false);
   const [comments, setComments] = useState({});
+  const [ratings, setRatings] = useState({}); // State for ratings
 
   const handleToggleProducts = () => {
     setShowMore(!showMore);
@@ -19,6 +20,13 @@ const OrderCard = ({ data, onCommentSubmit, hasCommentedMap }) => {
     setComments({
       ...comments,
       [productId]: e.target.value,
+    });
+  };
+
+  const handleRatingChange = (productId, value) => {
+    setRatings({
+      ...ratings,
+      [productId]: value,
     });
   };
 
@@ -34,10 +42,19 @@ const OrderCard = ({ data, onCommentSubmit, hasCommentedMap }) => {
     }
 
     try {
-      await onCommentSubmit(data._id, productId, comments[productId]);
+      await onCommentSubmit(
+        data._id,
+        productId,
+        comments[productId],
+        ratings[productId]
+      ); // Pass rating too
       setComments((prev) => ({
         ...prev,
         [productId]: "",
+      }));
+      setRatings((prev) => ({
+        ...prev,
+        [productId]: undefined, // Reset rating after submit
       }));
     } catch {
       message.error("Failed to submit comment.");
@@ -122,12 +139,20 @@ const OrderCard = ({ data, onCommentSubmit, hasCommentedMap }) => {
                           placeholder="Leave a comment..."
                           className="border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-[#dc2626] transition duration-150 ease-in-out text-xs md:text-sm"
                         />
+                        <Rate
+                          value={ratings[it.product._id] || 0} // Rating component
+                          onChange={(value) =>
+                            handleRatingChange(it.product._id, value)
+                          }
+                          className="mt-2"
+                          allowHalf
+                        />
                         <Button
                           type="primary"
                           onClick={() => handleCommentSubmit(it.product._id)}
                           className="mt-2 w-full bg-[#dc2626] hover:bg-[#b91c1c] text-white font-semibold rounded-lg transition duration-150 ease-in-out text-xs md:text-sm"
                         >
-                          Submit Comment
+                          Submit Comment and Rating
                         </Button>
                       </div>
                     )}
