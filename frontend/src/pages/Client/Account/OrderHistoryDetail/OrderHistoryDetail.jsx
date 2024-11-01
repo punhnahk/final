@@ -154,10 +154,11 @@ const OrderHistoryDetail = () => {
 
         <div className="md:ml-[50%] mt-4">
           <div className="flex items-center mb-3">
-            <p className="w-1/2">Subtotal:</p>
-            <p className="w-1/2 text-right">{formatPrice(data.totalPrice)}</p>
+            <p className="w-1/2">Total Discount</p>
+            <p className="w-1/2 text-right text-red-500">
+              - {formatPrice(data.discountAmount)}
+            </p>
           </div>
-
           <div className="flex items-center mb-3">
             <p className="w-1/2">Shipping Fee:</p>
             <p className="w-1/2 text-right">Free</p>

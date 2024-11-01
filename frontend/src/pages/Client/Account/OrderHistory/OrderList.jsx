@@ -6,6 +6,13 @@ import formatPrice from "../../../../utils/formatPrice";
 import { getOrderStatus } from "../../../../utils/order";
 
 const MAX_PRODUCT = 2;
+const statusColors = {
+  INITIAL: "text-blue-500", // Màu xanh cho trạng thái INITIAL
+  CONFIRMED: "text-green-500", // Màu xanh lá cho trạng thái CONFIRMED
+  DELIVERING: "text-yellow-500", // Màu vàng cho trạng thái DELIVERING
+  DELIVERED: "text-purple-500", // Màu tím cho trạng thái DELIVERED
+  CANCELED: "text-red-500", // Màu đỏ cho trạng thái CANCELED
+};
 
 const OrderCard = ({ data, onCommentSubmit, hasCommentedMap }) => {
   const [showMore, setShowMore] = useState(false);
@@ -64,7 +71,11 @@ const OrderCard = ({ data, onCommentSubmit, hasCommentedMap }) => {
   return (
     <div className="pt-4 px-4 md:px-6 pb-6 rounded bg-white [&:not(:last-child)]:mb-4">
       <div className="flex flex-col md:flex-row items-center justify-between pb-4 border-b border-[#CFCFCF]">
-        <p className="text-[#6d6e72] text-sm md:text-[14px] font-semibold">
+        <p
+          className={`text-sm md:text-[14px] font-semibold ${
+            statusColors[data.status] || "text-gray-500"
+          }`}
+        >
           {getOrderStatus(data.status)}
         </p>
         <p className="text-sm md:text-[14px] text-[#111] font-semibold mt-2 md:mt-0">

@@ -26,6 +26,9 @@ import EditSlider from "./pages/Admin/SliderManagement/EditSlider";
 import SliderList from "./pages/Admin/SliderManagement/SliderList";
 import EditUser from "./pages/Admin/UserManagement/EditUser";
 import UserList from "./pages/Admin/UserManagement/UserList";
+import AddVoucher from "./pages/Admin/VoucherManagement/AddVoucher";
+import EditVoucher from "./pages/Admin/VoucherManagement/EditVoucher";
+import ListVoucher from "./pages/Admin/VoucherManagement/ListVoucher";
 import Overview from "./pages/Client/About/Overview";
 import PaymentGuide from "./pages/Client/About/PaymentGuide";
 import ChangePassword from "./pages/Client/Account/ChangePassword/ChangePassword";
@@ -136,6 +139,7 @@ const App = () => {
             },
           ],
         },
+        //admin
         {
           path: ROUTE_PATH.ADMIN,
           element: (
@@ -235,6 +239,18 @@ const App = () => {
             {
               path: ROUTE_PATH.ORDER_DETAIL(":id"),
               element: <OrderDetail />,
+            },
+            {
+              path: ROUTE_PATH.VOUCHER_MANAGEMENT,
+              element: <ListVoucher />,
+            },
+            {
+              path: ROUTE_PATH.ADD_VOUCHER,
+              element: <AddVoucher />,
+            },
+            {
+              path: ROUTE_PATH.EDIT_VOUCHER(":id"),
+              element: <EditVoucher />,
             },
           ],
         },

@@ -1,4 +1,4 @@
-import { message, Spin } from "antd"; // Import Spin for loading indicator
+import { message, Spin } from "antd";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import productApi from "../../../api/productApi";
@@ -8,8 +8,8 @@ import { ROUTE_PATH } from "../../../constants/routes";
 
 const ProductsList = () => {
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true); // State to track loading status
-  const [productCount, setProductCount] = useState(5); // Default to show 5 products
+  const [loading, setLoading] = useState(true);
+  const [productCount, setProductCount] = useState(5);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -19,37 +19,25 @@ const ProductsList = () => {
       } catch (error) {
         message.error("Failed to fetch products");
       } finally {
-        setLoading(false); // Set loading to false after data fetch
+        setLoading(false);
       }
     };
-
     fetchData();
   }, []);
 
   useEffect(() => {
-    // Function to handle resizing and set product count
     const handleResize = () => {
-      if (window.innerWidth < 640) {
-        setProductCount(4); // 4 products on mobile
-      } else {
-        setProductCount(5); // 5 products on larger screens
-      }
+      setProductCount(window.innerWidth < 640 ? 4 : 5);
     };
-
-    // Initial check
     handleResize();
-
-    // Add event listener for resize
     window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize); // Cleanup listener
-    };
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   if (loading) {
     return (
       <WrapperContent className="pt-4 pb-8 flex justify-center">
-        <Spin /> {/* Loading spinner */}
+        <Spin />
       </WrapperContent>
     );
   }
@@ -57,42 +45,32 @@ const ProductsList = () => {
   if (data.length === 0) {
     return (
       <WrapperContent className="pt-4 pb-8 text-center">
-        <p>No products available at this time.</p> {/* Empty state message */}
+        <p>No products available at this time.</p>
       </WrapperContent>
     );
   }
 
   return (
     <WrapperContent className="pt-4 pb-8">
+      <div className="h-1 bg-red-300 my-4" />
       {data.map((category) => (
         <div key={`category-section-${category._id}`} className="mb-6">
-          <div className="flex items-center justify-between">
-            <p className="font-bold text-2xl uppercase text-[#444]">
+          <div className="flex items-center justify-between mb-2">
+            <p className="font-semibold text-xl text-gray-700">
               {category.name}
             </p>
-
             <Link
-              to={`${ROUTE_PATH.PRODUCTS_LIST}?category=${category._id}`} // Use template literals for cleaner code
-              className="h-9 text-[#090d14] px-3 bg-white rounded-full inline-flex items-center text-sm border border-[#e5e7eb]"
-              aria-label={`See all products in ${category.name}`} // Improved accessibility
+              to={`${ROUTE_PATH.PRODUCTS_LIST}?category=${category._id}`}
+              className="text-gray-500 hover:text-gray-800 text-sm"
+              aria-label={`See all products in ${category.name}`}
             >
               See all
             </Link>
           </div>
-
-          {/* Responsive grid layout */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-2">
-            {category.products.slice(0, productCount).map(
-              (
-                product // Use productCount for slicing
-              ) => (
-                <ProductItem
-                  key={`product-item-${product._id}`}
-                  className="col-span-1"
-                  data={product}
-                />
-              )
-            )}
+            {category.products.slice(0, productCount).map((product) => (
+              <ProductItem key={`product-item-${product._id}`} data={product} />
+            ))}
           </div>
         </div>
       ))}

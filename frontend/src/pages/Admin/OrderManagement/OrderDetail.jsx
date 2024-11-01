@@ -105,6 +105,13 @@ const OrderDetail = () => {
       dataIndex: "quantity",
     },
     {
+      title: "Discount",
+      key: "discount",
+      render: () => {
+        return formatPrice(data?.discountAmount || 0);
+      },
+    },
+    {
       title: "Total Price",
       key: "product",
       dataIndex: "product",
@@ -112,7 +119,9 @@ const OrderDetail = () => {
         const productPrice =
           product.salePrice > 0 ? product.salePrice : product.price;
 
-        return formatPrice(productPrice * row.quantity);
+        return formatPrice(
+          productPrice * row.quantity - (data?.discountAmount || 0)
+        );
       },
     },
   ];
@@ -213,29 +222,50 @@ const OrderDetail = () => {
       <Card>
         <div className="grid grid-cols-12 gap-3">
           <div className="col-span-6">
-            <p className="text-base leading-8">
+            <h3 className="text-lg font-semibold text-gray-800">
+              Recipient Information
+            </h3>
+            <p className="text-base leading-8 text-blue-600">
               Recipient Name: {data?.customerName}
             </p>
-            <p className="text-base leading-7">Email: {data?.customerEmail}</p>
-            <p className="text-base leading-7">
+            <p className="text-base leading-7 text-gray-700">
+              Email: {data?.customerEmail}
+            </p>
+            <p className="text-base leading-7 text-green-600">
               Phone Number: {data?.customerPhone}
             </p>
-            <p className="text-base leading-7">Address: {data?.address}</p>
-            <p className="text-base leading-7">Notes: {data?.message}</p>
+            <p className="text-base leading-7 text-gray-800">
+              Address: {data?.address}
+            </p>
+            <p className="text-base leading-7 text-yellow-600">
+              Notes: {data?.message}
+            </p>
           </div>
 
           <div className="col-span-6">
-            <p className="text-base leading-8">
+            <h3 className="text-lg font-semibold text-gray-800">
+              Order Details
+            </h3>
+            <p className="text-base leading-8 text-purple-600">
               Payment Method:{" "}
               {data?.paymentMethod === PAYMENT_METHOD.COD
                 ? "Cash on Delivery"
                 : "VNPay"}
             </p>
-            <p className="text-base leading-7">
+            <p className="text-base leading-7 text-orange-600">
               Order Status: {getOrderStatus(data?.status)}
             </p>
-            <p className="text-base leading-7">
+            <p className="text-base leading-7 text-red-600">
               Payment Status: {getOrderPaymentStatus(data?.paymentStatus)}
+            </p>
+            <p className="text-base leading-7 text-gray-700">
+              Voucher: {data?.voucherCode}
+            </p>
+            <p className="text-base leading-7 text-blue-500 font-semibold">
+              Delivery Time:{" "}
+              {data?.updatedAt
+                ? new Date(data.updatedAt).toLocaleString("vi")
+                : "N/A"}
             </p>
           </div>
         </div>

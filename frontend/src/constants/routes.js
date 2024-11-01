@@ -49,4 +49,8 @@ export const ROUTE_PATH = {
 
   ORDER_MANAGEMENT: "/admin/orders",
   ORDER_DETAIL: (param) => `/admin/orders/${param}/view`,
+
+  VOUCHER_MANAGEMENT: "/admin/vouchers",
+  ADD_VOUCHER: "/admin/vouchers/add",
+  EDIT_VOUCHER: (param) => `/admin/vouchers/${param}/edit`,
 };

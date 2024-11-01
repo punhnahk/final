@@ -3,11 +3,13 @@ import FormItem from "antd/es/form/FormItem";
 import TextArea from "antd/es/input/TextArea";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { FaTimes } from "react-icons/fa";
 import { FaAngleLeft } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import orderApi from "../../../api/orderApi";
 import userApi from "../../../api/userApi";
+import voucherApi from "../../../api/voucherApi";
 import WrapperContent from "../../../components/WrapperContent/WrapperContent";
 import { PAYMENT_METHOD } from "../../../constants";
 import { PHONE_REG } from "../../../constants/reg";
@@ -24,7 +26,10 @@ const Checkout = () => {
   const [form] = Form.useForm();
   const [selectedCity, setSelectedCity] = useState(null);
   const [cities, setCities] = useState([]);
+  const [voucherCode, setVoucherCode] = useState("");
+  const [totalDiscount, setTotalDiscount] = useState(0);
   const [districts, setDistricts] = useState([]);
+  const [isVoucherApplied, setIsVoucherApplied] = useState(false);
 
   const FREE_SHIPPING_THRESHOLD = 5000000;
   const SHIPPING_FEE = 20000;
@@ -85,6 +90,7 @@ const Checkout = () => {
       const res = await orderApi.createOrder({
         ...values,
         address: fullAddress,
+        voucherCode,
       });
       const paymentMethod = res.data.paymentMethod;
 
@@ -106,22 +112,46 @@ const Checkout = () => {
       </WrapperContent>
     );
   }
-
-  const totalDiscount = cart.products.reduce((total, it) => {
-    const salePrice = it.product.salePrice;
-    const originPrice = it.product.price;
-
-    if (salePrice > 0) {
-      return total + (originPrice - salePrice) * it.quantity;
+  const applyVoucher = async () => {
+    if (isVoucherApplied) {
+      message.warning("A voucher is already applied.");
+      return;
     }
-    return total;
-  }, 0);
 
-  const totalPriceWithoutShipping = cart.totalPrice;
+    try {
+      const response = await voucherApi.getVoucherByCode(voucherCode); // Use the API to get voucher by code
+      const voucher = response.data;
+
+      if (
+        voucher &&
+        voucher.isActive &&
+        new Date(voucher.expirationDate) > new Date()
+      ) {
+        const discount =
+          (totalPriceWithoutShipping * voucher.discountPercentage) / 100;
+        setTotalDiscount(discount);
+        setIsVoucherApplied(true); // Mark voucher as applied
+        message.success("Voucher applied successfully!");
+      } else {
+        message.error("Invalid or expired voucher code.");
+        setTotalDiscount(0);
+      }
+    } catch (error) {
+      console.error("Error applying voucher:", error);
+      message.error("Invalid or expired voucher code.");
+    }
+  };
+
+  const totalPriceWithoutShipping = cart.totalPrice - totalDiscount;
   const shippingCost =
     totalPriceWithoutShipping < FREE_SHIPPING_THRESHOLD ? SHIPPING_FEE : 0;
-  const totalPrice = totalPriceWithoutShipping + shippingCost;
+  const total = totalPriceWithoutShipping + shippingCost;
 
+  const clearVoucherCode = () => {
+    setVoucherCode(""); // Clear the voucher code state
+    setTotalDiscount(0);
+    setIsVoucherApplied(false); // Reset voucher applied state
+  };
   return (
     <div className="bg-gray-100">
       <WrapperContent className="py-4">
@@ -326,11 +356,50 @@ const Checkout = () => {
                   {shippingCost === 0 ? "Free" : formatPrice(shippingCost)}
                 </p>
               </div>
+              {/* New Section for Voucher Code */}
+              <p className="text-[#090d14] font-semibold mb-3">Apply Voucher</p>
+              <FormItem>
+                <div className="relative">
+                  <Input
+                    value={voucherCode}
+                    onChange={(e) => setVoucherCode(e.target.value)}
+                    placeholder="Enter voucher code"
+                    style={{
+                      width: "70%",
+                      marginRight: "10px",
+                      paddingRight: "30px",
+                    }}
+                  />
+                  {voucherCode && (
+                    <button
+                      onClick={clearVoucherCode}
+                      className="absolute right-28 top-1/2 transform -translate-y-1/2 cursor-pointer"
+                      style={{
+                        background: "transparent",
+                        border: "none",
+                        padding: 0,
+                        color: "gray",
+                      }} // Kiểu cho nút
+                    >
+                      <FaTimes style={{ fontSize: "18px" }} />
+                    </button>
+                  )}
+                  <button
+                    onClick={applyVoucher}
+                    disabled={!voucherCode} // Vô hiệu hóa nếu không có voucher
+                    className={`bg-blue-500 text-white py-2 px-4 rounded ${
+                      !voucherCode ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                  >
+                    Apply
+                  </button>
+                </div>
+              </FormItem>
 
               <div className="border-t pt-2 flex justify-between items-center">
                 <p className="text-sm text-[#6b7280]">Total</p>
                 <p className="text-xl text-[#dc2626] font-bold">
-                  {formatPrice(totalPrice)}
+                  {formatPrice(total)}
                 </p>
               </div>
 

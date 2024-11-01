@@ -130,10 +130,9 @@ const AddProduct = () => {
         <Form.Item
           name="brand"
           label="Brand"
-          rules={[
-            { required: true, message: "Please select a product brand" },
-          ]}
+          rules={[{ required: true, message: "Please select a product brand" }]}
         >
+          <Input placeholder="Enter product name" />
         </Form.Item>
 
         <Form.Item name="posts" label="Related Articles">

@@ -130,13 +130,31 @@ const MENUS = [
       },
     ],
   },
+  {
+    key: "9",
+    icon: <UnorderedListOutlined />,
+    label: <p>Vouchers</p>,
+    children: [
+      {
+        key: "sub91",
+        label: (
+          <NavLink to={ROUTE_PATH.VOUCHER_MANAGEMENT}>List Voucher</NavLink>
+        ),
+      },
+      {
+        key: "sub92",
+        label: <NavLink to={ROUTE_PATH.ADD_VOUCHER}>Add Voucher</NavLink>,
+      },
+    ],
+  },
 ];
 
 const AdminLayout = () => {
   const { profile } = useProfile();
   const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState(new Date()); // Initialize state for current time
-  const [isDarkMode, setIsDarkMode] = useState(false); // State for dark mode
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [collapsed, setCollapsed] = useState(true); // State for collapsed menu
 
   const onSignOut = () => {
     localStorage.removeItem(TOKEN_STORAGE_KEY);
@@ -155,7 +173,7 @@ const AdminLayout = () => {
 
     // Clear interval on component unmount
     return () => clearInterval(timer);
-  }, [profile]);
+  }, [profile, navigate]);
 
   if (!profile || profile?.role !== ROLE.ADMIN) {
     return (
@@ -182,9 +200,15 @@ const AdminLayout = () => {
     setIsDarkMode((prev) => !prev);
   };
 
+  const toggleCollapse = () => {
+    setCollapsed((prev) => !prev); // Toggle the collapsed state
+  };
+
   return (
     <Layout hasSider className={`min-h-screen ${isDarkMode ? "dark" : ""}`}>
       <Sider
+        collapsed={collapsed}
+        onCollapse={setCollapsed}
         style={{
           ...siderStyle,
           backgroundColor: isDarkMode ? "#001529" : "#f9f9f9",
@@ -192,36 +216,51 @@ const AdminLayout = () => {
         width={256}
       >
         <Link to={ROUTE_PATH.HOME}>
-          <h1
+          <div
             className={`text-${
               isDarkMode ? "white" : "black"
-            } font-semibold text-xl text-center py-4`}
+            } font-semibold text-xl text-center py-4 flex justify-center`}
+            style={{
+              width: collapsed ? "80px" : "auto",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
           >
-            Noel Techshop
-          </h1>
+            {collapsed ? "Noel" : "Noel Techshop"}{" "}
+          </div>
         </Link>
         <Menu
           theme={isDarkMode ? "dark" : "light"}
           mode="inline"
           defaultSelectedKeys={["1"]}
-          items={MENUS}
+          items={MENUS.map((item) => ({
+            ...item,
+            label: <div>{item.label}</div>,
+            children: item.children?.map((subItem) => ({
+              ...subItem,
+              label: <div>{subItem.label}</div>,
+            })),
+          }))}
         />
       </Sider>
 
-      <Layout className="pl-64 h-full">
+      <Layout style={{ marginLeft: collapsed ? 70 : 256 }} className="h-full">
         <Header
           className={`p-0 ${
             isDarkMode ? "bg-gray-800" : "bg-white"
           } px-6 text-right shadow-md`}
         >
           <div className="inline-flex items-center ml-auto gap-x-3 justify-end">
+            {/* <Button onClick={toggleCollapse} style={{ marginRight: "16px" }}>
+              {collapsed ? "Expand" : "Collapse"}
+            </Button> */}
             <p
               className={`text-${
                 isDarkMode ? "white" : "gray-600"
               } font-semibold mr-5`}
             >
               {formatVietnamTime(currentTime)}
-            </p>{" "}
+            </p>
             <p
               className={`font-semibold ${
                 isDarkMode ? "text-white" : "text-black"
@@ -260,7 +299,7 @@ const AdminLayout = () => {
           className={`p-6 ${
             isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-black"
           } h-full`}
-          style={{ minHeight: "calc(100vh - 64px)" }} // Adjust to account for header height
+          style={{ minHeight: "calc(100vh - 64px)" }}
         >
           <Outlet />
         </Content>

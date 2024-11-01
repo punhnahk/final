@@ -18,8 +18,9 @@ const Dashboard = () => {
   const [bestProducts, setBestProducts] = useState([]);
   const [ordersPerMonth, setOrdersPerMonth] = useState([]);
   const [totalSales, setTotalSales] = useState(0);
+  const [canceledOrdersCount, setCanceledOrdersCount] = useState(0); // State for canceled orders count
   const [recentOrders, setRecentOrders] = useState([]);
-  const [cityDistribution, setCityDistribution] = useState([]); // State for city distribution
+  const [cityDistribution, setCityDistribution] = useState([]);
 
   const CUSTOM_COLORS = ["#FF6B6B", "#4ECDC4", "#1A535C", "#FFE66D", "#FF924C"];
 
@@ -35,7 +36,6 @@ const Dashboard = () => {
       });
       setBestProducts(productRes.data);
 
-      // Fetching orders per month
       const orderRes = await orderApi.getOrders();
       const ordersByMonth = calculateOrdersPerMonth(orderRes.data);
       setOrdersPerMonth(ordersByMonth);
@@ -44,11 +44,13 @@ const Dashboard = () => {
       const totalSales = calculateTotalSales(orderRes.data);
       setTotalSales(totalSales);
 
-      // Fetching recent orders
-      const recentOrdersRes = await orderApi.getOrders();
-      setRecentOrders(recentOrdersRes.data); // Displaying top 5 recent orders
+      // Fetching canceled orders count
+      const canceledCount = calculateCanceledOrdersCount(orderRes.data);
+      setCanceledOrdersCount(canceledCount);
 
-      // Fetch city distribution
+      const recentOrdersRes = await orderApi.getOrders();
+      setRecentOrders(recentOrdersRes.data);
+
       const cityDist = await fetchCityDistribution(orderRes.data);
       setCityDistribution(cityDist);
     } catch (error) {
@@ -57,16 +59,22 @@ const Dashboard = () => {
     }
   };
 
-  const limitedProducts = bestProducts.slice(0, 5);
+  const limitedProducts = bestProducts.slice(0, 6);
 
   const calculateTotalSales = (orders) => {
-    return orders.reduce((sum, order) => sum + order.totalPrice, 0);
+    return orders.reduce((sum, order) => {
+      return order.status === "DELIVERED" ? sum + order.totalPrice : sum;
+    }, 0);
+  };
+
+  const calculateCanceledOrdersCount = (orders) => {
+    return orders.filter((order) => order.status === "CANCELED").length;
   };
 
   const calculateOrdersPerMonth = (orders) => {
     const ordersByMonth = [];
     orders.forEach((order) => {
-      if (order.status !== "canceled") {
+      if (order.status !== "CANCELED") {
         const month = new Date(order.createdAt).getMonth();
         if (!ordersByMonth[month]) {
           ordersByMonth[month] = { month: month + 1, orders: 0 };
@@ -77,21 +85,12 @@ const Dashboard = () => {
     return ordersByMonth.filter(Boolean);
   };
 
-  const fetchCashOrders = (orders) => {
-    return orders.filter((order) => order.paymentMethod === "COD").length;
-  };
-
-  const fetchVnPayOrders = (orders) => {
-    return orders.filter((order) => order.paymentMethod === "VNPAY").length;
-  };
-
-  // Function to fetch city distribution
   const fetchCityDistribution = (orders) => {
     const cityCount = {};
     orders.forEach((order) => {
       const addressParts = order.address.split(",").map((part) => part.trim());
       if (addressParts.length > 1) {
-        const city = addressParts[addressParts.length - 1]; // Get the last part as the city
+        const city = addressParts[addressParts.length - 1];
         cityCount[city] = (cityCount[city] || 0) + 1;
       }
     });
@@ -100,70 +99,99 @@ const Dashboard = () => {
       value: count,
     }));
   };
+
   const getStatusColor = (status) => {
     switch (status) {
       case "INITIAL":
-        return "text-gray-400"; // Gray for initial status
+        return "text-gray-400";
       case "CONFIRMED":
-        return "text-blue-600"; // Blue for confirmed status
+        return "text-blue-600";
       case "DELIVERING":
-        return "text-orange-600"; // Orange for delivering status
+        return "text-orange-600";
       case "DELIVERED":
-        return "text-green-600"; // Green for delivered status
+        return "text-green-600";
       case "CANCELED":
-        return "text-red-600"; // Red for canceled status
+        return "text-red-600";
       default:
-        return "text-gray-500"; // Default gray color for other statuses
+        return "text-gray-500";
     }
   };
 
-  // Table columns for recent orders
   const columns = [
     {
       title: <div className="text-center">Order Num</div>,
       dataIndex: "order_number",
-      render: (_, __, index) => ++index,
+      width: "5%",
+      render: (_, __, index) => <div className="text-center">{++index}</div>,
     },
     {
       title: <div className="text-center">User</div>,
       dataIndex: "customerName",
       key: "customerName",
+      width: "15%",
+      render: (text) => <div className="text-center">{text}</div>,
     },
     {
       title: <div className="text-center">Phone</div>,
       dataIndex: "customerPhone",
       key: "customerPhone",
+      render: (text) => <div className="text-center">{text}</div>,
     },
     {
       title: <div className="text-center">Address</div>,
       dataIndex: "address",
       key: "address",
+      render: (text) => <div>{text}</div>,
     },
     {
       title: <div className="text-center">Note</div>,
       dataIndex: "message",
       key: "message",
+      width: "15%",
+      render: (text) => <div>{text}</div>,
     },
     {
       title: <div className="text-center">Total Amount</div>,
       dataIndex: "totalPrice",
       key: "totalPrice",
-      render: (text) => formatPrice(text),
+      render: (text) => <div className="text-center">{formatPrice(text)}</div>,
     },
     {
       title: <div className="text-center">Status</div>,
       dataIndex: "status",
       key: "status",
       render: (status) => (
-        <span className={`font-semibold ${getStatusColor(status)}`}>
-          {status}
-        </span>
+        <div className="text-center">
+          <span className={`font-semibold ${getStatusColor(status)}`}>
+            {status}
+          </span>
+        </div>
       ),
     },
     {
-      title: <div className="text-center">Payment</div>,
-      dataIndex: "paymentMethod",
-      key: "paymentMethod",
+      title: <div className="text-center">Order Time</div>,
+      dataIndex: "createdAt",
+      key: "createdAt",
+      width: "10%",
+      render: (text) => {
+        const date = new Date(text);
+        const options = {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false,
+          timeZone: "Asia/Ho_Chi_Minh",
+        };
+
+        return (
+          <div className="text-center">
+            {date.toLocaleString("vi-VN", options)}
+          </div>
+        );
+      },
     },
   ];
 
@@ -182,6 +210,20 @@ const Dashboard = () => {
               {formatPrice(totalSales)}
             </h2>
           </Card>
+          <br />
+          <Card
+            title={
+              <span className="font-semibold text-gray-800">
+                Canceled Orders
+              </span>
+            }
+            bordered={false}
+            className="shadow-lg rounded-lg bg-red-300 text-white"
+          >
+            <h2 className="font-bold text-red-600 text-lg">
+              {canceledOrdersCount}
+            </h2>
+          </Card>
         </Col>
 
         {/* Orders Per Month (Bar Chart) */}
@@ -193,7 +235,7 @@ const Dashboard = () => {
             bordered={false}
             className="shadow-lg rounded-lg"
           >
-            <BarChart width={450} height={300} data={ordersPerMonth}>
+            <BarChart width={490} height={300} data={ordersPerMonth}>
               <defs>
                 <linearGradient id="colorOrders" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#C9E9D2" stopOpacity={0.8} />
@@ -245,13 +287,15 @@ const Dashboard = () => {
             <div className="grid grid-cols-1 gap-2">
               {limitedProducts
                 .sort((a, b) => b.view - a.view)
-                .slice(0, 5) // Only take the top three products
+                .slice(0, 6) // Only take the top three products
                 .map((product) => (
                   <div
                     key={product._id}
                     className="flex justify-between items-center bg-white text-black rounded-lg p-2 pr-3 shadow-md"
                   >
-                    <span className="flex-grow pr-4 ">{product.name}</span>
+                    <span className="flex-grow pr-4 overflow-hidden text-ellipsis whitespace-nowrap">
+                      {product.name}
+                    </span>
                     <span className="font-bold text-red-500 text-lg flex-shrink-0">
                       {product.view}
                       <span className="text-gray-500 text-sm"> views</span>
@@ -267,8 +311,12 @@ const Dashboard = () => {
       <Card title="Recent Orders" className="mt-4">
         <Table
           columns={columns}
-          dataSource={recentOrders.slice(0, 4)}
-          pagination={false}
+          dataSource={recentOrders}
+          pagination={{
+            pageSize: 4,
+            showSizeChanger: false,
+            showQuickJumper: true,
+          }}
         />
       </Card>
 
@@ -283,11 +331,11 @@ const Dashboard = () => {
           <PieChart width={600} height={300} className="">
             <Pie
               data={cityDistribution}
-              cx={400}
+              cx={350}
               cy={150}
               labelLine={false}
               label={({ name, percent }) =>
-                `${name} (${(percent * 100).toFixed(0)}%)`
+                `${name} (${(percent * 100).toFixed(1)}%)`
               }
               outerRadius={80}
               dataKey="value"

@@ -119,13 +119,13 @@ const ProductDetail = () => {
           <Carousel draggable arrows>
             {data.image.map((it, index) => (
               <div
-                className="relative pt-[100%]"
+                className="relative w-full h-[400px] overflow-hidden"
                 key={`product-image-${index}`}
               >
                 <img
                   src={it}
                   alt="Product"
-                  className="object-cover h-full absolute w-full rounded-lg top-0 right-0 bottom-0 left-0"
+                  className="object-contain w-full h-full rounded-lg transition-transform duration-300 ease-in-out transform"
                 />
               </div>
             ))}
@@ -201,29 +201,33 @@ const ProductDetail = () => {
 
       {/* Product Description */}
       <div className="mb-6">
-        <p className="font-bold text-2xl uppercase text-[#444]">
-          Product Information
-        </p>
-        <div className="p-3 rounded-lg mt-2 shadow-lg">
-          <div dangerouslySetInnerHTML={{ __html: data.description }} />
+        <p className="font-bold text-2xl text-[#444]">Product Information</p>
+        <div className="p-3 rounded-lg mt-2 shadow-lg bg-white">
+          <div
+            className="text-base text-gray-700"
+            dangerouslySetInnerHTML={{ __html: data.description }}
+          />
         </div>
       </div>
 
       {/* Related News */}
       <div className="mb-6">
-        <p className="font-bold text-2xl uppercase text-[#444]">Related News</p>
+        <p className="font-bold text-2xl text-[#444]">Related News</p>
         <div className="p-3 rounded-lg mt-2 shadow-lg">
           {data.posts.length > 0 ? (
             data.posts.map((post, index) => (
               <div key={`post-${index}`} className="mb-4">
-                <h3 className="font-semibold text-4xl">{post.title}</h3>
+                <h3 className="font-semibold text-3xl text-center">
+                  {post.title}
+                </h3>{" "}
                 <br />
                 {post.thumbnail && (
-                  <div className="mb-3">
+                  <div className="mb-3 flex justify-center">
+                    {" "}
                     <img
                       src={post.thumbnail}
                       alt={post.title}
-                      className="w-full h-auto rounded-lg"
+                      className="w-3/4 h-auto rounded-lg"
                     />
                   </div>
                 )}
@@ -238,9 +242,7 @@ const ProductDetail = () => {
 
       {/* Related Products */}
       <div className="mb-6">
-        <p className="font-bold text-2xl uppercase text-[#444]">
-          Similar Products
-        </p>
+        <p className="font-bold text-2xl text-[#444]">Similar Products</p>
         <div className="grid grid-cols-12 gap-3 mt-2">
           {relatedProduct.slice(0, 4).map((it) => (
             <ProductItem
@@ -256,9 +258,7 @@ const ProductDetail = () => {
         )}
       </div>
       <div className="mb-6">
-        <p className="font-bold text-2xl uppercase text-[#444]">
-          Customer Feedback
-        </p>
+        <p className="font-bold text-2xl text-[#444]">Customer Feedback</p>
         <div className="p-3 rounded-lg mt-2 shadow-lg">
           {loadingComments ? (
             <Spin />

@@ -1,4 +1,5 @@
 import { Badge, Dropdown, Form, Input, message } from "antd";
+import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { FaPhoneAlt, FaShoppingCart } from "react-icons/fa";
 import { FaBarsStaggered } from "react-icons/fa6";
@@ -10,7 +11,7 @@ import categoryApi from "../../api/categoryApi";
 import productApi from "../../api/productApi";
 import WrapperContent from "../../components/WrapperContent/WrapperContent";
 import { ROUTE_PATH } from "../../constants/routes";
-import useProfile from "../../hooks/useProfile"; // Import useProfile hook
+import useProfile from "../../hooks/useProfile";
 import { selectCart } from "../../store/cartSlice";
 import ProfileAvatar from "./ProfileAvatar";
 
@@ -18,14 +19,16 @@ const HeaderClient = () => {
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [searchStr, setSearchStr] = useState("");
+  const [weather, setWeather] = useState(null);
   const cart = useSelector(selectCart);
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const isMobile = useMediaQuery({ query: `(max-width: 768px)` });
-  const { profile } = useProfile(); // Get user profile to check authentication
+  const { profile } = useProfile();
 
   useEffect(() => {
     fetchData();
+    fetchWeather(); // Fetch weather on component mount
   }, []);
 
   const fetchData = async () => {
@@ -34,6 +37,19 @@ const HeaderClient = () => {
       setCategories(res.data);
     } catch (error) {
       message.error("Failed to fetch categories");
+    }
+  };
+
+  const fetchWeather = async () => {
+    const city = "Da Nang"; // Thay thế bằng tên thành phố bạn muốn
+    try {
+      const res = await axios.get(
+        `https://api.weatherapi.com/v1/current.json?key=${process.env.REACT_APP_WEATHER}&q=${city}&aqi=no`
+      );
+      console.log(process.env.REACT_APP_WEATHER);
+      setWeather(res.data);
+    } catch (error) {
+      message.error("Failed to fetch weather data");
     }
   };
 
@@ -72,17 +88,19 @@ const HeaderClient = () => {
   const productDropdown = (
     <Dropdown
       overlay={
-        <div className="bg-white rounded-md shadow-lg px-4 py-2 mt-1">
+        <div className="bg-white rounded-md shadow-lg px-2 py-2 mt-1 max-w-xs ml-10">
           {searchStr ? (
             products.length > 0 ? (
-              products.slice(0, 5).map((product) => (
+              products.slice(0, 3).map((product) => (
                 <Link
                   key={product._id}
                   to={ROUTE_PATH.PRODUCT_DETAIL(product._id)}
                   className="block p-3 transition-colors duration-200 rounded-md hover:bg-[#C9E9D2]"
                   onClick={() => setSearchStr("")}
                 >
-                  {product.name}
+                  <span className="block w-full overflow-hidden whitespace-nowrap text-ellipsis">
+                    {product.name}
+                  </span>
                 </Link>
               ))
             ) : (
@@ -94,6 +112,7 @@ const HeaderClient = () => {
         </div>
       }
       trigger={["click"]}
+      placement="bottomCenter"
     >
       <Input
         className="rounded-2xl h-9 md:h-11 max-w-sm px-4"
@@ -140,27 +159,39 @@ const HeaderClient = () => {
               onFinish={() =>
                 navigate(ROUTE_PATH.PRODUCTS_LIST + "?search=" + searchStr)
               }
-              className="flex-1 w-full sm:w-2/3 md:w-1/2 max-w-lg flex justify-end mb-2 md:mb-0"
+              className="flex-1 w-4/5 sm:w-2/3 md:w-1/2 max-w-lg flex justify-end mb-2 md:mb-0"
             >
               {productDropdown}
             </Form>
-            {!isMobile && (
-              <div className="flex items-center gap-4 ml-12">
-                <a
-                  href="tel:18001291"
-                  className="flex items-center gap-1 p-2 bg-red-200 border-red-200  border-4 rounded-xl cursor-pointer text-sm"
-                >
-                  <FaPhoneAlt className="mr-1" /> 1800.1291
-                </a>
-              </div>
-            )}
 
             {/* Profile and Cart */}
             <div className="flex items-center gap-2 ml-auto">
+              {!isMobile && (
+                <div className="flex items-center gap-2">
+                  <a
+                    href="tel:18001291"
+                    className="flex items-center gap-1 p-2 bg-red-200 border-red-200 border-4 rounded-xl cursor-pointer text-sm"
+                  >
+                    <FaPhoneAlt className="mr-1" /> 1800.1291
+                  </a>
+
+                  {/* Weather Display */}
+                  {weather && (
+                    <div className="flex items-center gap-1 p-2 bg-blue-200 border-blue-200 border-4 rounded-xl text-sm">
+                      <img
+                        src={weather.current.condition.icon}
+                        alt="Weather icon"
+                        className="w-5 h-5"
+                      />
+                      <span>{`${weather.current.temp_c}°C, ${weather.current.condition.text}`}</span>
+                    </div>
+                  )}
+                </div>
+              )}
               {profile && (
                 <Link
                   to={ROUTE_PATH.CART}
-                  className="flex items-center gap-1 p-2 bg-red-200 border-red-200  border-4 rounded-xl cursor-pointer"
+                  className="flex items-center gap-1 p-2 bg-yellow-200 border-yellow-200  border-4 rounded-xl cursor-pointer"
                 >
                   <Badge
                     count={cart?.products.length}
@@ -190,10 +221,10 @@ const HeaderClient = () => {
                 className="w-6 h-6 sm:w-8 sm:h-8"
               />
               <p className="text-xs sm:text-sm font-semibold">
-                iPhone 16 Pro Max starting from 31,490K at Noel Techshop
+                iPhone 16 Pro Max starting from 1,800,000 VND
               </p>
             </div>
-            <div className="flex items-center gap-x-1 flex-shrink-0">
+            <div className="flex items-center gap-x-1.5">
               <img
                 src="https://cdn-icons-png.flaticon.com/512/6337/6337246.png" // Samsung logo
                 alt="Samsung Logo"
