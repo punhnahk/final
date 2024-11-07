@@ -7,13 +7,14 @@
     <meta name="theme-color" content="#000000" />
     <meta name="referenced" content="no-referrer" />
     <meta
+      name="google-site-verification"
+      content="D4KkxXLeGkMcXDuJdHSbJC8i424Ng3tnjL79A_Jg8ZY"
+    />
+    <meta
       name="description"
       content="Noel Techshop - Your one-stop shop for authentic phones, laptops, and accessories at the best prices."
     />
-    <link
-      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
-      rel="stylesheet"
-    />
+    <link rel="stylesheet" />
     <link rel="apple-touch-icon" href="images/logo.svg" />
     <!--
       manifest.json provides metadata used when your web app is installed on a
@@ -85,21 +86,4 @@
             setTimeout(y, 2e3, k + 1)));
       })(0));
   })(window, document, "script", "subiz", "acsdibhfvnjaormkgtqw");
-
-  // After the Subiz widget is initialized, fetch user attributes
-  window.subiz = window.subiz || {};
-  window.subiz("onReady", function () {
-    window.subiz("getUserAttributes", function (response) {
-      if (response && response.name && response.email) {
-        // Show user info on the page
-        document.getElementById("user-name").innerText =
-          "Name: " + response.name;
-        document.getElementById("user-email").innerText =
-          "Email: " + response.email;
-        document.getElementById("user-info").classList.remove("hidden");
-      } else {
-        console.log("User attributes not available");
-      }
-    });
-  });
 </script>

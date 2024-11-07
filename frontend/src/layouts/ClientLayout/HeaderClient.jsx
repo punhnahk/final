@@ -28,7 +28,7 @@ const HeaderClient = () => {
 
   useEffect(() => {
     fetchData();
-    fetchWeather(); // Fetch weather on component mount
+    fetchWeather();
   }, []);
 
   const fetchData = async () => {
@@ -41,12 +41,11 @@ const HeaderClient = () => {
   };
 
   const fetchWeather = async () => {
-    const city = "Da Nang"; // Thay thế bằng tên thành phố bạn muốn
+    const city = "Da Nang";
     try {
       const res = await axios.get(
         `https://api.weatherapi.com/v1/current.json?key=${process.env.REACT_APP_WEATHER}&q=${city}&aqi=no`
       );
-      console.log(process.env.REACT_APP_WEATHER);
       setWeather(res.data);
     } catch (error) {
       message.error("Failed to fetch weather data");
@@ -77,7 +76,7 @@ const HeaderClient = () => {
     label: (
       <Link
         to={`${ROUTE_PATH.PRODUCTS_LIST}?category=${category._id}`}
-        className="flex p-0 items-center gap-2 "
+        className="flex p-0 items-center gap-2"
       >
         <img src={category.image} alt={category.name} className="w-7 h-7" />
         {category.name}
@@ -88,7 +87,7 @@ const HeaderClient = () => {
   const productDropdown = (
     <Dropdown
       overlay={
-        <div className="bg-white rounded-md shadow-lg px-2 py-2 mt-1 max-w-xs ml-10">
+        <div className="bg-white rounded-md shadow-lg px-2 py-2 mt-2 ml-5 max-w-xs">
           {searchStr ? (
             products.length > 0 ? (
               products.slice(0, 3).map((product) => (
@@ -135,70 +134,63 @@ const HeaderClient = () => {
     <>
       <header className="bg-[#C9E9D2] sticky top-0 z-50 shadow-md">
         <WrapperContent>
-          <div className="flex flex-col md:flex-row items-center justify-between min-h-[70px] py-1">
-            {/* Logo and Categories */}
+          <div className="flex flex-col md:flex-row items-center justify-between py-2">
             <div className="flex items-center gap-x-2 mb-2 md:mb-0">
               <Link to={ROUTE_PATH.HOME}>
-                <img src="/svg/logo.svg" className="h-12 md:h-14" alt="Logo" />
+                <img src="/svg/logo.svg" className="h-10 md:h-12" alt="Logo" />
               </Link>
 
-              {/* Categories Dropdown */}
               {!isMobile && (
                 <Dropdown menu={{ items: menuItems }} placement="bottomRight">
-                  <div className="bg-[#FEF9F2] ml-12 flex items-center rounded-full px-3 h-8 md:h-10 cursor-pointer">
-                    <FaBarsStaggered className=" text-sm" />
-                    <p className=" text-xs font-medium ml-2">Categories</p>
+                  <div className="bg-[#FEF9F2] ml-4 flex items-center rounded-full px-2 h-8 cursor-pointer">
+                    <FaBarsStaggered className="text-sm" />
+                    <p className="text-xs font-medium ml-1">Categories</p>
                   </div>
                 </Dropdown>
               )}
             </div>
 
-            {/* Search Form */}
             <Form
               form={form}
               onFinish={() =>
                 navigate(ROUTE_PATH.PRODUCTS_LIST + "?search=" + searchStr)
               }
-              className="flex-1 w-4/5 sm:w-2/3 md:w-1/2 max-w-lg flex justify-end mb-2 md:mb-0"
+              className="flex-1 flex justify-center mb-2 md:mb-0" // Changed to justify-center
             >
               {productDropdown}
             </Form>
 
-            {/* Profile and Cart */}
             <div className="flex items-center gap-2 ml-auto">
               {!isMobile && (
-                <div className="flex items-center gap-2">
-                  <a
-                    href="tel:18001291"
-                    className="flex items-center gap-1 p-2 bg-red-200 border-red-200 border-4 rounded-xl cursor-pointer text-sm"
-                  >
-                    <FaPhoneAlt className="mr-1" /> 1800.1291
-                  </a>
-
-                  {/* Weather Display */}
-                  {weather && (
-                    <div className="flex items-center gap-1 p-2 bg-blue-200 border-blue-200 border-4 rounded-xl text-sm">
-                      <img
-                        src={weather.current.condition.icon}
-                        alt="Weather icon"
-                        className="w-5 h-5"
-                      />
-                      <span>{`${weather.current.temp_c}°C, ${weather.current.condition.text}`}</span>
-                    </div>
-                  )}
+                <a
+                  href="tel:18001291"
+                  className="flex items-center gap-1 p-2 bg-red-200 border-red-200 border-4 rounded-xl cursor-pointer text-sm"
+                >
+                  <FaPhoneAlt className="mr-1" /> 1800.1291
+                </a>
+              )}
+              {weather && !isMobile && (
+                <div className="flex items-center gap-1 p-2 bg-blue-200 border-blue-200 border-4 rounded-xl text-xs max-w-[120px]">
+                  <img
+                    src={weather.current.condition.icon}
+                    alt="Weather icon"
+                    className="w-6 h-6" // Reduced icon size
+                  />
+                  <span className="whitespace-nowrap">{`${weather.current.temp_c}°C`}</span>
                 </div>
               )}
+
               {profile && (
                 <Link
                   to={ROUTE_PATH.CART}
-                  className="flex items-center gap-1 p-2 bg-yellow-200 border-yellow-200  border-4 rounded-xl cursor-pointer"
+                  className="flex items-center gap-1 p-2 bg-yellow-200 border-yellow-200 border-4 rounded-xl cursor-pointer"
                 >
                   <Badge
                     count={cart?.products.length}
                     offset={[0, -4]}
                     color="#FF5733"
                   >
-                    <FaShoppingCart className=" text-xl" />
+                    <FaShoppingCart className="text-xl" />
                   </Badge>
                   <span className="hidden md:inline text-xs font-medium">
                     Cart
@@ -226,7 +218,7 @@ const HeaderClient = () => {
             </div>
             <div className="flex items-center gap-x-1.5">
               <img
-                src="https://cdn-icons-png.flaticon.com/512/6337/6337246.png" // Samsung logo
+                src="https://cdn-icons-png.flaticon.com/512/6337/6337246.png"
                 alt="Samsung Logo"
                 className="w-7 h-7 sm:w-8 sm:h-8"
               />

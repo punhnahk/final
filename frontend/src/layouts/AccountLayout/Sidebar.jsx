@@ -45,7 +45,13 @@ const Sidebar = () => {
             <p>Change Password</p>
           </NavLink>
         )}
-
+        <NavLink
+          to={ROUTE_PATH.WISHLIST}
+          className="flex items-center py-3 px-5 gap-x-3 text-[#111] hover:text-[#E8B86D] transition-all [&.active]:text-[#A1D6B2]"
+        >
+          <FaCartShopping />
+          <p>Wishlist</p>
+        </NavLink>
         <NavLink
           to={ROUTE_PATH.ORDERS_HISTORY}
           className="flex items-center py-3 px-5 gap-x-3 text-[#111] hover:text-[#E8B86D] transition-all [&.active]:text-[#A1D6B2]"

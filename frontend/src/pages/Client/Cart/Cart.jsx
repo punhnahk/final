@@ -106,7 +106,7 @@ const Cart = () => {
                       key={`cart-product-item-${it._id}`}
                       className="bg-white rounded-xl px-4 py-3 mb-3 flex items-center justify-between"
                     >
-                      <div className="flex gap-x-2 items-center">
+                      <div className="flex gap-x-2 items-center text-wrap">
                         <div className="w-[68px] h-[68px] p-2 border border-[#d1d5db] rounded-lg">
                           <img
                             src={it.product.image[0]}
@@ -115,7 +115,7 @@ const Cart = () => {
                           />
                         </div>
 
-                        <p className="font-medium pl-3 text-[#090d14]">
+                        <p className="font-medium pl-3 text-[#090d14] truncate w-24 sm:w-32 md:w-auto">
                           {it.product.name}
                         </p>
                       </div>

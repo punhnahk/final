@@ -44,8 +44,7 @@ const ClientLayout = () => {
     <>
       <HeaderClient />
       <Outlet />
-      <Analytics /> {/* Include the Analytics component here */}
-      {/* {<SocialButton />} */}
+      <Analytics />
       <FooterClient />
     </>
   );

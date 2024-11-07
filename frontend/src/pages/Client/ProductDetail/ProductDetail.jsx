@@ -1,11 +1,12 @@
 import { Breadcrumb, Carousel, Empty, message, Pagination, Spin } from "antd";
 import React, { useEffect, useState } from "react";
-import { FaCartArrowDown, FaPhoneAlt } from "react-icons/fa";
+import { FaCartArrowDown, FaHeart, FaPhoneAlt } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import cartApi from "../../../api/cartApi";
 import commentApi from "../../../api/commentApi"; // Import the comment API
 import productApi from "../../../api/productApi";
+import wishlistApi from "../../../api/wishlistApi";
 import ProductItem from "../../../components/ProductItem/ProductItem";
 import WrapperContent from "../../../components/WrapperContent/WrapperContent";
 import { ROUTE_PATH } from "../../../constants/routes";
@@ -16,7 +17,8 @@ const ProductDetail = () => {
   const [data, setData] = useState();
   const [relatedProduct, setRelatedProduct] = useState([]);
   const [comments, setComments] = useState([]); // State for comments
-  const [loadingComments, setLoadingComments] = useState(false); // Loading state for comments
+  const [loadingComments, setLoadingComments] = useState(false);
+  const [isInWishlist, setIsInWishlist] = useState(false);
   const [currentPage, setCurrentPage] = useState(1); // State for current page
   const [commentsPerPage] = useState(5); // Number of comments per page
   const navigate = useNavigate();
@@ -25,7 +27,21 @@ const ProductDetail = () => {
 
   useEffect(() => {
     id && fetchData(id);
+    fetchWishlistStatus();
   }, [id]);
+
+  const fetchWishlistStatus = async (itemId) => {
+    try {
+      const response = await wishlistApi.getWishlist();
+      console.log("Fetched wishlist items:", response.data);
+      const isInWishlist =
+        Array.isArray(response.data) &&
+        response.data.some((item) => item.id === itemId);
+    } catch (error) {
+      message.error("Failed to fetch wishlist items");
+    } finally {
+    }
+  };
 
   const onAddProductToCart = () => {
     handleAddCart(() => {
@@ -37,6 +53,54 @@ const ProductDetail = () => {
     handleAddCart(() => {
       navigate(ROUTE_PATH.CART);
     });
+  };
+  const onAddProductToWishlist = async () => {
+    if (!data) return;
+    try {
+      await wishlistApi.addToWishlist({ productId: id });
+      setIsInWishlist(true); // Update the state to reflect the product is now in the wishlist
+      message.success("Added product to wishlist");
+    } catch (error) {
+      console.error(
+        "Error adding product to wishlist:",
+        error.response || error.message
+      );
+      message.error(
+        error.response?.data?.message || "Failed to add product to wishlist"
+      );
+    }
+  };
+  const toggleWishlist = async () => {
+    if (!data) return;
+    if (isInWishlist) {
+      try {
+        await wishlistApi.removeFromWishlist(id);
+        setIsInWishlist(false); // Update the state to reflect the product is now in the wishlist
+        message.success("Remove product to wishlist");
+      } catch (error) {
+        console.error(
+          "Error adding product to wishlist:",
+          error.response || error.message
+        );
+        message.error(
+          error.response?.data?.message || "Failed to add product to wishlist"
+        );
+      }
+    } else {
+      try {
+        await wishlistApi.addToWishlist({ productId: id });
+        setIsInWishlist(true); // Update the state to reflect the product is now in the wishlist
+        message.success("Added product to wishlist");
+      } catch (error) {
+        console.error(
+          "Error adding product to wishlist:",
+          error.response || error.message
+        );
+        message.error(
+          error.response?.data?.message || "Failed to add product to wishlist"
+        );
+      }
+    }
   };
 
   const handleAddCart = async (callback) => {
@@ -181,6 +245,16 @@ const ProductDetail = () => {
               className="w-14 h-14 flex justify-center items-center rounded-lg border border-[#dc2626] transition-colors duration-200 hover:bg-[#dc2626] hover:text-white cursor-pointer"
             >
               <FaCartArrowDown className="text-[#dc2626] text-2xl" />
+            </button>
+            <button
+              onClick={toggleWishlist}
+              className="w-14 h-14 flex justify-center items-center rounded-lg border transition-colors duration-200 hover:bg-[#f59e0b] hover:text-white cursor-pointer border border-[#dc2626]"
+            >
+              <FaHeart
+                className={`text-2xl ${
+                  isInWishlist ? "text-red-500" : "text-[#f59e0b]"
+                }`}
+              />
             </button>
             <button
               onClick={onPayNow}

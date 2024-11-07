@@ -1,5 +1,6 @@
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import ErrorPage from "./components/Error/ErrorPage";
 import PrivateRoutes from "./components/PrivateRoutes/PrivateRoutes";
 import { ROUTE_PATH } from "./constants/routes";
 import AccountLayout from "./layouts/AccountLayout/AccountLayout";
@@ -35,11 +36,13 @@ import ChangePassword from "./pages/Client/Account/ChangePassword/ChangePassword
 import OrderHistory from "./pages/Client/Account/OrderHistory/OrderHistory";
 import OrderHistoryDetail from "./pages/Client/Account/OrderHistoryDetail/OrderHistoryDetail";
 import UpdateInformation from "./pages/Client/Account/UpdateInformation/UpdateInformation";
+import WishlistList from "./pages/Client/Account/Wishlist/WishlistList";
 import Cart from "./pages/Client/Cart/Cart";
 import Checkout from "./pages/Client/Cart/Checkout";
 import OrderSuccess from "./pages/Client/Cart/OrderSuccess";
 import ForgotPassword from "./pages/Client/ForgotPassword/ForgotPassword";
 import HomePage from "./pages/Client/Home/HomePage";
+import NotFoundPage from "./pages/Client/Home/NotFoundPage";
 import Policies from "./pages/Client/Policy/Policies";
 import ProductDetail from "./pages/Client/ProductDetail/ProductDetail";
 import ClientProductList from "./pages/Client/Products/ProductList";
@@ -52,6 +55,7 @@ const App = () => {
     {
       path: ROUTE_PATH.HOME,
       element: <AppLayout />,
+      errorElement: <ErrorPage />,
       children: [
         {
           path: ROUTE_PATH.HOME,
@@ -128,6 +132,10 @@ const App = () => {
                   element: <ChangePassword />,
                 },
                 {
+                  path: ROUTE_PATH.WISHLIST,
+                  element: <WishlistList />,
+                },
+                {
                   path: ROUTE_PATH.ORDERS_HISTORY,
                   element: <OrderHistory />,
                 },
@@ -142,6 +150,7 @@ const App = () => {
         //admin
         {
           path: ROUTE_PATH.ADMIN,
+          errorElement: <ErrorPage />,
           element: (
             <PrivateRoutes>
               <AdminLayout />
@@ -256,6 +265,7 @@ const App = () => {
         },
       ],
     },
+    { path: "*", element: <NotFoundPage /> },
   ]);
 
   return <RouterProvider router={router} />;
