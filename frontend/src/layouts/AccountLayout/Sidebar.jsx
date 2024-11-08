@@ -18,11 +18,13 @@ const Sidebar = () => {
     <aside className="bg-white rounded h-full">
       <header className="p-4 flex items-center gap-x-6 border-b border-b-[#CFCFCF] mb-1.5">
         <img
-          src={profile.avatar || DEFAULT_AVATAR_PATH}
+          src={profile?.avatar || DEFAULT_AVATAR_PATH}
           alt="Avatar"
           className="w-[48px] h-[48px] rounded-full object-cover"
         />
-        <p className="text-[18px] font-semibold text-[#111]">{profile.name}</p>
+        <p className="text-[18px] font-semibold text-[#111]">
+          {profile?.name || "Guest"}
+        </p>
       </header>
 
       <div className="pb-6">
@@ -35,7 +37,7 @@ const Sidebar = () => {
           <p>Account Information</p>
         </NavLink>
 
-        {profile.password && (
+        {profile?.password && (
           <NavLink
             to={ROUTE_PATH.CHANGE_PASSWORD}
             className="flex items-center py-3 px-5 gap-x-3 text-[#111] hover:text-[#E8B86D] transition-all [&.active]:text-[#A1D6B2]"

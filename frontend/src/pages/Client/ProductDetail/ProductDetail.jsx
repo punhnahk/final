@@ -37,9 +37,9 @@ const ProductDetail = () => {
       const isInWishlist =
         Array.isArray(response.data) &&
         response.data.some((item) => item.id === itemId);
+      setIsInWishlist(isInWishlist); // Set the state here
     } catch (error) {
       message.error("Failed to fetch wishlist items");
-    } finally {
     }
   };
 
@@ -53,22 +53,6 @@ const ProductDetail = () => {
     handleAddCart(() => {
       navigate(ROUTE_PATH.CART);
     });
-  };
-  const onAddProductToWishlist = async () => {
-    if (!data) return;
-    try {
-      await wishlistApi.addToWishlist({ productId: id });
-      setIsInWishlist(true); // Update the state to reflect the product is now in the wishlist
-      message.success("Added product to wishlist");
-    } catch (error) {
-      console.error(
-        "Error adding product to wishlist:",
-        error.response || error.message
-      );
-      message.error(
-        error.response?.data?.message || "Failed to add product to wishlist"
-      );
-    }
   };
   const toggleWishlist = async () => {
     if (!data) return;
