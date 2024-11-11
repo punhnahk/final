@@ -1,18 +1,24 @@
-import { Button, Input, message, Rate } from "antd"; // Import Rate from Ant Design
-import { useState } from "react";
+import { Button, Input, message, Rate } from "antd";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { io } from "socket.io-client";
 import { ROUTE_PATH } from "../../../../constants/routes";
 import formatPrice from "../../../../utils/formatPrice";
 import { getOrderStatus } from "../../../../utils/order";
 
 const MAX_PRODUCT = 2;
 const statusColors = {
-  INITIAL: "text-blue-500", // Màu xanh cho trạng thái INITIAL
-  CONFIRMED: "text-green-500", // Màu xanh lá cho trạng thái CONFIRMED
-  DELIVERING: "text-yellow-500", // Màu vàng cho trạng thái DELIVERING
-  DELIVERED: "text-purple-500", // Màu tím cho trạng thái DELIVERED
-  CANCELED: "text-red-500", // Màu đỏ cho trạng thái CANCELED
+  INITIAL: "text-blue-500",
+  CONFIRMED: "text-green-500",
+  DELIVERING: "text-yellow-500",
+  DELIVERED: "text-purple-500",
+  CANCELED: "text-red-500",
 };
+const socket = io(
+  process.env.NODE_ENV === "production"
+    ? process.env.REACT_APP_APP_API // Production URL
+    : "http://localhost:4000" // Local URL
+);
 
 const OrderCard = ({ data, onCommentSubmit, hasCommentedMap }) => {
   const [showMore, setShowMore] = useState(false);
@@ -205,9 +211,25 @@ const OrderCard = ({ data, onCommentSubmit, hasCommentedMap }) => {
 };
 
 const OrderList = ({ data, onCommentSubmit, hasCommentedMap }) => {
+  const [orders, setOrders] = useState(data);
+
+  useEffect(() => {
+    socket.on("orderStatusUpdated", ({ orderId, status }) => {
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order._id === orderId ? { ...order, status } : order
+        )
+      );
+    });
+
+    return () => {
+      socket.off("orderStatusUpdated");
+    };
+  }, []);
+
   return (
     <div className="bg-[#ececec]">
-      {data.map((it) => (
+      {orders.map((it) => (
         <OrderCard
           key={`order-item-${it._id}`}
           data={it}

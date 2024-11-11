@@ -1,12 +1,9 @@
 import crypto from "crypto";
 import moment from "moment-timezone";
 import querystring from "qs";
+import { io } from "../app.js";
 import Cart from "../models/carts.js";
-import Order, {
-  PAYMENT_METHOD,
-  PAYMENT_STATUS,
-  STATUS_ORDER,
-} from "../models/orders.js";
+import Order, { PAYMENT_METHOD } from "../models/orders.js";
 import Product from "../models/products.js";
 import Voucher from "../models/voucher.js";
 import sortObject from "../utils/sortObject.js";
@@ -158,28 +155,30 @@ const OrderController = {
 
   updateStatus: async (req, res) => {
     try {
-      const { id } = req.params;
-      const { status, paymentStatus } = req.body;
+      const orderId = req.params.id;
+      const { status } = req.body;
 
-      if (status && !STATUS_ORDER.includes(status)) {
-        return res.status(400).json({ message: "Status is not valid" });
-      }
-
-      if (paymentStatus && !PAYMENT_STATUS.includes(paymentStatus)) {
-        return res.status(400).json({ message: "Status is not valid" });
-      }
-
+      // Find the order by ID and update its status
       const order = await Order.findByIdAndUpdate(
-        id,
-        { status, paymentStatus },
+        orderId,
+        { status },
         { new: true }
-      ).exec();
+      );
 
-      res.json(order);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      // Emit the status update event to all connected clients
+      io.emit("orderStatusUpdated", {
+        orderId: order._id,
+        status: order.status,
+      });
+      console.log("Emitted update for order:", order._id, order.status);
+
+      res.status(200).json({ message: "Order status updated", order });
     } catch (error) {
-      res
-        .status(500)
-        .json({ message: "Internal server error", error: error.message });
+      res.status(500).json({ message: "Server error", error });
     }
   },
 };

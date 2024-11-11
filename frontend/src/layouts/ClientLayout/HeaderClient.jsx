@@ -1,12 +1,14 @@
-import { Badge, Dropdown, Form, Input, message } from "antd";
+import { Badge, Dropdown, Form, Input, Menu, message } from "antd";
 import React, { useEffect, useState } from "react";
-import { FaPhoneAlt, FaShoppingCart } from "react-icons/fa";
+import { FaBell, FaPhoneAlt, FaShoppingCart } from "react-icons/fa";
 import { FaBarsStaggered } from "react-icons/fa6";
 import { IoSearch } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import { useMediaQuery } from "react-responsive";
 import { Link, useNavigate } from "react-router-dom";
+import { io } from "socket.io-client";
 import categoryApi from "../../api/categoryApi";
+import orderApi from "../../api/orderApi";
 import productApi from "../../api/productApi";
 import WrapperContent from "../../components/WrapperContent/WrapperContent";
 import { ROUTE_PATH } from "../../constants/routes";
@@ -18,6 +20,8 @@ const HeaderClient = () => {
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [searchStr, setSearchStr] = useState("");
+  const [orderNotifications, setOrderNotifications] = useState([]);
+  const [readOrders, setReadOrders] = useState([]);
   const cart = useSelector(selectCart);
   const navigate = useNavigate();
   const [form] = Form.useForm();
@@ -25,11 +29,32 @@ const HeaderClient = () => {
   const { profile } = useProfile();
 
   useEffect(() => {
+    const socket = io(
+      process.env.NODE_ENV === "production"
+        ? process.env.REACT_APP_APP_API
+        : "http://localhost:4000"
+    );
+
+    socket.on("orderStatusUpdated", ({ orderId, status }) => {
+      setOrderNotifications((prev) => [
+        ...prev,
+        { _id: orderId, status, isRead: false },
+      ]);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
     if (!isMobile) {
       fetchData(); // Fetch categories only if not on mobile
     }
+    fetchOrders(); // Fetch orders to get notifications
   }, [isMobile]);
 
+  // Fetch categories data
   const fetchData = async () => {
     try {
       const res = await categoryApi.getCategories();
@@ -39,6 +64,7 @@ const HeaderClient = () => {
     }
   };
 
+  // Fetch products for search
   const fetchProducts = async (query) => {
     try {
       const res = await productApi.getProducts({ search: query });
@@ -48,6 +74,25 @@ const HeaderClient = () => {
     }
   };
 
+  // Fetch orders and filter unread ones
+  const fetchOrders = async () => {
+    if (!profile) {
+      return;
+    }
+
+    try {
+      const res = await orderApi.getOrdersHistory();
+      const unreadOrders = res.data.filter((order) => !order.isRead);
+      setOrderNotifications(unreadOrders);
+      setReadOrders(res.data.filter((order) => order.isRead));
+    } catch (error) {
+      if (profile) {
+        message.error("Failed to fetch orders");
+      }
+    }
+  };
+
+  // Handle search bar change
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearchStr(value);
@@ -117,103 +162,128 @@ const HeaderClient = () => {
     </Dropdown>
   );
 
-  return (
-    <>
-      <header className="bg-white sticky top-0 z-50 shadow-md border-b border-gray-200">
-        <WrapperContent>
-          <div className="relative flex items-center justify-between mb-2 md:mb-0 w-full p-2 ml-2 space-x-4">
-            {/* Logo */}
-            <Link to={ROUTE_PATH.HOME} className="flex-shrink-0">
-              <img src="/svg/logo.svg" className="h-10 md:h-12" alt="Logo" />
+  // Dropdown for order notifications
+  const orderMenu = (
+    <Menu>
+      {orderNotifications.length ? (
+        orderNotifications.map(({ _id, status, isRead }) => (
+          <Menu.Item
+            key={_id}
+            onClick={() => handleOrderNotificationClick(_id)}
+            style={{ backgroundColor: isRead ? "#f0f0f0" : "transparent" }}
+          >
+            <Link to={ROUTE_PATH.ORDER_HISTORY_DETAIL(_id)}>
+              Order #{_id} - {status}
             </Link>
+          </Menu.Item>
+        ))
+      ) : (
+        <Menu.Item>No new orders</Menu.Item>
+      )}
+      <Menu.Divider />
+      <Menu.Item>
+        <Link to={ROUTE_PATH.ORDERS_HISTORY}>View all orders</Link>
+      </Menu.Item>
+    </Menu>
+  );
 
-            {/* Dropdown Categories */}
+  const handleOrderNotificationClick = (orderId) => {
+    const updatedNotifications = orderNotifications.filter(
+      (order) => order._id !== orderId
+    );
+
+    setOrderNotifications(updatedNotifications);
+  };
+
+  return (
+    <header className="bg-white sticky top-0 z-50 shadow-md border-b border-gray-200">
+      <WrapperContent>
+        <div className="relative flex items-center justify-between mb-2 md:mb-0 w-full p-2 ml-2 space-x-4">
+          {/* Logo */}
+          <Link to={ROUTE_PATH.HOME} className="flex-shrink-0">
+            <img src="/svg/logo.svg" className="h-10 md:h-12" alt="Logo" />
+          </Link>
+
+          {/* Dropdown Categories */}
+          {!isMobile && (
+            <Dropdown menu={{ items: menuItems }} placement="bottomLeft">
+              <div className="bg-gray-100 ml-4 flex items-center rounded-full px-4 py-2 cursor-pointer">
+                <FaBarsStaggered className="text-sm" />
+                <p className="text-xs font-medium ml-2">Categories</p>
+              </div>
+            </Dropdown>
+          )}
+
+          {/* Search Bar */}
+          <Form
+            form={form}
+            onFinish={() =>
+              navigate(ROUTE_PATH.PRODUCTS_LIST + "?search=" + searchStr)
+            }
+            className="flex-1 flex justify-center"
+          >
+            <div className="w-full sm:w-[300px] md:w-[500px]">
+              {productDropdown}
+            </div>
+          </Form>
+
+          {/* Contact and Cart */}
+          <div className="flex items-center gap-4 ml-auto">
             {!isMobile && (
-              <Dropdown menu={{ items: menuItems }} placement="bottomLeft">
-                <div className="bg-gray-100 ml-4 flex items-center rounded-full  px-4 py-2 cursor-pointer">
-                  <FaBarsStaggered className="text-sm" />
-                  <p className="text-xs font-medium ml-2">Categories</p>
-                </div>
-              </Dropdown>
+              <a
+                href="tel:18001291"
+                className="flex items-center gap-2 p-2 rounded-lg cursor-pointer text-sm"
+              >
+                <FaPhoneAlt className="text-base mr-1" /> 1800.1291
+              </a>
             )}
 
-            {/* Search Bar */}
-            <Form
-              form={form}
-              onFinish={() =>
-                navigate(ROUTE_PATH.PRODUCTS_LIST + "?search=" + searchStr)
-              }
-              className="flex-1 flex justify-center"
+            {/* Cart Icon */}
+            {!isMobile && (
+              <Link
+                to={ROUTE_PATH.CART}
+                className="flex items-center gap-2 p-2 rounded-lg cursor-pointer"
+              >
+                <Badge
+                  count={cart?.products.length}
+                  offset={[0, -4]}
+                  color="#FF5733"
+                >
+                  <FaShoppingCart className="text-lg" />
+                </Badge>
+              </Link>
+            )}
+
+            <Dropdown
+              overlay={orderMenu}
+              trigger={["click"]}
+              placement="bottomRight"
             >
-              <div className="w-full sm:w-[300px] md:w-[500px]">
-                {productDropdown}
+              <div className="cursor-pointer relative flex items-center">
+                <Badge
+                  count={orderNotifications.length}
+                  offset={[0, -4]}
+                  color="#FF5733"
+                >
+                  <FaBell className="text-lg" />
+                </Badge>
               </div>
-            </Form>
+            </Dropdown>
 
-            {/* Contact and Cart */}
-            <div className="flex items-center gap-4 ml-auto">
-              {!isMobile && (
-                <a
-                  href="tel:18001291"
-                  className="flex items-center gap-2 p-2  rounded-lg cursor-pointer  text-sm"
-                >
-                  <FaPhoneAlt className="text-base mr-1" /> 1800.1291
-                </a>
-              )}
-
-              {/* Cart Icon */}
-              {profile && !isMobile && (
-                <Link
-                  to={ROUTE_PATH.CART}
-                  className="flex items-center gap-2 p-2  rounded-lg cursor-pointer "
-                >
-                  <Badge
-                    count={cart?.products.length}
-                    offset={[0, -4]}
-                    color="#FF5733"
-                  >
-                    <FaShoppingCart className="text-xl" />
-                  </Badge>
-                  <span className="hidden md:inline text-xs font-medium">
-                    Cart
-                  </span>
-                </Link>
-              )}
-
-              {/* Profile Avatar */}
-              {!isMobile && <ProfileAvatar />}
-            </div>
+            {profile ? (
+              <ProfileAvatar />
+            ) : (
+              <Link
+                to={ROUTE_PATH.SIGN_IN}
+                className="p-3 rounded-lg hover:bg-gray-100 transition"
+              >
+                Login
+              </Link>
+            )}
           </div>
-        </WrapperContent>
-      </header>
-
-      {!isMobile && (
-        <WrapperContent>
-          <div className="flex flex-wrap items-center gap-x-3 py-2 rounded-lg ">
-            <div className="flex items-center gap-x-1.5">
-              <img
-                src="/images/header-iphone.png"
-                alt="Icon"
-                className="w-6 h-6 sm:w-8 sm:h-8"
-              />
-              <p className="text-xs sm:text-sm font-semibold">
-                iPhone 16 Pro Max starting from 1,800,000 VND
-              </p>
-            </div>
-            <div className="flex items-center gap-x-1.5">
-              <img
-                src="https://cdn-icons-png.flaticon.com/512/6337/6337246.png"
-                alt="Samsung Logo"
-                className="w-7 h-7 sm:w-8 sm:h-8"
-              />
-              <p className="text-xs sm:text-sm font-semibold">
-                Check out our latest offers on smartphones at Noel Techshop!
-              </p>
-            </div>
-          </div>
-        </WrapperContent>
-      )}
-    </>
+        </div>
+      </WrapperContent>
+    </header>
   );
 };
 

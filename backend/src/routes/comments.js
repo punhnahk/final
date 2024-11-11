@@ -14,7 +14,8 @@ CommentRouter.get(
 );
 CommentRouter.get("/order/:orderId", CommentController.getCommentsByOrderId);
 
-CommentRouter.get("/check", checkLogin, CommentController.checkUserComment);
+// CommentRouter.get("/check", checkLogin, CommentController.checkUserComment);
+CommentRouter.post("/multiple", CommentController.getCommentsByProductIds);
 CommentRouter.delete(
   "/:commentId",
   checkLogin,

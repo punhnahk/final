@@ -7,7 +7,6 @@ import { Link } from "react-router-dom";
 import categoryApi from "../../api/categoryApi";
 import { ROUTE_PATH } from "../../constants/routes";
 import { selectCart } from "../../store/cartSlice";
-import ProfileAvatar from "./ProfileAvatar";
 
 const BottomNavigation = () => {
   const cart = useSelector(selectCart);
@@ -112,9 +111,6 @@ const BottomNavigation = () => {
           <FaCartShopping className="text-3xl" />
         </Badge>
       </Link>
-
-      {/* Profile Avatar */}
-      <ProfileAvatar />
     </div>
   );
 };

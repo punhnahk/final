@@ -59,48 +59,60 @@ const OrdersHistory = ({ userId }) => {
 
   const checkUserComments = async (ordersData) => {
     try {
-      const promises = ordersData.flatMap((order) =>
-        order.products.map(async (product) => {
-          const response = await commentApi.checkComment({
-            productId: product.product._id,
-            userId: userId,
-            orderId: order._id,
-          });
-          return {
-            productId: product.product._id,
-            orderId: order._id,
-            hasCommented: response.data.hasCommented,
-          };
-        })
-      );
+      const productIds = [
+        ...new Set(
+          ordersData.flatMap((order) =>
+            order.products.map((product) => product.product._id)
+          )
+        ),
+      ];
 
-      const results = await Promise.all(promises);
-      const hasCommented = results.reduce(
-        (acc, { productId, orderId, hasCommented }) => {
-          acc[`${orderId}_${productId}`] = hasCommented;
-          return acc;
-        },
-        {}
-      );
+      const response = await commentApi.getCommentsByProductIds(productIds);
+
+      const commentsByProduct = response.reduce((acc, comment) => {
+        if (!acc[comment.productId]) {
+          acc[comment.productId] = [];
+        }
+        acc[comment.productId].push(comment);
+        return acc;
+      }, {});
+
+      const hasCommented = ordersData.reduce((acc, order) => {
+        order.products.forEach((product) => {
+          const productId = product.product._id;
+          const userComments = commentsByProduct[productId] || [];
+
+          const orderProductKey = `${order._id}_${productId}`;
+
+          const hasCommentedForThisProduct = userComments.some(
+            (comment) => comment.userId === userId
+          );
+
+          acc[orderProductKey] = hasCommentedForThisProduct;
+        });
+        return acc;
+      }, {});
 
       setHasCommentedMap(hasCommented);
     } catch (error) {
-      console.error("Failed to check comments", error);
+      console.error("Failed to fetch comments", error);
     }
   };
 
   const handleCommentSubmit = async (orderId, productId, content, rating) => {
     try {
+      // If rating is not provided, default it to 0
+      const finalRating = rating !== undefined ? rating : 0;
+
       await commentApi.addComment({
         orderId,
         productId,
         content,
-        rating, // Include the rating
+        rating: finalRating,
       });
-      message.success("Comment added successfully!");
-      // Optionally refetch comments or update state
+      message.success("Comment and rating added successfully!");
     } catch (error) {
-      message.error("You have already commented on this product.");
+      message.error("You can only comment once on each product.");
     }
   };
 

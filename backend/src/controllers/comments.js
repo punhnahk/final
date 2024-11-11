@@ -49,12 +49,34 @@ const CommentController = {
       const comments = await comment
         .find({ productId })
         .populate("userId", "name avatar")
-        .populate({ path: "orderId", select: "createdAt" }) // Populate orderId if needed
+        .populate({ path: "orderId", select: "createdAt" })
         .exec();
 
       res.status(200).json(comments);
     } catch (error) {
       console.error(error);
+      res.status(500).json({ message: "Failed to fetch comments." });
+    }
+  },
+
+  getCommentsByProductIds: async (req, res) => {
+    try {
+      const { productIds } = req.body;
+
+      if (!productIds || !Array.isArray(productIds)) {
+        return res.status(400).json({
+          message: "Product IDs are required and should be an array.",
+        });
+      }
+
+      const comments = await comment
+        .find({ productId: { $in: productIds } })
+        .populate("userId", "name avatar")
+        .exec();
+
+      res.status(200).json(comments);
+    } catch (error) {
+      console.error("Error fetching comments:", error); // Logs the error to the console
       res.status(500).json({ message: "Failed to fetch comments." });
     }
   },
@@ -74,28 +96,28 @@ const CommentController = {
     }
   },
 
-  // Check if user has commented on a product
-  checkUserComment: async (req, res) => {
-    const { productId } = req.query;
+  // // Check if user has commented on a product
+  // checkUserComment: async (req, res) => {
+  //   const { productId } = req.query;
 
-    try {
-      const existingComment = await comment.findOne({
-        productId,
-        userId: req.user.id,
-      });
+  //   try {
+  //     const existingComment = await comment.findOne({
+  //       productId,
+  //       userId: req.user.id,
+  //     });
 
-      if (existingComment) {
-        return res.status(200).json({ hasCommented: true });
-      } else {
-        return res.status(200).json({ hasCommented: false });
-      }
-    } catch (error) {
-      console.error("Error checking user comment:", error);
-      res
-        .status(500)
-        .json({ message: "Error checking comment", error: error.message });
-    }
-  },
+  //     if (existingComment) {
+  //       return res.status(200).json({ hasCommented: true });
+  //     } else {
+  //       return res.status(200).json({ hasCommented: false });
+  //     }
+  //   } catch (error) {
+  //     console.error("Error checking user comment:", error);
+  //     res
+  //       .status(500)
+  //       .json({ message: "Error checking comment", error: error.message });
+  //   }
+  // },
 
   // Delete a comment
   deleteComment: async (req, res) => {
