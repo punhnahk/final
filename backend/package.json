@@ -13,6 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "compression": "^1.7.5",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
@@ -30,6 +31,7 @@
     "nanoid": "^5.0.8",
     "nodemailer": "^6.9.15",
     "qs": "^6.13.0",
+    "redis": "^4.7.0",
     "socket.io": "^4.8.0"
   },
   "devDependencies": {
