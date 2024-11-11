@@ -3,7 +3,6 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import rateLimit from "express-rate-limit";
-import slowDown from "express-slow-down";
 import helmet from "helmet";
 import http from "http";
 import morgan from "morgan";
@@ -42,18 +41,11 @@ connectDB();
 // DDoS Protection with Rate Limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 1000,
+  max: 100,
   message: "Too many requests from this IP, please try again later.",
 });
 
-const speedLimiter = slowDown({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  delayAfter: 50,
-  delayMs: false,
-});
-
 app.use(limiter);
-app.use(speedLimiter);
 
 // Routes
 app.use("/api", router);
