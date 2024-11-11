@@ -1,5 +1,4 @@
 import { Badge, Dropdown, Form, Input, message } from "antd";
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { FaPhoneAlt, FaShoppingCart } from "react-icons/fa";
 import { FaBarsStaggered } from "react-icons/fa6";
@@ -19,7 +18,6 @@ const HeaderClient = () => {
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [searchStr, setSearchStr] = useState("");
-  const [weather, setWeather] = useState(null);
   const cart = useSelector(selectCart);
   const navigate = useNavigate();
   const [form] = Form.useForm();
@@ -27,9 +25,10 @@ const HeaderClient = () => {
   const { profile } = useProfile();
 
   useEffect(() => {
-    fetchData();
-    fetchWeather();
-  }, []);
+    if (!isMobile) {
+      fetchData(); // Fetch categories only if not on mobile
+    }
+  }, [isMobile]);
 
   const fetchData = async () => {
     try {
@@ -37,18 +36,6 @@ const HeaderClient = () => {
       setCategories(res.data);
     } catch (error) {
       message.error("Failed to fetch categories");
-    }
-  };
-
-  const fetchWeather = async () => {
-    const city = "Da Nang";
-    try {
-      const res = await axios.get(
-        `https://api.weatherapi.com/v1/current.json?key=${process.env.REACT_APP_WEATHER}&q=${city}&aqi=no`
-      );
-      setWeather(res.data);
-    } catch (error) {
-      message.error("Failed to fetch weather data");
     }
   };
 
@@ -132,58 +119,53 @@ const HeaderClient = () => {
 
   return (
     <>
-      <header className="bg-[#C9E9D2] sticky top-0 z-50 shadow-md">
+      <header className="bg-white sticky top-0 z-50 shadow-md border-b border-gray-200">
         <WrapperContent>
-          <div className="flex flex-col md:flex-row items-center justify-between py-2">
-            <div className="flex items-center gap-x-2 mb-2 md:mb-0">
-              <Link to={ROUTE_PATH.HOME}>
-                <img src="/svg/logo.svg" className="h-10 md:h-12" alt="Logo" />
-              </Link>
+          <div className="relative flex items-center justify-between mb-2 md:mb-0 w-full p-2 ml-2 space-x-4">
+            {/* Logo */}
+            <Link to={ROUTE_PATH.HOME} className="flex-shrink-0">
+              <img src="/svg/logo.svg" className="h-10 md:h-12" alt="Logo" />
+            </Link>
 
-              {!isMobile && (
-                <Dropdown menu={{ items: menuItems }} placement="bottomRight">
-                  <div className="bg-[#FEF9F2] ml-4 flex items-center rounded-full px-2 h-8 cursor-pointer">
-                    <FaBarsStaggered className="text-sm" />
-                    <p className="text-xs font-medium ml-1">Categories</p>
-                  </div>
-                </Dropdown>
-              )}
-            </div>
+            {/* Dropdown Categories */}
+            {!isMobile && (
+              <Dropdown menu={{ items: menuItems }} placement="bottomLeft">
+                <div className="bg-gray-100 ml-4 flex items-center rounded-full  px-4 py-2 cursor-pointer">
+                  <FaBarsStaggered className="text-sm" />
+                  <p className="text-xs font-medium ml-2">Categories</p>
+                </div>
+              </Dropdown>
+            )}
 
+            {/* Search Bar */}
             <Form
               form={form}
               onFinish={() =>
                 navigate(ROUTE_PATH.PRODUCTS_LIST + "?search=" + searchStr)
               }
-              className="flex-1 flex justify-center mb-2 md:mb-0" // Changed to justify-center
+              className="flex-1 flex justify-center"
             >
-              {productDropdown}
+              <div className="w-full sm:w-[300px] md:w-[500px]">
+                {productDropdown}
+              </div>
             </Form>
 
-            <div className="flex items-center gap-2 ml-auto">
+            {/* Contact and Cart */}
+            <div className="flex items-center gap-4 ml-auto">
               {!isMobile && (
                 <a
                   href="tel:18001291"
-                  className="flex items-center gap-1 p-2 bg-red-200 border-red-200 border-4 rounded-xl cursor-pointer text-sm"
+                  className="flex items-center gap-2 p-2  rounded-lg cursor-pointer  text-sm"
                 >
-                  <FaPhoneAlt className="mr-1" /> 1800.1291
+                  <FaPhoneAlt className="text-base mr-1" /> 1800.1291
                 </a>
               )}
-              {weather && !isMobile && (
-                <div className="flex items-center gap-1 p-2 bg-blue-200 border-blue-200 border-4 rounded-xl text-xs max-w-[120px]">
-                  <img
-                    src={weather.current.condition.icon}
-                    alt="Weather icon"
-                    className="w-6 h-6" // Reduced icon size
-                  />
-                  <span className="whitespace-nowrap">{`${weather.current.temp_c}°C`}</span>
-                </div>
-              )}
 
-              {profile && (
+              {/* Cart Icon */}
+              {profile && !isMobile && (
                 <Link
                   to={ROUTE_PATH.CART}
-                  className="flex items-center gap-1 p-2 bg-yellow-200 border-yellow-200 border-4 rounded-xl cursor-pointer"
+                  className="flex items-center gap-2 p-2  rounded-lg cursor-pointer "
                 >
                   <Badge
                     count={cart?.products.length}
@@ -197,7 +179,9 @@ const HeaderClient = () => {
                   </span>
                 </Link>
               )}
-              <ProfileAvatar />
+
+              {/* Profile Avatar */}
+              {!isMobile && <ProfileAvatar />}
             </div>
           </div>
         </WrapperContent>
@@ -205,7 +189,7 @@ const HeaderClient = () => {
 
       {!isMobile && (
         <WrapperContent>
-          <div className="flex flex-wrap items-center gap-x-3 py-2">
+          <div className="flex flex-wrap items-center gap-x-3 py-2 rounded-lg ">
             <div className="flex items-center gap-x-1.5">
               <img
                 src="/images/header-iphone.png"

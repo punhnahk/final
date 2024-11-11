@@ -10,7 +10,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom"; // Import Link for navigation
 import wishlistApi from "../../../../api/wishlistApi";
-import WrapperContent from "../../../../components/WrapperContent/WrapperContent"; // Assuming this is the correct import path
+import WrapperContent from "../../../../components/WrapperContent/WrapperContent";
 import { ROUTE_PATH } from "../../../../constants/routes";
 import formatPrice from "../../../../utils/formatPrice";
 
@@ -64,7 +64,7 @@ const WishlistList = () => {
   const currentItems = wishlistItems.slice(indexOfFirstItem, indexOfLastItem); // Get items for the current page
 
   return (
-    <WrapperContent className="my-8">
+    <WrapperContent className="my-8 px-4">
       <Title className="text-center my-4">Your Wishlist</Title>
       <List
         grid={{
@@ -77,45 +77,49 @@ const WishlistList = () => {
         }}
         dataSource={Array.isArray(currentItems) ? currentItems : []} // Ensure dataSource is always an array
         renderItem={(item) => {
-          // Check if item has images and is an array
           const images = item?.image || []; // Fallback to an empty array
 
           return (
             <List.Item>
               <Link to={ROUTE_PATH.PRODUCT_DETAIL(item._id)}>
-                {" "}
                 {/* Use Link to navigate to product details */}
                 <Card
                   hoverable
-                  cover={
-                    images.length > 0 ? ( // Check if there are images
-                      <img
-                        alt={item.name}
-                        src={images[0]} // Use the first image
-                        className="object-cover h-48 w-full" // Keep the height consistent
-                        style={{ objectFit: "cover" }} // Ensure the image covers the card without distortion
-                      />
-                    ) : (
-                      <div className="h-48 w-full flex items-center justify-center bg-gray-200">
-                        <span>No Image Available</span>
-                      </div>
-                    )
-                  }
                   className="shadow-lg rounded-lg transition-transform transform"
                 >
                   <Card.Meta
                     title={item?.name || "Unnamed Product"}
                     description={formatPrice(item.salePrice)}
                   />
+                  <div className="flex justify-center items-center mt-2">
+                    {/* Display product image horizontally */}
+                    {images.length > 0 ? (
+                      <img
+                        alt={item.name}
+                        src={images[0]} // Use the first image
+                        className="object-cover w-full" // Make the image width 100% of the card
+                        style={{
+                          maxWidth: "100%", // Ensure the image fits within the card
+                          maxHeight: "120px", // Limit the image height to fit horizontally
+                          objectFit: "contain", // Preserve aspect ratio
+                        }}
+                      />
+                    ) : (
+                      <div className="h-48 w-full flex items-center justify-center bg-gray-200">
+                        <span>No Image Available</span>
+                      </div>
+                    )}
+                  </div>
                 </Card>
               </Link>
-              <div className="justify-items-center pt-2 pl-9">
+              <div className="flex justify-center pt-2">
                 <Button
                   type="primary"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleRemoveFromWishlist(item._id);
                   }}
+                  className="w-full sm:w-auto" // Make button full width on small screens
                 >
                   Remove
                 </Button>

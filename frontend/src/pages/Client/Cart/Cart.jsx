@@ -1,6 +1,6 @@
-import { Breadcrumb, InputNumber, message, Popconfirm } from "antd";
+import { InputNumber, message, Popconfirm } from "antd";
 import React from "react";
-import { FaRegTrashAlt } from "react-icons/fa";
+import { FaMinus, FaPlus, FaRegTrashAlt } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import WrapperContent from "../../../components/WrapperContent/WrapperContent";
@@ -72,39 +72,18 @@ const Cart = () => {
 
         {!isCartEmpty && (
           <>
-            <Breadcrumb
-              className="mb-3"
-              items={[
-                {
-                  title: (
-                    <Link
-                      className="!text-[#1250dc] font-medium"
-                      to={ROUTE_PATH.HOME}
-                    >
-                      Home
-                    </Link>
-                  ),
-                },
-                {
-                  title: "Shopping Cart",
-                  className: "font-medium",
-                },
-              ]}
-            />
-
             <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
               <div className="col-span-12 sm:col-span-8">
                 {cart.products.map((it) => {
                   const salePrice = it.product.salePrice;
                   const originPrice = it.product.price;
-
                   const price = salePrice > 0 ? salePrice : originPrice;
                   const totalPrice = price * it.quantity;
 
                   return (
                     <div
                       key={`cart-product-item-${it._id}`}
-                      className="bg-white rounded-xl px-4 py-3 mb-3 flex items-center justify-between"
+                      className="bg-white rounded-xl px-4 py-3 mb-3 flex items-center justify-between flex-wrap"
                     >
                       <div className="flex gap-x-2 items-center text-wrap">
                         <div className="w-[68px] h-[68px] p-2 border border-[#d1d5db] rounded-lg">
@@ -115,42 +94,65 @@ const Cart = () => {
                           />
                         </div>
 
-                        <p className="font-medium pl-3 text-[#090d14] truncate w-24 sm:w-32 md:w-auto">
+                        <p className="font-medium pl-3 text-[#090d14] truncate max-w-[300px] sm:max-w-[250px] md:max-w-[250px] pr-5">
                           {it.product.name}
                         </p>
                       </div>
 
-                      <div className="flex items-center gap-x-3 flex-grow justify-between">
-                        <div>
-                          <p className="text-sm pl-4 text-[#dc2626] font-semibold">
+                      <div className="flex flex-grow justify-between items-center pt-2">
+                        {/* Price Section */}
+                        <div className="flex flex-col items-start w-[150px] sm:w-[200px]">
+                          <p className="text-sm text-[#dc2626] font-semibold truncate">
                             {formatPrice(totalPrice)}
                           </p>
 
                           {salePrice > 0 && (
-                            <p className="text-xs pl-4 text-[#9ca3af] font-medium line-through">
+                            <p className="text-xs text-[#9ca3af] font-medium line-through">
                               {formatPrice(originPrice * it.quantity)}
                             </p>
                           )}
                         </div>
 
-                        <div className="flex items-center gap-x-2">
-                          <InputNumber
-                            value={it.quantity}
-                            size="large"
-                            onKeyDown={(e) => e.preventDefault()}
-                            min={1}
-                            className="max-w-[45px]"
-                            onChange={(val) =>
-                              onQuantityUpdate(it.product._id, val)
+                        {/* Quantity and actions section */}
+                        <div className="flex items-center gap-x-1 justify-center">
+                          <button
+                            onClick={() =>
+                              onQuantityUpdate(it.product._id, it.quantity - 1)
                             }
-                          />
+                            disabled={it.quantity <= 1}
+                            className="p-2 bg-gray-200 rounded-full hover:bg-gray-300 disabled:bg-gray-300"
+                          >
+                            <FaMinus className="text-[#6b7280]" />
+                          </button>
+
+                          <div className="flex items-center justify-center w-[45px]">
+                            <InputNumber
+                              value={it.quantity}
+                              size="large"
+                              onKeyDown={(e) => e.preventDefault()}
+                              min={1}
+                              className="max-w-[45px] w-[45px] pl-1.5"
+                              onChange={(val) =>
+                                onQuantityUpdate(it.product._id, val)
+                              }
+                            />
+                          </div>
+
+                          <button
+                            onClick={() =>
+                              onQuantityUpdate(it.product._id, it.quantity + 1)
+                            }
+                            className="p-2 bg-gray-200 rounded-full hover:bg-gray-300"
+                          >
+                            <FaPlus className="text-[#6b7280]" />
+                          </button>
 
                           <Popconfirm
                             title="Remove product from cart"
                             description="Are you sure you want to remove this product?"
                             onConfirm={() => onDeleteProduct(it.product._id)}
                           >
-                            <FaRegTrashAlt className="text-[#6b7280] cursor-pointer" />
+                            <FaRegTrashAlt className="text-[#6b7280] cursor-pointer w-[24px] h-[24px] pl-2" />
                           </Popconfirm>
                         </div>
                       </div>
@@ -166,7 +168,6 @@ const Cart = () => {
 
                 <div className="flex items-center justify-between mb-1">
                   <p className="text-xs">Total</p>
-
                   <p className="font-medium">{formatPrice(cart.totalPrice)}</p>
                 </div>
 
@@ -174,7 +175,6 @@ const Cart = () => {
 
                 <div className="flex items-center justify-between mb-1">
                   <p className="text-xs">Total Discounts</p>
-
                   <p className="font-medium">{formatPrice(0)}</p>
                 </div>
 

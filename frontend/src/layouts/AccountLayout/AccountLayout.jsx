@@ -31,7 +31,7 @@ const AccountLayout = () => {
   }
 
   return (
-    <div className="bg-gray-100 py-11 px-4 md:px-8 min-h-[calc(100vh-100px)]">
+    <div className="bg-gray-100 py-11 px-4 md:px-8 min-h-[calc(100vh-100px)]  overflow-x-hidden">
       <WrapperContent>
         <div className="grid grid-cols-12 gap-4">
           <div className="col-span-12 md:col-span-3 self-start">

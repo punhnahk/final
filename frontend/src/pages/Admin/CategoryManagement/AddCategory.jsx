@@ -8,31 +8,20 @@ import uploadImage from "../../../utils/uploadImage";
 
 const AddCategory = () => {
   const [loading, setLoading] = useState(false);
-  const [imageUrl, setImageUrl] = useState(""); // State to store image URL
   const navigate = useNavigate();
 
-  // Handle form submission
   const onSubmit = async ({ image, ...rest }) => {
     setLoading(true);
     try {
-      let uploadedImageUrl;
+      const imageUrl = await uploadImage(image.file.originFileObj);
+      await categoryApi.addCategory({ ...rest, image: imageUrl });
 
-      // If image URL is provided, use it; otherwise, upload the file
-      if (imageUrl) {
-        uploadedImageUrl = imageUrl;
-      } else {
-        uploadedImageUrl = await uploadImage(image.file.originFileObj);
-      }
-
-      // Add category with the image URL (from file upload or direct URL)
-      await categoryApi.addCategory({ ...rest, image: uploadedImageUrl });
-
-      message.success("Successfully added product category");
+      message.success("Thêm danh mục SP thành công");
       navigate(ROUTE_PATH.CATEGORY_MANAGEMENT);
     } catch (error) {
       message.error("Failed to submit");
     } finally {
-      setLoading(false); // Stop the loading state after submission
+      setLoading(false);
     }
   };
 
@@ -41,7 +30,6 @@ const AddCategory = () => {
       <h1 className="font-semibold text-2xl mb-3">Add Category</h1>
 
       <Form layout="vertical" onFinish={onSubmit}>
-        {/* Category Name */}
         <Form.Item
           name="name"
           label="Category Name"
@@ -55,29 +43,19 @@ const AddCategory = () => {
           <Input placeholder="Enter category name" />
         </Form.Item>
 
-        {/* Category Image Upload or URL */}
         <Form.Item
           label="Category Image"
           name="image"
           rules={[
             {
-              required: !imageUrl, // Require file upload if URL is not provided
-              message: "Please select a category image or enter an image URL",
+              required: true,
+              message: "Please select a category image",
             },
           ]}
         >
-          {/* UploadFormItem for local file upload */}
           <UploadFormItem />
-          <div className="mt-2">
-            <Input
-              placeholder="Or enter an image URL"
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-            />
-          </div>
         </Form.Item>
 
-        {/* Submit Button */}
         <Button
           className="mt-2"
           type="primary"

@@ -45,18 +45,19 @@ const Banner = () => {
 // Ad Section Component
 const AdSection = () => {
   const [ad, setAd] = useState(null);
-  const [loading, setLoading] = useState(true); // State to track loading
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    fetchAd(); // Fetch a new ad once on component mount
+    fetchAd();
   }, []);
 
   const fetchAd = async () => {
     try {
-      setLoading(true); // Set loading to true before fetching
+      setLoading(true);
       const res = await axios.get(
-        `https://api.unsplash.com/photos/random?query=technology&client_id=${process.env.REACT_APP_UNSPLASH_ACCESS_KEY}`
+        `https://api.unsplash.com/photos/random?query=apple-brand&client_id=${process.env.REACT_APP_UNSPLASH_ACCESS_KEY}`
       );
-      setAd(res.data); // Set the single ad
+      setAd(res.data);
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -74,12 +75,12 @@ const AdSection = () => {
           className="relative rounded-md overflow-hidden bg-gray-200"
         >
           <img
-            src={ad.urls.regular} // Use a specific size for consistent dimensions
+            src={ad.urls.regular}
             alt={ad.alt_description}
             className={`w-full h-[150px] object-cover md:h-[248px] lg:h-[248px] transition-opacity duration-500 ease-in-out ${
               loading ? "opacity-0" : "opacity-100"
-            }`} // Add transition effect
-            onLoad={() => setLoading(false)} // Remove loading state on image load
+            }`}
+            onLoad={() => setLoading(false)}
           />
         </Link>
       )}
@@ -87,16 +88,49 @@ const AdSection = () => {
   );
 };
 
-// Main Component combining Banner and AdSection
+const SmallImagesGrid = () => {
+  const smallImages = [
+    "https://laptopbaominh.com/wp-content/uploads/2015/08/banner-n05.jpg",
+    "https://down-vn.img.susercontent.com/file/d11c20421106852a2564b6f68b157aba",
+    "https://laptopbaominh.com/wp-content/uploads/2015/08/banner-n04.jpg",
+    "https://cdn.shopify.com/s/files/1/1409/9796/files/PlayTech_Banner1_e934ebb1-f177-49e6-a954-e4f58cfa7fcd_1200x1200.png?v=1719556356",
+  ];
+
+  return (
+    <div className="grid grid-cols-2 gap-3 mt-4">
+      {smallImages.map((src, index) => (
+        <div
+          key={index}
+          className="w-full h-[100px] md:h-[100px] lg:h-[150px] overflow-hidden rounded-md shadow-md"
+        >
+          <img
+            src={src}
+            alt={`small-img-${index}`}
+            className="w-full h-full object-cover"
+            style={{
+              imageRendering: "auto", // Adjusts for higher-density screens
+              transform: "scale(1)", // Slight upscale for sharper look
+            }}
+            loading="lazy" // Lazy loading for performance optimization
+          />
+        </div>
+      ))}
+    </div>
+  );
+};
+
 const BannerWithAds = () => {
   return (
-    <WrapperContent className="flex flex-col md:flex-row gap-4 py-3">
-      <div className="w-full md:w-3/5">
-        <Banner />
+    <WrapperContent className="flex flex-col gap-4 py-3">
+      <div className="flex flex-col md:flex-row gap-4">
+        <div className="w-full md:w-3/5">
+          <Banner />
+        </div>
+        <div className="w-full md:w-2/5 flex flex-col gap-4">
+          <AdSection />
+        </div>
       </div>
-      <div className="w-full md:w-2/5 flex flex-col gap-4">
-        <AdSection />
-      </div>
+      <SmallImagesGrid />
     </WrapperContent>
   );
 };

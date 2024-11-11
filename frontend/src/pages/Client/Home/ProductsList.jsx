@@ -53,7 +53,7 @@ const ProductsList = () => {
   return (
     <WrapperContent className="pt-4 pb-8">
       <div className="h-1 bg-red-300 my-4" />
-      {data.map((category) => (
+      {data.map((category, index) => (
         <div key={`category-section-${category._id}`} className="mb-6">
           <div className="flex items-center justify-between mb-2">
             <p className="font-semibold text-xl text-gray-700">
@@ -72,6 +72,9 @@ const ProductsList = () => {
               <ProductItem key={`product-item-${product._id}`} data={product} />
             ))}
           </div>
+
+          {/* Red line between categories */}
+          {index < data.length - 1 && <div className="h-0.5 bg-red-300 my-2" />}
         </div>
       ))}
     </WrapperContent>

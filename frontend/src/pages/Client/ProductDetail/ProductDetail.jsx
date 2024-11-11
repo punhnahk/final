@@ -4,11 +4,12 @@ import { FaCartArrowDown, FaHeart, FaPhoneAlt } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import cartApi from "../../../api/cartApi";
-import commentApi from "../../../api/commentApi"; // Import the comment API
+import commentApi from "../../../api/commentApi";
 import productApi from "../../../api/productApi";
 import wishlistApi from "../../../api/wishlistApi";
 import ProductItem from "../../../components/ProductItem/ProductItem";
 import WrapperContent from "../../../components/WrapperContent/WrapperContent";
+import { TOKEN_STORAGE_KEY } from "../../../constants";
 import { ROUTE_PATH } from "../../../constants/routes";
 import { getMyCarts } from "../../../store/cartSlice";
 import formatPrice from "../../../utils/formatPrice";
@@ -19,7 +20,7 @@ const ProductDetail = () => {
   const [comments, setComments] = useState([]); // State for comments
   const [loadingComments, setLoadingComments] = useState(false);
   const [isInWishlist, setIsInWishlist] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1); // State for current page
+  const [currentPage, setCurrentPage] = useState(1);
   const [commentsPerPage] = useState(5); // Number of comments per page
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -31,13 +32,18 @@ const ProductDetail = () => {
   }, [id]);
 
   const fetchWishlistStatus = async (itemId) => {
+    const token = localStorage.getItem(TOKEN_STORAGE_KEY);
+
+    if (!token) {
+      return;
+    }
+
     try {
       const response = await wishlistApi.getWishlist();
-      console.log("Fetched wishlist items:", response.data);
       const isInWishlist =
         Array.isArray(response.data) &&
         response.data.some((item) => item.id === itemId);
-      setIsInWishlist(isInWishlist); // Set the state here
+      setIsInWishlist(isInWishlist);
     } catch (error) {
       message.error("Failed to fetch wishlist items");
     }
@@ -55,31 +61,32 @@ const ProductDetail = () => {
     });
   };
   const toggleWishlist = async () => {
+    const token = localStorage.getItem(TOKEN_STORAGE_KEY);
+
+    if (!token) {
+      message.warning("Please log in to toggle your wishlist.");
+      return;
+    }
+
     if (!data) return;
+
     if (isInWishlist) {
       try {
         await wishlistApi.removeFromWishlist(id);
-        setIsInWishlist(false); // Update the state to reflect the product is now in the wishlist
-        message.success("Remove product to wishlist");
+        setIsInWishlist(false);
+        message.success("Removed product from wishlist");
       } catch (error) {
-        console.error(
-          "Error adding product to wishlist:",
-          error.response || error.message
-        );
         message.error(
-          error.response?.data?.message || "Failed to add product to wishlist"
+          error.response?.data?.message ||
+            "Failed to remove product from wishlist"
         );
       }
     } else {
       try {
         await wishlistApi.addToWishlist({ productId: id });
-        setIsInWishlist(true); // Update the state to reflect the product is now in the wishlist
+        setIsInWishlist(true);
         message.success("Added product to wishlist");
       } catch (error) {
-        console.error(
-          "Error adding product to wishlist:",
-          error.response || error.message
-        );
         message.error(
           error.response?.data?.message || "Failed to add product to wishlist"
         );
@@ -131,10 +138,8 @@ const ProductDetail = () => {
     }
   };
 
-  // Calculate total number of pages
   const totalPages = Math.ceil(comments.length / commentsPerPage);
 
-  // Get comments for the current page
   const indexOfLastComment = currentPage * commentsPerPage;
   const indexOfFirstComment = indexOfLastComment - commentsPerPage;
   const currentComments = comments.slice(
@@ -182,9 +187,10 @@ const ProductDetail = () => {
 
         {/* Product Info */}
         <div className="col-span-12 lg:col-span-6">
-          <h1 className="text-[#090d14] font-semibold text-2xl lg:text-3xl">
+          <h1 className="text-[#090d14] font-semibold text-2xl lg:text-3xl break-words">
             {data.name}
           </h1>
+
           <p className="text-sm text-[#6b7280] font-medium">
             Category:
             <Link

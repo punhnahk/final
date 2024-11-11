@@ -1,6 +1,5 @@
 import { Form, Input, message, Radio, Select, Spin } from "antd";
 import FormItem from "antd/es/form/FormItem";
-import TextArea from "antd/es/input/TextArea";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { FaTimes } from "react-icons/fa";
@@ -30,6 +29,8 @@ const Checkout = () => {
   const [totalDiscount, setTotalDiscount] = useState(0);
   const [districts, setDistricts] = useState([]);
   const [isVoucherApplied, setIsVoucherApplied] = useState(false);
+  const [useSavedAddress, setUseSavedAddress] = useState(true); // New state for address selection
+  const [savedAddress, setSavedAddress] = useState(null); // To store the saved address
 
   const FREE_SHIPPING_THRESHOLD = 5000000;
   const SHIPPING_FEE = 20000;
@@ -47,6 +48,8 @@ const Checkout = () => {
     const fetchUserInfo = async () => {
       try {
         const res = await userApi.getProfile();
+        const userData = res.data;
+        setSavedAddress(userData.address);
         form.setFieldsValue({
           customerName: res.data.name,
           customerPhone: res.data.phone,
@@ -76,9 +79,17 @@ const Checkout = () => {
     }
   };
 
+  const handleAddressChange = (e) => {
+    setUseSavedAddress(e.target.value === "saved"); // Set state based on user choice
+  };
+
   const onSubmit = async (values) => {
-    const cityName = selectedCity ? selectedCity.name : values.city; // Get the selected city name
-    const fullAddress = `${values.detailedAddress}, ${values.district}, ${cityName}`;
+    const cityName = selectedCity ? selectedCity.name : values.city;
+    const fullAddress =
+      useSavedAddress && savedAddress // Use saved address if selected
+        ? savedAddress
+        : `${values.detailedAddress}, ${values.district}, ${cityName}`;
+
     try {
       await userApi.updateProfile({
         name: values.customerName,
@@ -263,53 +274,58 @@ const Checkout = () => {
                   Shipping Information
                 </p>
 
-                <FormItem
-                  name="city"
-                  rules={[{ required: true, message: "Please select a city" }]}
-                >
-                  <Select placeholder="Select City" onChange={handleCityChange}>
-                    {cities.map((city) => (
-                      <Option key={city.code} value={city.code}>
-                        {city.name}
-                      </Option>
-                    ))}
-                  </Select>
+                {/* Address selection Radio Buttons */}
+                <FormItem name="addressType" className="mb-4">
+                  <Radio.Group
+                    onChange={handleAddressChange}
+                    value={useSavedAddress ? "saved" : "new"}
+                  >
+                    <Radio value="saved">Use saved address</Radio>
+                    <Radio value="new">Enter a new address</Radio>
+                  </Radio.Group>
                 </FormItem>
 
-                <FormItem
-                  name="district"
-                  rules={[
-                    { required: true, message: "Please select a district" },
-                  ]}
-                >
-                  <Select placeholder="Select District">
-                    {districts.map((district) => (
-                      <Option key={district.code} value={district.name}>
-                        {" "}
-                        {district.name}
-                      </Option>
-                    ))}
-                  </Select>
-                </FormItem>
+                {/* If using saved address, pre-fill fields */}
+                {useSavedAddress ? (
+                  <div>
+                    <FormItem name="address" initialValue={savedAddress}>
+                      <Input placeholder="Saved Address" disabled />
+                    </FormItem>
+                  </div>
+                ) : (
+                  <div>
+                    {/* City, District, and Detailed Address Fields for New Address */}
+                    <FormItem name="city" rules={[{ required: true }]}>
+                      <Select
+                        placeholder="Select City"
+                        onChange={handleCityChange}
+                      >
+                        {cities.map((city) => (
+                          <Option key={city.code} value={city.code}>
+                            {city.name}
+                          </Option>
+                        ))}
+                      </Select>
+                    </FormItem>
 
-                <FormItem
-                  name="detailedAddress"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please enter your detailed address",
-                    },
-                  ]}
-                >
-                  <Input placeholder="Street Address" />
-                </FormItem>
+                    <FormItem name="district" rules={[{ required: true }]}>
+                      <Select placeholder="Select District">
+                        {districts.map((district) => (
+                          <Option key={district.code} value={district.name}>
+                            {district.name}
+                          </Option>
+                        ))}
+                      </Select>
+                    </FormItem>
 
-                <FormItem className="mb-6" name="message">
-                  <TextArea
-                    placeholder="Note (e.g. Call me when the order is ready)"
-                    rows={4}
-                  />
-                </FormItem>
+                    <FormItem
+                      name="detailedAddress"
+                      rules={[{ required: true }]}
+                    >
+                      <Input placeholder="Street Address" />
+                    </FormItem>
+                  </div>
+                )}
               </div>
 
               <div className="bg-white rounded-xl p-4 mb-3">

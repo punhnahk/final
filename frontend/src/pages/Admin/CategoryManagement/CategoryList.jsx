@@ -37,11 +37,14 @@ const CategoryList = () => {
       title: "No.",
       dataIndex: "stt",
       render: (_, __, index) => ++index,
+      width: 50,
+      align: "center",
     },
     {
       title: "Category Name",
       key: "name",
       dataIndex: "name",
+      align: "center",
     },
     {
       title: "Image",
@@ -50,6 +53,7 @@ const CategoryList = () => {
       render: (image) => (
         <Image src={image} width={120} height={120} className="object-cover" />
       ),
+      align: "center",
     },
     {
       title: "Actions",
@@ -71,20 +75,24 @@ const CategoryList = () => {
           </div>
         );
       },
+      width: 100,
     },
   ];
 
   return (
     <>
-      <h1 className="font-semibold text-2xl mb-3">Category Management</h1>
+      <div style={{ padding: 20, borderRadius: 8 }}>
+        <h1 className="font-semibold text-2xl mb-3">Category Management</h1>
 
-      <Table
-        columns={columns}
-        dataSource={data}
-        rowKey="_id"
-        scroll={{ x: 900 }}
-        pagination={data.length > 4 ? { pageSize: 4 } : false}
-      />
+        <Table
+          columns={columns}
+          dataSource={data}
+          rowKey="_id"
+          scroll={{ x: 800 }}
+          size="small"
+          pagination={data.length > 5 ? { pageSize: 5 } : false}
+        />
+      </div>
     </>
   );
 };
