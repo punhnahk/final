@@ -1,11 +1,15 @@
 import { Badge, Dropdown, message } from "antd";
 import React, { useEffect, useState } from "react";
-import { FaHome } from "react-icons/fa";
-import { FaAlignLeft, FaCartShopping } from "react-icons/fa6";
+import { BsCart2 } from "react-icons/bs";
+import { FaRegHeart } from "react-icons/fa";
+import { FaAlignLeft } from "react-icons/fa6";
+import { GoHome } from "react-icons/go";
+import { LuHistory } from "react-icons/lu";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import categoryApi from "../../api/categoryApi";
 import { ROUTE_PATH } from "../../constants/routes";
+import useProfile from "../../hooks/useProfile";
 import { selectCart } from "../../store/cartSlice";
 
 const BottomNavigation = () => {
@@ -13,6 +17,18 @@ const BottomNavigation = () => {
   const [categories, setCategories] = useState([]);
   const [showBottomNav, setShowBottomNav] = useState(true); // Show or hide navigation
   const [lastScrollY, setLastScrollY] = useState(0); // Last scroll position
+  const { profile } = useProfile();
+  const navigate = useNavigate();
+
+  // Redirect to login if not logged in
+  const handleNavigation = (path) => {
+    if (!profile) {
+      message.info("Access restricted. Please sign in to continue.");
+      navigate(ROUTE_PATH.SIGN_IN);
+    } else {
+      navigate(path);
+    }
+  };
 
   // Fetch categories on mount
   useEffect(() => {
@@ -39,24 +55,18 @@ const BottomNavigation = () => {
 
       if (currentScrollY > lastScrollY && currentScrollY > 100) {
         setShowBottomNav(false);
-      }
-      // If scrolling up or not past the threshold, show the bottom navigation
-      else if (currentScrollY < lastScrollY || currentScrollY <= 100) {
+      } else if (currentScrollY < lastScrollY || currentScrollY <= 100) {
         setShowBottomNav(true);
       }
 
-      // If the user has reached the bottom of the page, hide the bottom navigation
       if (currentScrollY + windowHeight >= documentHeight) {
         setShowBottomNav(false);
       }
 
-      // Update the last scroll position
       setLastScrollY(currentScrollY);
     };
 
     window.addEventListener("scroll", handleScroll);
-
-    // Cleanup the event listener on component unmount
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
@@ -81,36 +91,52 @@ const BottomNavigation = () => {
 
   return (
     <div
-      className={`fixed left-2 right-2 bg-white border-t flex justify-around items-center py-3 shadow-xl rounded-[14px] z-50 border-[1px] border-gray-300 transition-all duration-500 ease-in-out ${
+      className={`fixed left-2 right-2 bg-white border-t flex justify-around items-center py-5 shadow-xl rounded-[14px] z-50 border-[1px] border-gray-300 transition-all duration-500 ease-in-out ${
         showBottomNav
           ? "bottom-2 opacity-100 translate-y-0 scale-100"
           : "bottom-[-80px] opacity-0 translate-y-12 scale-95"
       }`}
     >
+      {/* Categories Dropdown */}
+      <Dropdown menu={{ items: menuItems }} placement="bottomCenter">
+        <div className="text-gray-600 flex flex-col items-center">
+          <FaAlignLeft className="text-3xl text-red-600" />
+        </div>
+      </Dropdown>
+
+      {/* Wishlist Link */}
+      <div
+        onClick={() => handleNavigation(ROUTE_PATH.WISHLIST)}
+        className="text-gray-600 flex flex-col items-center cursor-pointer"
+      >
+        <FaRegHeart className="text-3xl text-red-600" />
+      </div>
+
       {/* Home Link */}
       <Link
         to={ROUTE_PATH.HOME}
         className="text-gray-600 flex flex-col items-center"
       >
-        <FaHome className="text-3xl" />
+        <GoHome className="text-4xl text-red-600" />
       </Link>
 
-      {/* Categories Dropdown */}
-      <Dropdown menu={{ items: menuItems }} placement="bottomCenter">
-        <div className="text-gray-600 flex flex-col items-center">
-          <FaAlignLeft className="text-3xl" />
-        </div>
-      </Dropdown>
+      {/* Orders History Link */}
+      <div
+        onClick={() => handleNavigation(ROUTE_PATH.ORDERS_HISTORY)}
+        className="text-gray-600 flex flex-col items-center cursor-pointer"
+      >
+        <LuHistory className="text-3xl text-red-600" />
+      </div>
 
       {/* Cart Link */}
-      <Link
-        to={ROUTE_PATH.CART}
-        className="text-gray-600 hover:text-blue-500 flex flex-col items-center"
+      <div
+        onClick={() => handleNavigation(ROUTE_PATH.CART)}
+        className="text-gray-600 hover:text-blue-500 flex flex-col items-center cursor-pointer"
       >
         <Badge count={cart?.products.length} offset={[0, -4]} color="#FF5733">
-          <FaCartShopping className="text-3xl" />
+          <BsCart2 className="text-3xl text-red-600" />
         </Badge>
-      </Link>
+      </div>
     </div>
   );
 };

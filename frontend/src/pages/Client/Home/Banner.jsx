@@ -90,14 +90,12 @@ const AdSection = () => {
 
 const SmallImagesGrid = () => {
   const smallImages = [
-    "https://laptopbaominh.com/wp-content/uploads/2015/08/banner-n05.jpg",
-    "https://down-vn.img.susercontent.com/file/d11c20421106852a2564b6f68b157aba",
     "https://laptopbaominh.com/wp-content/uploads/2015/08/banner-n04.jpg",
     "https://cdn.shopify.com/s/files/1/1409/9796/files/PlayTech_Banner1_e934ebb1-f177-49e6-a954-e4f58cfa7fcd_1200x1200.png?v=1719556356",
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-3 mt-4">
+    <div className="grid grid-cols-2 gap-2 mb-1">
       {smallImages.map((src, index) => (
         <div
           key={index}
@@ -123,7 +121,7 @@ const BannerWithAds = () => {
   return (
     <WrapperContent className="flex flex-col gap-4 py-3">
       <div className="flex flex-col md:flex-row gap-4">
-        <div className="w-full md:w-3/5">
+        <div className="w-full md:w-3/5 ">
           <Banner />
         </div>
         <div className="w-full md:w-2/5 flex flex-col gap-4">

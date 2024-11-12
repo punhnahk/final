@@ -72,9 +72,8 @@ const ProductsList = () => {
               <ProductItem key={`product-item-${product._id}`} data={product} />
             ))}
           </div>
-
-          {/* Red line between categories */}
-          {index < data.length - 1 && <div className="h-0.5 bg-red-300 my-2" />}
+          {/* Red line between categories
+          {index < data.length - 1 && <div className="h-0.5 bg-red-300 my-2" />} */}
         </div>
       ))}
     </WrapperContent>

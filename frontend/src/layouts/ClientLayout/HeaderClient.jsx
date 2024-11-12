@@ -239,7 +239,7 @@ const HeaderClient = () => {
             )}
 
             {/* Cart Icon */}
-            {!isMobile && (
+            {!isMobile && profile && (
               <Link
                 to={ROUTE_PATH.CART}
                 className="flex items-center gap-2 p-2 rounded-lg cursor-pointer"
@@ -253,22 +253,23 @@ const HeaderClient = () => {
                 </Badge>
               </Link>
             )}
-
-            <Dropdown
-              overlay={orderMenu}
-              trigger={["click"]}
-              placement="bottomRight"
-            >
-              <div className="cursor-pointer relative flex items-center">
-                <Badge
-                  count={orderNotifications.length}
-                  offset={[0, -4]}
-                  color="#FF5733"
-                >
-                  <FaBell className="text-lg" />
-                </Badge>
-              </div>
-            </Dropdown>
+            {profile && (
+              <Dropdown
+                overlay={orderMenu}
+                trigger={["click"]}
+                placement="bottomRight"
+              >
+                <div className="cursor-pointer relative flex items-center">
+                  <Badge
+                    count={orderNotifications.length}
+                    offset={[0, -4]}
+                    color="#FF5733"
+                  >
+                    <FaBell className="text-lg" />
+                  </Badge>
+                </div>
+              </Dropdown>
+            )}
 
             {profile ? (
               <ProfileAvatar />

@@ -42,10 +42,10 @@ const Cart = () => {
   const totalPrice = (cart ? cart.totalPrice : 0) + shippingCost;
 
   return (
-    <div className="bg-gray-100">
+    <div className="bg-white">
       <WrapperContent className="py-4">
         {isCartEmpty && (
-          <div className="rounded-2xl p-6 bg-white flex flex-col sm:flex-row items-center justify-between">
+          <div className="rounded-2xl p-6 bg-gray-200 flex flex-col sm:flex-row items-center justify-between">
             <div className="mb-4 sm:mb-0">
               <p className="text-[#090d14] font-medium text-3xl mb-2">
                 Your cart is currently empty
@@ -83,10 +83,10 @@ const Cart = () => {
                   return (
                     <div
                       key={`cart-product-item-${it._id}`}
-                      className="bg-white rounded-xl px-4 py-3 mb-3 flex items-center justify-between flex-wrap"
+                      className="bg-gray-200 rounded-xl px-4 py-3 mb-3 flex items-center justify-between flex-wrap"
                     >
                       <div className="flex gap-x-2 items-center text-wrap">
-                        <div className="w-[68px] h-[68px] p-2 border border-[#d1d5db] rounded-lg">
+                        <div className="w-[68px] h-[68px] p-2 border border-white bg-white rounded-lg">
                           <img
                             src={it.product.image[0]}
                             alt="Product"
@@ -120,7 +120,7 @@ const Cart = () => {
                               onQuantityUpdate(it.product._id, it.quantity - 1)
                             }
                             disabled={it.quantity <= 1}
-                            className="p-2 bg-gray-200 rounded-full hover:bg-gray-300 disabled:bg-gray-300"
+                            className="p-2 bg-white rounded-full hover:bg-red-200 disabled"
                           >
                             <FaMinus className="text-[#6b7280]" />
                           </button>
@@ -129,8 +129,8 @@ const Cart = () => {
                             <InputNumber
                               value={it.quantity}
                               size="large"
-                              onKeyDown={(e) => e.preventDefault()}
-                              min={1}
+                              // onKeyDown={(e) => e.preventDefault()}
+                              min={0}
                               className="max-w-[45px] w-[45px] pl-1.5"
                               onChange={(val) =>
                                 onQuantityUpdate(it.product._id, val)
@@ -142,7 +142,7 @@ const Cart = () => {
                             onClick={() =>
                               onQuantityUpdate(it.product._id, it.quantity + 1)
                             }
-                            className="p-2 bg-gray-200 rounded-full hover:bg-gray-300"
+                            className="p-2 bg-white rounded-full hover:bg-blue-200"
                           >
                             <FaPlus className="text-[#6b7280]" />
                           </button>
@@ -161,7 +161,7 @@ const Cart = () => {
                 })}
               </div>
 
-              <div className="col-span-12 sm:col-span-4 bg-white rounded-[10px] p-4 self-start">
+              <div className="col-span-12 sm:col-span-4 bg-gray-200 rounded-[10px] p-4 self-start">
                 <p className="text-[#090d14] font-semibold mb-3">
                   Order Summary
                 </p>
@@ -171,12 +171,7 @@ const Cart = () => {
                   <p className="font-medium">{formatPrice(cart.totalPrice)}</p>
                 </div>
 
-                <hr className="my-2" />
-
-                <div className="flex items-center justify-between mb-1">
-                  <p className="text-xs">Total Discounts</p>
-                  <p className="font-medium">{formatPrice(0)}</p>
-                </div>
+                <hr className="my-2 border-t-2 border-[#dc2626]" />
 
                 <div className="flex items-center justify-between mb-1">
                   <p className="text-xs">Shipping</p>
