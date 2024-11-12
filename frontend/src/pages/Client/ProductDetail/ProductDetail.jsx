@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { FaCartArrowDown, FaHeart, FaPhoneAlt } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import io from "socket.io-client";
 import cartApi from "../../../api/cartApi";
 import commentApi from "../../../api/commentApi";
 import productApi from "../../../api/productApi";
@@ -15,17 +14,6 @@ import { ROUTE_PATH } from "../../../constants/routes";
 import useProfile from "../../../hooks/useProfile";
 import { getMyCarts } from "../../../store/cartSlice";
 import formatPrice from "../../../utils/formatPrice";
-
-const socket = io(
-  process.env.NODE_ENV === "production"
-    ? process.env.REACT_APP_APP_API
-    : "http://localhost:4000",
-  {
-    path: "/socket.io", // Specify path if custom or if issues arise
-    transports: ["websocket", "polling"], // Add "polling" as a fallback
-    withCredentials: true,
-  }
-);
 
 const ProductDetail = () => {
   const [data, setData] = useState();
@@ -43,16 +31,6 @@ const ProductDetail = () => {
   useEffect(() => {
     id && fetchData(id);
     fetchWishlistStatus();
-    // Listen for new comments for this product
-    socket.on("newComment", (data) => {
-      if (data.productId === id) {
-        setComments((prevComments) => [data.comment, ...prevComments]);
-      }
-    });
-
-    return () => {
-      socket.off("newComment");
-    };
   }, [id]);
 
   const fetchWishlistStatus = async (itemId) => {

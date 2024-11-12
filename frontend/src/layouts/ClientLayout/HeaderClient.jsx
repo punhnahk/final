@@ -6,7 +6,6 @@ import { IoSearch } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import { useMediaQuery } from "react-responsive";
 import { Link, useNavigate } from "react-router-dom";
-import { io } from "socket.io-client";
 import categoryApi from "../../api/categoryApi";
 import orderApi from "../../api/orderApi";
 import productApi from "../../api/productApi";
@@ -27,25 +26,6 @@ const HeaderClient = () => {
   const [form] = Form.useForm();
   const isMobile = useMediaQuery({ query: `(max-width: 768px)` });
   const { profile } = useProfile();
-
-  useEffect(() => {
-    const socket = io(
-      process.env.NODE_ENV === "production"
-        ? process.env.REACT_APP_APP_API
-        : "http://localhost:4000"
-    );
-
-    socket.on("orderStatusUpdated", ({ orderId, status }) => {
-      setOrderNotifications((prev) => [
-        ...prev,
-        { _id: orderId, status, isRead: false },
-      ]);
-    });
-
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
 
   useEffect(() => {
     if (!isMobile) {

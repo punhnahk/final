@@ -1,7 +1,6 @@
 import crypto from "crypto";
 import moment from "moment-timezone";
 import querystring from "qs";
-import { io } from "../app.js";
 import Cart from "../models/carts.js";
 import Order, { PAYMENT_METHOD } from "../models/orders.js";
 import Product from "../models/products.js";
@@ -58,9 +57,7 @@ const OrderController = {
           !voucher.isActive ||
           moment().isAfter(voucher.expirationDate)
         ) {
-          return res
-            .status(400)
-            .json({ message: "Voucher không hợp lệ hoặc đã hết hạn." });
+          return res.status(400);
         }
 
         discount = (totalPrice * voucher.discountPercentage) / 100; // Tính toán giảm giá
@@ -168,13 +165,6 @@ const OrderController = {
       if (!order) {
         return res.status(404).json({ message: "Order not found" });
       }
-
-      // Emit the status update event to all connected clients
-      io.emit("orderStatusUpdated", {
-        orderId: order._id,
-        status: order.status,
-      });
-      console.log("Emitted update for order:", order._id, order.status);
 
       res.status(200).json({ message: "Order status updated", order });
     } catch (error) {

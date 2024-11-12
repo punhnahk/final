@@ -1,4 +1,3 @@
-import { io } from "../app.js";
 import comment from "../models/comment.js";
 
 const CommentController = {
@@ -32,12 +31,6 @@ const CommentController = {
         content,
         orderId,
         rating, // Save the rating when creating the comment
-      });
-
-      // Emit the new comment to all clients subscribed to this product
-      io.emit("newComment", {
-        productId: newComment.productId,
-        comment: newComment,
       });
 
       res.status(201).json(newComment);
