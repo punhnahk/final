@@ -1,6 +1,12 @@
 import { Breadcrumb, Carousel, Empty, message, Pagination, Spin } from "antd";
 import React, { useEffect, useState } from "react";
-import { FaCartArrowDown, FaHeart, FaPhoneAlt } from "react-icons/fa";
+import {
+  FaCartArrowDown,
+  FaHeart,
+  FaPhoneAlt,
+  FaStar,
+  FaStarHalfAlt,
+} from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import cartApi from "../../../api/cartApi";
@@ -142,6 +148,40 @@ const ProductDetail = () => {
     }
   };
 
+  const renderStarRating = (rating) => {
+    const stars = [];
+    // Round the rating to the nearest 0.5 for displaying half stars
+    const fullStars = Math.floor(rating); // Full stars
+    const halfStars = rating % 1 >= 0.5 ? 1 : 0; // Check if there's a half star
+    const emptyStars = 5 - fullStars - halfStars; // Remaining empty stars
+
+    // Render full stars
+    for (let i = 1; i <= fullStars; i++) {
+      stars.push(<FaStar key={`full-${i}`} className="text-yellow-500" />);
+    }
+
+    // Render half star if needed
+    if (halfStars === 1) {
+      stars.push(<FaStarHalfAlt key="half" className="text-yellow-500" />);
+    }
+
+    // Render empty stars
+    for (let i = 1; i <= emptyStars; i++) {
+      stars.push(<FaStar key={`empty-${i}`} className="text-gray-400" />);
+    }
+
+    return stars;
+  };
+
+  const calculateAverageRating = () => {
+    if (comments.length === 0) return 0; // Avoid division by zero if no comments
+    const totalRating = comments.reduce(
+      (acc, comment) => acc + comment.rating,
+      0
+    );
+    return (totalRating / comments.length).toFixed(1); // Average rating rounded to 1 decimal
+  };
+
   const totalPages = Math.ceil(comments.length / commentsPerPage);
 
   const indexOfLastComment = currentPage * commentsPerPage;
@@ -194,6 +234,17 @@ const ProductDetail = () => {
           <h1 className="text-[#090d14] font-semibold text-2xl lg:text-3xl break-words">
             {data.name}
           </h1>
+
+          {/* Star Rating */}
+          <div className=" flex items-center gap-4">
+            <div className="flex items-center gap-1">
+              {/* Render Star Rating */}
+              {renderStarRating(calculateAverageRating())}
+            </div>
+            <p className="text-sm text-[#6b7280]">
+              ({comments.length} Reviews) - {calculateAverageRating()} Stars
+            </p>
+          </div>
 
           <p className="text-sm text-[#6b7280] font-medium">
             Category:

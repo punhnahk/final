@@ -8,6 +8,12 @@ const ProductItem = ({ className, data }) => {
   const originPrice = data.price;
   const salePrice = data.salePrice;
 
+  // Calculate the discount percentage
+  const discountPercentage =
+    salePrice > 0
+      ? Math.round(((originPrice - salePrice) / originPrice) * 100)
+      : 0;
+
   return (
     <div
       className={classNames(
@@ -24,6 +30,13 @@ const ProductItem = ({ className, data }) => {
           alt="Product"
           className="block absolute w-full h-full top-0 right-0 bottom-0 left-0 object-cover group-hover:scale-105 transition-all"
         />
+
+        {/* Display the discount percentage in the top-left corner */}
+        {salePrice > 0 && (
+          <div className="absolute top-0 left-0 bg-red-500 text-white text-[10px] px-2 py-1 rounded-md opacity-75">
+            Save {discountPercentage}%
+          </div>
+        )}
       </Link>
 
       {salePrice > 0 && (
@@ -35,9 +48,11 @@ const ProductItem = ({ className, data }) => {
       </p>
 
       {salePrice > 0 && (
-        <p className="text-xs text-[#059669] mt-1">
-          Discount {formatPrice(originPrice - salePrice)}
-        </p>
+        <div>
+          <p className="text-xs text-[#059669] mt-1">
+            Discount: {formatPrice(originPrice - salePrice)} VND
+          </p>
+        </div>
       )}
 
       <div className="text-[#090d14] mt-3 text-sm h-[40px] overflow-hidden text-ellipsis whitespace-wrap">

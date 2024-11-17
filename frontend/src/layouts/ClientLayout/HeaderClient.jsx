@@ -99,7 +99,7 @@ const HeaderClient = () => {
   const productDropdown = (
     <Dropdown
       overlay={
-        <div className="bg-white rounded-md shadow-lg px-2 py-2 mt-2 ml-5 max-w-xs">
+        <div className="bg-white rounded-md shadow-lg px-2 py-2 mt-2 ml-5 max-w-xs ">
           {searchStr ? (
             products.length > 0 ? (
               products.slice(0, 3).map((product) => (
@@ -131,7 +131,7 @@ const HeaderClient = () => {
         suffix={
           <div
             onClick={form.submit}
-            className="bg-[#fee2e2] cursor-pointer rounded-full w-8 h-8 flex items-center justify-center"
+            className=" cursor-pointer rounded-full w-8 h-8 flex items-center justify-center"
           >
             <IoSearch className="text-red-600 text-xl" />
           </div>

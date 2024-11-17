@@ -15,10 +15,9 @@ const ClientLayout = () => {
       {!isMobile && <hr className="border border-gray-300" />}
 
       {/* Main content area with flex-grow to push footer to the bottom */}
-      <main className={`flex-grow ${isMobile ? "pb-16" : ""}`}>
+      <main className={`flex-grow ${isMobile ? "" : ""} overflow-hidden`}>
         <Outlet />
       </main>
-
       <Analytics />
       <FooterClient />
 
