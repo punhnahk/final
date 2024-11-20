@@ -46,6 +46,7 @@ const userSchema = new Schema(
       enum: ["password", "google"],
       default: "password",
     },
+    isActive: { type: Boolean, default: true },
   },
   { timestamps: true }
 );

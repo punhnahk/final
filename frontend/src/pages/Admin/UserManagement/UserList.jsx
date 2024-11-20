@@ -1,4 +1,9 @@
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import {
+  CheckOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  StopOutlined,
+} from "@ant-design/icons";
 import { Image, message, Popconfirm, Table } from "antd";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
@@ -30,6 +35,18 @@ const UserList = () => {
       fetchData();
     } catch (error) {
       message.error("Failed to delete");
+    }
+  };
+
+  const onToggleActiveStatus = async (user) => {
+    try {
+      // Toggle the user's isActive status
+      const updatedUser = { ...user, isActive: !user.isActive };
+      await userApi.deactivateUser(user._id, updatedUser);
+      message.success("User status updated successfully");
+      fetchData();
+    } catch (error) {
+      message.error("Failed to update user status");
     }
   };
 
@@ -96,10 +113,10 @@ const UserList = () => {
       render: (role) => (role === "ADMIN" ? "Administrator" : "User"),
     },
     {
-      title: "Login Method", // New column for login method
+      title: "Login Method",
       key: "loginMethod",
-      dataIndex: "loginMethod", // This field should be returned by your API
-      render: (method) => (method === "google" ? "Google" : "Password"), // Display login method
+      dataIndex: "loginMethod",
+      render: (method) => (method === "google" ? "Google" : "Password"),
     },
     {
       title: "Created At",
@@ -114,7 +131,7 @@ const UserList = () => {
         return (
           <div className="flex items-center gap-x-3">
             <Link to={ROUTE_PATH.EDIT_USER(row._id)}>
-              <EditOutlined className="text-lg" />
+              <EditOutlined className="text-lg text-blue-300" />
             </Link>
 
             <Popconfirm
@@ -122,7 +139,21 @@ const UserList = () => {
               description="Confirm delete user"
               onConfirm={() => onDeleteUser(row._id)}
             >
-              <DeleteOutlined className="cursor-pointer text-lg" />
+              <DeleteOutlined className="cursor-pointer text-lg text-red-300" />
+            </Popconfirm>
+            <Popconfirm
+              title={
+                row.isActive
+                  ? "Are you sure you want to deactivate this user?"
+                  : "Are you sure you want to activate this user?"
+              }
+              onConfirm={() => onToggleActiveStatus(row)}
+            >
+              {row.isActive ? (
+                <StopOutlined className="text-lg text-red-600" />
+              ) : (
+                <CheckOutlined className="text-lg" />
+              )}
             </Popconfirm>
           </div>
         );

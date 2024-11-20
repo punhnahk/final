@@ -84,7 +84,9 @@ const ClientProductList = () => {
               ),
             },
             {
-              title: <Link className="font-medium !text-black">Products</Link>,
+              title: (
+                <Link className="font-medium !text-black">{categoryName}</Link>
+              ),
             },
           ]}
         />

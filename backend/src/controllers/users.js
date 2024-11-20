@@ -75,7 +75,7 @@ const UserController = {
   updateProfile: async (req, res) => {
     try {
       const userId = req.user.id;
-      const { name, avatar, address, gender, birthday, phone } = req.body; // Add phone to the destructuring
+      const { name, avatar, address, gender, birthday, phone } = req.body;
 
       const user = await User.findByIdAndUpdate(
         userId,
@@ -152,6 +152,31 @@ const UserController = {
       const user = await User.findByIdAndDelete(id).exec();
 
       res.json(user);
+    } catch (error) {
+      res.status(500).json({
+        message: "Internal server error",
+        error: error.message,
+      });
+    }
+  },
+  deactivateUser: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const user = await User.findById(id).exec();
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      user.isActive = !user.isActive;
+
+      await user.save();
+
+      const message = user.isActive
+        ? "User account activated successfully"
+        : "User account deactivated successfully";
+
+      res.json({ message });
     } catch (error) {
       res.status(500).json({
         message: "Internal server error",

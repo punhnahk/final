@@ -117,6 +117,12 @@ const AuthController = {
         return res.status(404).json({ message: "Unregistered account!" });
       }
 
+      if (!findUser.isActive) {
+        return res.status(403).json({
+          message: "Your account has been deactivated. Please contact support.",
+        });
+      }
+
       const isPasswordValid = await bcrypt.compare(password, findUser.password);
 
       if (!isPasswordValid) {
@@ -187,7 +193,34 @@ const AuthController = {
       await sendMail({
         toEmail: email,
         title: "Password Reset OTP",
-        content: `Your OTP for password reset is: ${otp}. It is valid for ${expireMinutes} minutes.`,
+        content: `
+    <html>
+      <body style="font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f7fc; color: #333;">
+        <table role="presentation" style="width: 100%; background-color: #ffffff; padding: 20px;">
+          <tr>
+            <td style="text-align: center; padding-bottom: 20px;">
+              <h2 style="color: #4CAF50;">Password Reset Request</h2>
+            </td>
+          </tr>
+          <tr>
+            <td style="font-size: 16px; line-height: 1.6; padding-bottom: 20px;">
+              <p>Hello,</p>
+              <p>We received a request to reset your password. Your One-Time Password (OTP) for resetting your password is:</p>
+              <h3 style="font-size: 24px; color: #4CAF50;">${otp}</h3>
+              <p>This OTP is valid for ${expireMinutes} minutes. Please use it before it expires.</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="font-size: 14px; line-height: 1.6; color: #777;">
+              <p>If you didn't request a password reset, you can safely ignore this email.</p>
+              <p>Best regards,</p>
+              <p>Noel Techshop</p>
+            </td>
+          </tr>
+        </table>
+      </body>
+    </html>
+  `,
       });
 
       res.json({

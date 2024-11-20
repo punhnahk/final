@@ -130,7 +130,7 @@ const Checkout = () => {
     }
 
     try {
-      const response = await voucherApi.getVoucherByCode(voucherCode); // Use the API to get voucher by code
+      const response = await voucherApi.getVoucherByCode(voucherCode);
       const voucher = response.data;
 
       if (
@@ -141,7 +141,7 @@ const Checkout = () => {
         const discount =
           (totalPriceWithoutShipping * voucher.discountPercentage) / 100;
         setTotalDiscount(discount);
-        setIsVoucherApplied(true); // Mark voucher as applied
+        setIsVoucherApplied(true);
         message.success("Coupon applied successfully!");
       } else {
         message.error("Invalid or expired Coupon code.");
@@ -372,7 +372,7 @@ const Checkout = () => {
                   {shippingCost === 0 ? "Free" : formatPrice(shippingCost)}
                 </p>
               </div>
-              {/* New Section for Voucher Code */}
+              {/* Section for Voucher Code */}
               <p className="text-[#090d14] font-semibold mb-3">Apply Coupon</p>
               <FormItem>
                 <div className="relative">
@@ -395,7 +395,7 @@ const Checkout = () => {
                         border: "none",
                         padding: 0,
                         color: "gray",
-                      }} // Kiểu cho nút
+                      }}
                     >
                       <FaTimes style={{ fontSize: "18px" }} />
                     </button>

@@ -22,6 +22,9 @@ const userApi = {
   changePassword: (data) => {
     return apiClient.post("/users/profile/change-password", data);
   },
+  deactivateUser: (id) => {
+    return apiClient.put(`/users/deactivate/${id}`);
+  },
 };
 
 export default userApi;

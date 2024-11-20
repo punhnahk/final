@@ -16,5 +16,11 @@ userRouter.post(
 );
 userRouter.put("/:id", checkLogin, isAdmin, UserController.updateUser);
 userRouter.delete("/:id", checkLogin, isAdmin, UserController.deleteUser);
+userRouter.put(
+  "/deactivate/:id",
+  checkLogin,
+  isAdmin,
+  UserController.deactivateUser
+);
 
 export default userRouter;

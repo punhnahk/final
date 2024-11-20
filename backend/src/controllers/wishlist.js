@@ -5,7 +5,6 @@ const wishlistController = {
     const { productId } = req.body.id;
 
     try {
-      // Ensure productId is valid
       if (!productId) {
         return res.status(400).json({ message: "Product ID is required" });
       }
@@ -13,13 +12,11 @@ const wishlistController = {
       let wishlist = await Wishlist.findOne({ user: req.user.id });
 
       if (!wishlist) {
-        // If wishlist does not exist, create a new one
         wishlist = new Wishlist({
           user: req.user.id,
           products: [productId],
         });
       } else {
-        // If product is already in the wishlist, notify the user
         if (wishlist.products.includes(productId)) {
           return res
             .status(400)
@@ -66,13 +63,15 @@ const wishlistController = {
 
   getWishlist: async (req, res) => {
     try {
-      const wishlist = await Wishlist.findOne({ user: req.user.id }).populate(
+      let wishlist = await Wishlist.findOne({ user: req.user.id }).populate(
         "products"
-      ); // Ensure you're populating product details
+      );
+
       if (!wishlist) {
-        return res.status(404).json({ message: "Wishlist not found" });
+        wishlist = { products: [] };
       }
-      res.status(200).json(wishlist.products); // Return only the products array
+
+      res.status(200).json(wishlist.products);
     } catch (error) {
       res.status(500).json({ message: "Error fetching wishlist", error });
     }
