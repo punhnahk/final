@@ -1,6 +1,14 @@
 import { Breadcrumb, Carousel, Empty, message, Pagination, Spin } from "antd";
 import React, { useEffect, useState } from "react";
-import { FaCartArrowDown, FaHeart, FaPhoneAlt } from "react-icons/fa";
+import {
+  FaCartArrowDown,
+  FaHeart,
+  FaPhoneAlt,
+  FaRegHeart,
+  FaStar,
+  FaStarHalfAlt,
+} from "react-icons/fa";
+import { GoGitCompare } from "react-icons/go";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import cartApi from "../../../api/cartApi";
@@ -22,7 +30,8 @@ const ProductDetail = () => {
   const [loadingComments, setLoadingComments] = useState(false);
   const [isInWishlist, setIsInWishlist] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [commentsPerPage] = useState(5); // Number of comments per page
+  const [commentsPerPage] = useState(5);
+  const [comparisonList, setComparisonList] = useState([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { id } = useParams();
@@ -36,18 +45,30 @@ const ProductDetail = () => {
   const fetchWishlistStatus = async (itemId) => {
     const token = localStorage.getItem(TOKEN_STORAGE_KEY);
 
+    // If there's no token, exit early (user is not logged in)
     if (!token) {
       return;
     }
 
     try {
+      // Fetch the wishlist from the API
       const response = await wishlistApi.getWishlist();
+
+      // Check if the response contains a valid array of items
       const isInWishlist =
         Array.isArray(response.data) &&
         response.data.some((item) => item.id === itemId);
+
       setIsInWishlist(isInWishlist);
     } catch (error) {
-      message.error("Failed to fetch wishlist items");
+      // Differentiate between an empty wishlist and an actual error
+      if (error.response && error.response.status === 500) {
+        // Only show an error message for actual API errors (status 500)
+        message.error("Failed to fetch wishlist items");
+      } else {
+        // Treat non-existent or empty wishlist as not in the wishlist
+        setIsInWishlist(false);
+      }
     }
   };
 
@@ -66,6 +87,7 @@ const ProductDetail = () => {
       });
     }
   };
+
   const toggleWishlist = async () => {
     if (!profile) {
       navigate(ROUTE_PATH.SIGN_IN);
@@ -142,6 +164,63 @@ const ProductDetail = () => {
     }
   };
 
+  const renderStarRating = (rating) => {
+    const stars = [];
+    // Round the rating to the nearest 0.5 for displaying half stars
+    const fullStars = Math.floor(rating); // Full stars
+    const halfStars = rating % 1 >= 0.5 ? 1 : 0; // Check if there's a half star
+    const emptyStars = 5 - fullStars - halfStars; // Remaining empty stars
+
+    // Render full stars
+    for (let i = 1; i <= fullStars; i++) {
+      stars.push(<FaStar key={`full-${i}`} className="text-yellow-500" />);
+    }
+
+    // Render half star if needed
+    if (halfStars === 1) {
+      stars.push(<FaStarHalfAlt key="half" className="text-yellow-500" />);
+    }
+
+    // Render empty stars
+    for (let i = 1; i <= emptyStars; i++) {
+      stars.push(<FaStar key={`empty-${i}`} className="text-gray-400" />);
+    }
+
+    return stars;
+  };
+
+  const calculateAverageRating = () => {
+    if (comments.length === 0) return 0; // Avoid division by zero if no comments
+    const totalRating = comments.reduce(
+      (acc, comment) => acc + comment.rating,
+      0
+    );
+    return (totalRating / comments.length).toFixed(1); // Average rating rounded to 1 decimal
+  };
+
+  const addToComparison = (product) => {
+    const isProductInComparison = comparisonList.some(
+      (existingProduct) => existingProduct.id === product.id
+    );
+
+    if (isProductInComparison) {
+      message.warning("This product is already in the comparison list.");
+      return;
+    }
+
+    if (comparisonList.length < 3) {
+      setComparisonList([...comparisonList, product]);
+    } else {
+      message.warning("You can compare up to 3 products.");
+    }
+  };
+
+  const removeFromComparison = (productId) => {
+    setComparisonList(
+      comparisonList.filter((product) => product.id !== productId)
+    );
+  };
+
   const totalPages = Math.ceil(comments.length / commentsPerPage);
 
   const indexOfLastComment = currentPage * commentsPerPage;
@@ -165,6 +244,14 @@ const ProductDetail = () => {
         <Breadcrumb.Item>
           <Link className="text-[#1250dc] font-medium" to={ROUTE_PATH.HOME}>
             Home
+          </Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Item>
+          <Link
+            className="text-[#1250dc] font-medium"
+            to={`${ROUTE_PATH.PRODUCTS_LIST}?category=${data.category._id}`}
+          >
+            {data.category.name}
           </Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item className="font-medium">{data.name}</Breadcrumb.Item>
@@ -194,6 +281,17 @@ const ProductDetail = () => {
           <h1 className="text-[#090d14] font-semibold text-2xl lg:text-3xl break-words">
             {data.name}
           </h1>
+
+          {/* Star Rating */}
+          <div className=" flex items-center gap-4">
+            <div className="flex items-center gap-1">
+              {/* Render Star Rating */}
+              {renderStarRating(calculateAverageRating())}
+            </div>
+            <p className="text-sm text-[#6b7280]">
+              ({comments.length} Reviews) - {calculateAverageRating()} Stars
+            </p>
+          </div>
 
           <p className="text-sm text-[#6b7280] font-medium">
             Category:
@@ -235,6 +333,12 @@ const ProductDetail = () => {
 
           <div className="mt-4 flex flex-wrap gap-2">
             <button
+              onClick={() => addToComparison(data)}
+              className="w-14 h-14 flex justify-center items-center rounded-lg border border-[#dc2626] transition-colors duration-200 hover:bg-[#dc2626] hover:text-white cursor-pointer"
+            >
+              <GoGitCompare className="text-2xl text-blue-400" />
+            </button>
+            <button
               onClick={onAddProductToCart}
               className="w-14 h-14 flex justify-center items-center rounded-lg border border-[#dc2626] transition-colors duration-200 hover:bg-[#dc2626] hover:text-white cursor-pointer"
             >
@@ -244,11 +348,11 @@ const ProductDetail = () => {
               onClick={toggleWishlist}
               className="w-14 h-14 flex justify-center items-center rounded-lg border transition-colors duration-200 hover:bg-[#f59e0b] hover:text-white cursor-pointer border border-[#dc2626]"
             >
-              <FaHeart
-                className={`text-2xl ${
-                  isInWishlist ? "text-red-500" : "text-[#f59e0b]"
-                }`}
-              />
+              {isInWishlist ? (
+                <FaHeart className="text-2xl text-red-500" />
+              ) : (
+                <FaRegHeart className="text-2xl text-[#f59e0b]" />
+              )}
             </button>
             <button
               onClick={onPayNow}
@@ -266,6 +370,58 @@ const ProductDetail = () => {
           </div>
         </div>
       </div>
+      {comparisonList.length > 0 && (
+        <div className="mt-8 mb-8">
+          <h3 className="text-[#444] text-2xl text-left font-bold">
+            Comparison List
+          </h3>
+          <div className="overflow-x-auto mt-4">
+            <table className="min-w-full table-auto border-collapse">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="p-4 border-b text-left">Product</th>
+                  <th className="p-4 border-b text-center">Image</th>
+                  <th className="p-4 border-b text-left">Brand</th>
+                  <th className="p-4 border-b text-center">Price</th>
+                  <th className="p-4 border-b text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {comparisonList.map((product) => (
+                  <tr key={product.id} className="border-b hover:bg-gray-50">
+                    <td className="p-2 text-lg font-medium">{product.name}</td>
+                    <td>
+                      <img
+                        src={product.image[0]}
+                        alt={product.name}
+                        className="object-contain w-[100px] h-[100px] mx-auto items-start"
+                      />
+                    </td>
+                    <td className="p-4 text-sm text-gray-600">
+                      {product.brand}
+                    </td>
+                    <td className="p-4 text-lg text-center font-semibold text-green-600">
+                      {formatPrice(
+                        product.salePrice > 0
+                          ? product.salePrice
+                          : product.price
+                      )}
+                    </td>
+                    <td className="p-4 text-center">
+                      <button
+                        onClick={() => removeFromComparison(product.id)}
+                        className="bg-red-500 text-white py-1 px-3 rounded-lg hover:bg-red-600 transition"
+                      >
+                        Remove
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* Product Description */}
       <div className="mb-6">
@@ -309,14 +465,14 @@ const ProductDetail = () => {
       </div>
 
       {/* Related Products */}
-      <div className="mb-6">
-        <p className="font-bold text-2xl text-[#444]">Similar Products</p>
-        <div className="grid grid-cols-12 gap-3 mt-2">
+      <div className="mb-2 pt-4 pb-6 lg:pb-8">
+        <p className="font-bold text-xl text-[#444]">Similar Products</p>
+        <div className="mt-2 overflow-x-auto flex lg:justify-start md:justify-center sm:justify-center space-x-2">
           {relatedProduct.slice(0, 4).map((it) => (
             <ProductItem
               key={`related-product-${it._id}`}
               data={it}
-              className="col-span-12 sm:col-span-6 lg:col-span-3 shadow-lg"
+              className="flex-none w-[60%] sm:w-[45%] md:w-[25%] lg:w-[23%] shadow-md mb-2"
             />
           ))}
         </div>
@@ -325,6 +481,7 @@ const ProductDetail = () => {
           <Empty className="mt-3" description="No related products available" />
         )}
       </div>
+
       <div className="mb-6">
         <p className="font-bold text-2xl text-[#444]">Customer Feedback</p>
         <div className="p-3 rounded-lg mt-2 shadow-lg">

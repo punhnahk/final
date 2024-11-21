@@ -13,7 +13,7 @@ const wishlistApi = {
 
   // Removes a product from the user's wishlist
   removeFromWishlist: (id) => {
-    return apiClient.post(`/wishlists/remove/${id}`);
+    return apiClient.put(`/wishlists/remove/${id}`);
   },
 };
 

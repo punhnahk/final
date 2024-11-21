@@ -5,6 +5,7 @@ import Cart from "../models/carts.js";
 import Order, { PAYMENT_METHOD } from "../models/orders.js";
 import Product from "../models/products.js";
 import Voucher from "../models/voucher.js";
+import sendMail from "../utils/sendMail.js";
 import sortObject from "../utils/sortObject.js";
 
 const OrderController = {
@@ -45,8 +46,6 @@ const OrderController = {
 
         return total;
       }, 0);
-
-      // Kiểm tra mã voucher
       let discount = 0;
 
       if (voucherCode) {
@@ -60,10 +59,10 @@ const OrderController = {
           return res.status(400);
         }
 
-        discount = (totalPrice * voucher.discountPercentage) / 100; // Tính toán giảm giá
+        discount = (totalPrice * voucher.discountPercentage) / 100;
       }
 
-      const finalPrice = totalPrice - discount; // Cập nhật giá trị cuối cùng
+      const finalPrice = totalPrice - discount;
 
       const order = await new Order({
         customerName,
@@ -72,7 +71,7 @@ const OrderController = {
         address,
         message,
         orderBy,
-        totalPrice: finalPrice, // Sử dụng finalPrice
+        totalPrice: finalPrice,
         products: productsOrder,
         paymentMethod,
         voucherCode,
@@ -82,14 +81,69 @@ const OrderController = {
       // remove cart
       await Cart.deleteOne({ user: orderBy });
 
-      // generate vnpay payment url
+      await sendMail({
+        toEmail: customerEmail,
+        title: "Order Confirmation - Your Order has been Placed Successfully",
+        content: `
+  <html>
+    <body style="font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f7fc; color: #333;">
+      <table role="presentation" style="width: 100%; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+        <tr>
+          <td style="text-align: center; padding-bottom: 20px;">
+            <h2 style="color: #4CAF50; font-size: 24px; margin-bottom: 10px;">Order Confirmation</h2>
+            <p style="font-size: 16px; color: #777;">Thank you for your purchase!</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="font-size: 16px; line-height: 1.6; padding-bottom: 20px;">
+            <p>Dear <strong>${customerName}</strong>,</p>
+            <p>We are excited to confirm that we have received your order. Below are the details:</p>
+            <table style="width: 100%; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; margin-top: 20px;">
+              <tr>
+                <td style="padding: 10px; background-color: #f8f8f8; font-weight: bold;">Order ID</td>
+                <td style="padding: 10px; background-color: #fff;">${
+                  order._id
+                }</td>
+              </tr>
+              <tr>
+                <td style="padding: 10px; background-color: #f8f8f8; font-weight: bold;">Total Price</td>
+                <td style="padding: 10px; background-color: #fff;">${finalPrice} VND</td>
+              </tr>
+              <tr>
+                <td style="padding: 10px; background-color: #f8f8f8; font-weight: bold;">Shipping Address</td>
+                <td style="padding: 10px; background-color: #fff;">${address}</td>
+              </tr>
+              <tr>
+                <td style="padding: 10px; background-color: #f8f8f8; font-weight: bold;">Message</td>
+                <td style="padding: 10px; background-color: #fff;">${
+                  message || "No message provided"
+                }</td>
+              </tr>
+            </table>
+            <p style="margin-top: 20px;">Your order is being processed and we will notify you once it is shipped. We appreciate your trust in us!</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="font-size: 14px; line-height: 1.6; color: #777; padding-top: 20px; border-top: 1px solid #ddd;">
+            <p>If you have any questions or concerns, feel free to reach out to our customer support.</p>
+            <p>Best regards,</p>
+            <p><strong>Noel Techshop</strong></p>
+            <p style="font-size: 12px; color: #aaa;">&copy; 2024 Noel Techshop | All Rights Reserved</p>
+          </td>
+        </tr>
+      </table>
+    </body>
+  </html>
+`,
+      });
+
       if (paymentMethod === PAYMENT_METHOD.VNPAY) {
         const orderId = `NoelTechshop_${order._id}`;
         const paymentUrl = await createVNPayPaymentUrl({
           req,
           orderId,
-          amount: finalPrice, // Sử dụng finalPrice
-          orderInfo: `Thanh toan don hang ${orderId}`,
+          amount: finalPrice,
+          orderInfo: `Pyament order is ${orderId}`,
         });
 
         return res.status(201).json({

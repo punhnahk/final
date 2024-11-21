@@ -1,4 +1,13 @@
-import { Badge, Dropdown, Form, Input, Menu, message } from "antd";
+import {
+  Badge,
+  Button,
+  Card,
+  Dropdown,
+  Form,
+  Input,
+  List,
+  message,
+} from "antd";
 import React, { useEffect, useState } from "react";
 import { FaBell, FaPhoneAlt, FaShoppingCart } from "react-icons/fa";
 import { FaBarsStaggered } from "react-icons/fa6";
@@ -32,6 +41,9 @@ const HeaderClient = () => {
       fetchData(); // Fetch categories only if not on mobile
     }
     fetchOrders(); // Fetch orders to get notifications
+    const storedNotifications =
+      JSON.parse(localStorage.getItem("orderNotifications")) || [];
+    setOrderNotifications(storedNotifications);
   }, [isMobile]);
 
   // Fetch categories data
@@ -99,26 +111,29 @@ const HeaderClient = () => {
   const productDropdown = (
     <Dropdown
       overlay={
-        <div className="bg-white rounded-md shadow-lg px-2 py-2 mt-2 ml-5 max-w-xs">
+        <div
+          className="bg-white rounded-md shadow-lg px-4 py-4 mt-2 ml-10 border border-gray-300
+    max-w-xs md:max-w-md lg:max-w-lg xl:max-w-xl"
+        >
           {searchStr ? (
             products.length > 0 ? (
               products.slice(0, 3).map((product) => (
                 <Link
                   key={product._id}
                   to={ROUTE_PATH.PRODUCT_DETAIL(product._id)}
-                  className="block p-3 transition-colors duration-200 rounded-md hover:bg-[#C9E9D2]"
+                  className="block p-3 transition-all duration-300 rounded-md hover:bg-[#C9E9D2] hover:text-green-800"
                   onClick={() => setSearchStr("")}
                 >
-                  <span className="block w-full overflow-hidden whitespace-nowrap text-ellipsis">
+                  <span className="block w-full overflow-hidden whitespace-nowrap text-ellipsis text-gray-700 font-medium">
                     {product.name}
                   </span>
                 </Link>
               ))
             ) : (
-              <div className="p-2">No results found</div>
+              <div className="p-2 text-gray-500">No results found</div>
             )
           ) : (
-            <div className="p-2">No results found</div>
+            <div className="p-2 text-gray-500">Start typing to search...</div>
           )}
         </div>
       }
@@ -126,14 +141,14 @@ const HeaderClient = () => {
       placement="bottomCenter"
     >
       <Input
-        className="rounded-2xl h-9 md:h-11 max-w-sm px-4"
+        className="rounded-2xl h-11 max-w-full px-6 border border-gray-300 focus:border-green-500 focus:ring-green-500"
         placeholder="Search for products"
         suffix={
           <div
             onClick={form.submit}
-            className="bg-[#fee2e2] cursor-pointer rounded-full w-8 h-8 flex items-center justify-center"
+            className="cursor-pointer rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-200 transition-all"
           >
-            <IoSearch className="text-red-600 text-xl" />
+            <IoSearch className="text-green-600 text-xl" />
           </div>
         }
         value={searchStr}
@@ -143,36 +158,107 @@ const HeaderClient = () => {
   );
 
   // Dropdown for order notifications
-  const orderMenu = (
-    <Menu>
-      {orderNotifications.length ? (
-        orderNotifications.map(({ _id, status, isRead }) => (
-          <Menu.Item
-            key={_id}
-            onClick={() => handleOrderNotificationClick(_id)}
-            style={{ backgroundColor: isRead ? "#f0f0f0" : "transparent" }}
+  const orderMenu = () => {
+    const handleOrderNotificationClick = (id) => {
+      const updatedNotifications = orderNotifications.map((notification) => {
+        if (notification._id === id) {
+          return { ...notification, isRead: true };
+        }
+        return notification;
+      });
+
+      setOrderNotifications(updatedNotifications);
+      localStorage.setItem(
+        "orderNotifications",
+        JSON.stringify(updatedNotifications)
+      ); // Store updates
+    };
+
+    // Handle marking all notifications as read
+    const handleMarkAllAsRead = () => {
+      const updatedNotifications = orderNotifications.map((notification) => ({
+        ...notification,
+        isRead: true,
+      }));
+
+      setOrderNotifications(updatedNotifications);
+      localStorage.setItem(
+        "orderNotifications",
+        JSON.stringify(updatedNotifications)
+      ); // Store updates
+    };
+
+    return (
+      <Card
+        className="rounded-md shadow-lg w-64 md:w-80 border-2 mt-4"
+        title={
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-sm font-semibold text-gray-600">
+              Order Notifications
+            </span>
+            {orderNotifications.some((notif) => !notif.isRead) && (
+              <Button
+                size="small"
+                onClick={handleMarkAllAsRead}
+                className="text-xs text-blue-500 hover:text-blue-700"
+                type="link"
+              >
+                Read All
+              </Button>
+            )}
+          </div>
+        }
+        bordered={false}
+        bodyStyle={{ padding: "12px" }} // Increased padding for a more balanced layout
+      >
+        <List
+          itemLayout="horizontal"
+          dataSource={orderNotifications.filter(({ isRead }) => !isRead)}
+          renderItem={({ _id, status, isRead, updatedAt }) => (
+            <List.Item
+              className={`py-3 px-4 hover:bg-gray-100 cursor-pointer transition-colors duration-200 ${
+                isRead ? "bg-gray-100" : "bg-white"
+              } rounded-md mb-2 flex justify-center items-center`}
+              onClick={() => handleOrderNotificationClick(_id)}
+            >
+              <Link
+                to={ROUTE_PATH.ORDER_HISTORY_DETAIL(_id)}
+                className="w-full"
+              >
+                <List.Item.Meta
+                  title={
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs font-medium text-gray-700 mx-auto text-left">
+                        Order #{_id}
+                      </span>
+                      <span className="text-xs text-gray-400 mx-auto">
+                        {new Date(updatedAt).toLocaleString()}
+                      </span>
+                    </div>
+                  }
+                  description={
+                    <div className="mt-1">
+                      <span className="text-xs text-gray-500 mx-auto">
+                        Status: {status}
+                      </span>
+                    </div>
+                  }
+                />
+              </Link>
+            </List.Item>
+          )}
+        />
+
+        <div className="text-center mt-3">
+          <Link
+            to={ROUTE_PATH.ORDERS_HISTORY}
+            className="text-xs text-blue-500 hover:underline"
           >
-            <Link to={ROUTE_PATH.ORDER_HISTORY_DETAIL(_id)}>
-              Order #{_id} - {status}
-            </Link>
-          </Menu.Item>
-        ))
-      ) : (
-        <Menu.Item>No new orders</Menu.Item>
-      )}
-      <Menu.Divider />
-      <Menu.Item>
-        <Link to={ROUTE_PATH.ORDERS_HISTORY}>View all orders</Link>
-      </Menu.Item>
-    </Menu>
-  );
-
-  const handleOrderNotificationClick = (orderId) => {
-    const updatedNotifications = orderNotifications.filter(
-      (order) => order._id !== orderId
+            View all orders
+          </Link>
+        </div>
+      </Card>
     );
-
-    setOrderNotifications(updatedNotifications);
   };
 
   return (
@@ -241,7 +327,9 @@ const HeaderClient = () => {
               >
                 <div className="cursor-pointer relative flex items-center">
                   <Badge
-                    count={orderNotifications.length}
+                    count={Math.min(
+                      orderNotifications.filter(({ isRead }) => !isRead).length
+                    )}
                     offset={[0, -4]}
                     color="#FF5733"
                   >

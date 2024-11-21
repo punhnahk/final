@@ -130,7 +130,7 @@ const Checkout = () => {
     }
 
     try {
-      const response = await voucherApi.getVoucherByCode(voucherCode); // Use the API to get voucher by code
+      const response = await voucherApi.getVoucherByCode(voucherCode);
       const voucher = response.data;
 
       if (
@@ -141,15 +141,15 @@ const Checkout = () => {
         const discount =
           (totalPriceWithoutShipping * voucher.discountPercentage) / 100;
         setTotalDiscount(discount);
-        setIsVoucherApplied(true); // Mark voucher as applied
-        message.success("Voucher applied successfully!");
+        setIsVoucherApplied(true);
+        message.success("Coupon applied successfully!");
       } else {
-        message.error("Invalid or expired voucher code.");
+        message.error("Invalid or expired Coupon code.");
         setTotalDiscount(0);
       }
     } catch (error) {
-      console.error("Error applying voucher:", error);
-      message.error("Invalid or expired voucher code.");
+      console.error("Error applying Coupon:", error);
+      message.error("Invalid or expired Coupon code.");
     }
   };
 
@@ -372,14 +372,14 @@ const Checkout = () => {
                   {shippingCost === 0 ? "Free" : formatPrice(shippingCost)}
                 </p>
               </div>
-              {/* New Section for Voucher Code */}
-              <p className="text-[#090d14] font-semibold mb-3">Apply Voucher</p>
+              {/* Section for Voucher Code */}
+              <p className="text-[#090d14] font-semibold mb-3">Apply Coupon</p>
               <FormItem>
                 <div className="relative">
                   <Input
                     value={voucherCode}
                     onChange={(e) => setVoucherCode(e.target.value)}
-                    placeholder="Enter voucher code"
+                    placeholder="Enter Coupon Code"
                     style={{
                       width: "70%",
                       marginRight: "10px",
@@ -395,14 +395,14 @@ const Checkout = () => {
                         border: "none",
                         padding: 0,
                         color: "gray",
-                      }} // Kiểu cho nút
+                      }}
                     >
                       <FaTimes style={{ fontSize: "18px" }} />
                     </button>
                   )}
                   <button
                     onClick={applyVoucher}
-                    disabled={!voucherCode} // Vô hiệu hóa nếu không có voucher
+                    disabled={!voucherCode}
                     className={`bg-blue-500 text-white py-2 px-4 rounded ${
                       !voucherCode ? "opacity-50 cursor-not-allowed" : ""
                     }`}

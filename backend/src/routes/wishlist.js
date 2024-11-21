@@ -5,7 +5,7 @@ import { checkLogin } from "../middlewares/auth.js";
 const wishlistRouter = express.Router();
 
 wishlistRouter.post("/add", checkLogin, Wishlist.addToWishlist);
-wishlistRouter.post(
+wishlistRouter.put(
   "/remove/:productId",
   checkLogin,
   Wishlist.removeFromWishlist

@@ -1,4 +1,4 @@
-import { Breadcrumb, Flex, message, Select } from "antd";
+import { Breadcrumb, Flex, message, Pagination, Select } from "antd";
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import productApi from "../../../api/productApi";
@@ -8,13 +8,14 @@ import WrapperContent from "../../../components/WrapperContent/WrapperContent";
 const ClientProductList = () => {
   const [data, setData] = useState([]);
   const [sortOption, setSortOption] = useState(1); // Default sorting option
+  const [currentPage, setCurrentPage] = useState(1); // Track the current page
+  const [pageSize] = useState(10); // Number of products per page
   const [searchParams] = useSearchParams();
   const categoryId = searchParams.get("category");
   const searchStr = searchParams.get("search");
 
   const categoryName = useMemo(() => {
     if (!categoryId || !data.length) return;
-
     return data[0].category.name;
   }, [categoryId, data]);
 
@@ -55,6 +56,17 @@ const ClientProductList = () => {
     setSortOption(value); // Update the sort option state
   };
 
+  const handlePageChange = (page) => {
+    setCurrentPage(page); // Update the current page
+  };
+
+  // Calculate the index range for the products on the current page
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = currentPage * pageSize;
+
+  // Get the products to display on the current page
+  const paginatedData = sortedData.slice(startIndex, endIndex);
+
   return (
     <div className="bg-gray-100">
       <WrapperContent>
@@ -72,7 +84,9 @@ const ClientProductList = () => {
               ),
             },
             {
-              title: <Link className="font-medium !text-black">Products</Link>,
+              title: (
+                <Link className="font-medium !text-black">{categoryName}</Link>
+              ),
             },
           ]}
         />
@@ -115,7 +129,7 @@ const ClientProductList = () => {
 
         {/* Responsive grid layout */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-2">
-          {sortedData.map((it) => (
+          {paginatedData.map((it) => (
             <ProductItem
               data={it}
               key={`product-item-${it._id}`}
@@ -123,6 +137,16 @@ const ClientProductList = () => {
             />
           ))}
         </div>
+
+        {/* Pagination Component */}
+        <Pagination
+          current={currentPage}
+          pageSize={pageSize}
+          total={sortedData.length}
+          onChange={handlePageChange}
+          showSizeChanger={false}
+          className="mt-4 mb-2 justify-end"
+        />
       </WrapperContent>
     </div>
   );
