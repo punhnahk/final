@@ -40,7 +40,7 @@ const OrderHistoryDetail = () => {
 
   return (
     <>
-      <div className="px-6 py-4 flex items-center justify-between gap-x-8">
+      <div className="px-6 py-4 flex items-center justify-between gap-x-8 flex-wrap">
         <p className="text-[24px] font-semibold text-[#333]">
           <p>Order details #{data._id}</p>
         </p>

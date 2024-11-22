@@ -1,4 +1,5 @@
 import Voucher from "../models/voucher.js";
+import VoucherUsage from "../models/voucherUsage.js";
 import sendMail from "../utils/sendMail.js";
 const VoucherController = {
   createVoucher: async (req, res) => {
@@ -33,9 +34,27 @@ const VoucherController = {
 
   // Get all vouchers
   getAllVouchers: async (req, res) => {
+    const THRESHOLD = 20;
     try {
       const vouchers = await Voucher.find().exec();
-      res.json(vouchers);
+
+      const voucherDetails = [];
+
+      for (const voucher of vouchers) {
+        const usageCount = await VoucherUsage.countDocuments({
+          voucherId: voucher._id,
+        }).exec();
+        if (usageCount > THRESHOLD) {
+          voucher.isActive = false;
+          await voucher.save();
+        }
+        voucherDetails.push({
+          ...voucher.toObject(),
+          usageCount: usageCount,
+        });
+      }
+
+      res.json(voucherDetails);
     } catch (error) {
       res
         .status(500)
@@ -104,25 +123,42 @@ const VoucherController = {
   },
   getVoucherByCode: async (req, res) => {
     try {
-      const { code } = req.params; // Assuming code is passed in the URL
+      const { code } = req.params;
+      const userId = req.user.id;
+
       const voucher = await Voucher.findOne({ code }).exec();
 
       if (!voucher) {
         return res.status(404).json({ message: "Voucher not found" });
       }
 
-      // Check if voucher is active
       if (!voucher.isActive) {
         return res.status(400).json({ message: "Voucher is not active." });
       }
 
-      // Check if voucher is expired
       const currentDate = new Date();
       if (new Date(voucher.expirationDate) < currentDate) {
         return res.status(400).json({ message: "Voucher has expired." });
       }
 
-      // If all checks pass, return the voucher
+      const voucherUsage = await VoucherUsage.findOne({
+        userId,
+        voucherId: voucher._id,
+      }).exec();
+
+      if (voucherUsage) {
+        return res
+          .status(400)
+          .json({ message: "Voucher has already been used by this user." });
+      }
+
+      const newVoucherUsage = new VoucherUsage({
+        userId,
+        voucherId: voucher._id,
+        usedAt: new Date(),
+      });
+
+      await newVoucherUsage.save();
       res.json(voucher);
     } catch (error) {
       res
@@ -130,6 +166,7 @@ const VoucherController = {
         .json({ message: "Error fetching voucher", error: error.message });
     }
   },
+
   sendVoucher: async (req, res) => {
     try {
       const { id } = req.params; // Voucher ID from URL parameter

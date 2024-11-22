@@ -5,7 +5,7 @@ import productApi from "../../../api/productApi";
 import ProductItem from "../../../components/ProductItem/ProductItem";
 import WrapperContent from "../../../components/WrapperContent/WrapperContent";
 import { ROUTE_PATH } from "../../../constants/routes";
-import formatPrice from "../../../utils/formatPrice"; // Import formatPrice function
+import formatPrice from "../../../utils/formatPrice";
 
 const ProductsList = () => {
   const [data, setData] = useState([]);
@@ -124,14 +124,12 @@ const ProductsList = () => {
 
             {/* Display other products */}
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-              {otherProducts
-                .slice(0, productCount) // Display only the number of products to match screen size
-                .map((product) => (
-                  <ProductItem
-                    key={`product-item-${product._id}`}
-                    data={product}
-                  />
-                ))}
+              {otherProducts.slice(0, productCount).map((product) => (
+                <ProductItem
+                  key={`product-item-${product._id}`}
+                  data={product}
+                />
+              ))}
             </div>
           </div>
         );

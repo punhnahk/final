@@ -109,6 +109,11 @@ const VoucherList = () => {
       ),
     },
     {
+      title: "Users Applied",
+      dataIndex: "usageCount",
+      render: (usageCount) => <p>{usageCount}</p>,
+    },
+    {
       title: "Actions",
       render: (_, row) => (
         <div className="flex items-center gap-x-3">
