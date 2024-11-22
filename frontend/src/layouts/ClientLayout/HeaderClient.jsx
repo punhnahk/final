@@ -209,14 +209,17 @@ const HeaderClient = () => {
           </div>
         }
         bordered={false}
-        bodyStyle={{ padding: "12px" }} // Increased padding for a more balanced layout
+        bodyStyle={{ padding: "12px" }}
       >
         <List
           itemLayout="horizontal"
-          dataSource={orderNotifications.filter(({ isRead }) => !isRead)}
+          dataSource={orderNotifications
+            .filter(({ isRead }) => !isRead)
+            .slice(0, 5)}
+          className="max-h-[300px] overflow-y-auto"
           renderItem={({ _id, status, isRead, updatedAt }) => (
             <List.Item
-              className={`py-3 px-4 hover:bg-gray-100 cursor-pointer transition-colors duration-200 ${
+              className={`py-3 px-4 hover:bg-gray-100 cursor-pointer max-h- transition-colors duration-200 ${
                 isRead ? "bg-gray-100" : "bg-white"
               } rounded-md mb-2 flex justify-center items-center`}
               onClick={() => handleOrderNotificationClick(_id)}
@@ -328,7 +331,9 @@ const HeaderClient = () => {
                 <div className="cursor-pointer relative flex items-center">
                   <Badge
                     count={Math.min(
-                      orderNotifications.filter(({ isRead }) => !isRead).length
+                      orderNotifications
+                        .filter(({ isRead }) => !isRead)
+                        .slice(0, 5).length
                     )}
                     offset={[0, -4]}
                     color="#FF5733"

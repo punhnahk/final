@@ -8,7 +8,11 @@ voucherRouter.post("/", checkLogin, isAdmin, VoucherController.createVoucher);
 voucherRouter.get("/", checkLogin, isAdmin, VoucherController.getAllVouchers);
 voucherRouter.get("/:id", checkLogin, VoucherController.getVoucher);
 voucherRouter.put("/:id", checkLogin, isAdmin, VoucherController.updateVoucher);
-voucherRouter.get("/code/:code", VoucherController.getVoucherByCode);
+voucherRouter.get(
+  "/code/:code",
+  checkLogin,
+  VoucherController.getVoucherByCode
+);
 voucherRouter.delete(
   "/:id",
   checkLogin,

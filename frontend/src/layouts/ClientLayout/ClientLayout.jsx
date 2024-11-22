@@ -10,7 +10,7 @@ const ClientLayout = () => {
   const isMobile = useMediaQuery({ query: `(max-width: 768px)` });
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen text-sm">
       <HeaderClient />
       {!isMobile && <hr className="border border-gray-300" />}
 

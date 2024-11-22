@@ -45,7 +45,6 @@ const ProductDetail = () => {
   const fetchWishlistStatus = async (itemId) => {
     const token = localStorage.getItem(TOKEN_STORAGE_KEY);
 
-    // If there's no token, exit early (user is not logged in)
     if (!token) {
       return;
     }
@@ -54,7 +53,6 @@ const ProductDetail = () => {
       // Fetch the wishlist from the API
       const response = await wishlistApi.getWishlist();
 
-      // Check if the response contains a valid array of items
       const isInWishlist =
         Array.isArray(response.data) &&
         response.data.some((item) => item.id === itemId);
@@ -199,9 +197,7 @@ const ProductDetail = () => {
   };
 
   const addToComparison = (product) => {
-    const isProductInComparison = comparisonList.some(
-      (existingProduct) => existingProduct.id === product.id
-    );
+    const isProductInComparison = comparisonList.some((id) => product === id);
 
     if (isProductInComparison) {
       message.warning("This product is already in the comparison list.");
@@ -209,19 +205,15 @@ const ProductDetail = () => {
     }
 
     if (comparisonList.length < 3) {
-      setComparisonList([...comparisonList, product]);
+      setComparisonList((prevList) => [...prevList, product]);
     } else {
       message.warning("You can compare up to 3 products.");
     }
   };
 
   const removeFromComparison = (productId) => {
-    setComparisonList(
-      comparisonList.filter((product) => product.id !== productId)
-    );
+    setComparisonList([]);
   };
-
-  const totalPages = Math.ceil(comments.length / commentsPerPage);
 
   const indexOfLastComment = currentPage * commentsPerPage;
   const indexOfFirstComment = indexOfLastComment - commentsPerPage;
@@ -346,7 +338,7 @@ const ProductDetail = () => {
             </button>
             <button
               onClick={toggleWishlist}
-              className="w-14 h-14 flex justify-center items-center rounded-lg border transition-colors duration-200 hover:bg-[#f59e0b] hover:text-white cursor-pointer border border-[#dc2626]"
+              className="w-14 h-14 flex justify-center items-center rounded-lg border transition-colors duration-200 hover:bg-[#f59e0b] hover:text-white cursor-pointer border-[#dc2626]"
             >
               {isInWishlist ? (
                 <FaHeart className="text-2xl text-red-500" />
@@ -409,7 +401,7 @@ const ProductDetail = () => {
                     </td>
                     <td className="p-4 text-center">
                       <button
-                        onClick={() => removeFromComparison(product.id)}
+                        onClick={() => removeFromComparison(id)}
                         className="bg-red-500 text-white py-1 px-3 rounded-lg hover:bg-red-600 transition"
                       >
                         Remove
@@ -504,7 +496,9 @@ const ProductDetail = () => {
                 />
                 <div>
                   {/* User Name */}
-                  <p className="font-semibold">{comment.userId.name}</p>
+                  <p className="font-semibold">
+                    {comment.userId?.name || "User"}
+                  </p>
                   {/* Rating Display */}
                   <div className="flex items-center mb-1">
                     {[...Array(5)].map((_, starIndex) => {

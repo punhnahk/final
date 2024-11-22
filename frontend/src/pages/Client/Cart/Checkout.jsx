@@ -13,6 +13,7 @@ import WrapperContent from "../../../components/WrapperContent/WrapperContent";
 import { PAYMENT_METHOD } from "../../../constants";
 import { PHONE_REG } from "../../../constants/reg";
 import { ROUTE_PATH } from "../../../constants/routes";
+import useProfile from "../../../hooks/useProfile";
 import { resetCart, selectCart } from "../../../store/cartSlice";
 import formatPrice from "../../../utils/formatPrice";
 
@@ -80,32 +81,39 @@ const Checkout = () => {
   };
 
   const handleAddressChange = (e) => {
-    setUseSavedAddress(e.target.value === "saved"); // Set state based on user choice
+    const value = e.target.value === "saved";
+    setUseSavedAddress(value);
   };
 
   const onSubmit = async (values) => {
     const cityName = selectedCity ? selectedCity.name : values.city;
     const fullAddress =
-      useSavedAddress && savedAddress // Use saved address if selected
+      useSavedAddress && savedAddress
         ? savedAddress
         : `${values.detailedAddress}, ${values.district}, ${cityName}`;
 
+    if (!fullAddress || fullAddress.trim() === "undefined") {
+      message.error("Vui lòng nhập địa chỉ hợp lệ.");
+      return;
+    }
+
     try {
-      await userApi.updateProfile({
-        name: values.customerName,
-        phone: values.customerPhone,
-        email: values.customerEmail,
-        address: fullAddress,
-      });
+      if (!useSavedAddress) {
+        await userApi.updateProfile({
+          name: values.customerName,
+          phone: values.customerPhone,
+          email: values.customerEmail,
+          address: fullAddress,
+        });
+      }
 
       const res = await orderApi.createOrder({
         ...values,
         address: fullAddress,
         voucherCode,
       });
-      const paymentMethod = res.data.paymentMethod;
 
-      if (paymentMethod === PAYMENT_METHOD.COD) {
+      if (res.data.paymentMethod === PAYMENT_METHOD.COD) {
         dispatch(resetCart());
         navigate(ROUTE_PATH.ORDER_SUCCESS);
       } else {
@@ -130,7 +138,8 @@ const Checkout = () => {
     }
 
     try {
-      const response = await voucherApi.getVoucherByCode(voucherCode);
+      const userId = useProfile;
+      const response = await voucherApi.getVoucherByCode(voucherCode, userId);
       const voucher = response.data;
 
       if (
@@ -149,7 +158,11 @@ const Checkout = () => {
       }
     } catch (error) {
       console.error("Error applying Coupon:", error);
-      message.error("Invalid or expired Coupon code.");
+      if (error.response && error.response.data.message) {
+        message.error(error.response.data.message);
+      } else {
+        message.error("An unexpected error occurred.");
+      }
     }
   };
 
@@ -285,17 +298,18 @@ const Checkout = () => {
                   </Radio.Group>
                 </FormItem>
 
-                {/* If using saved address, pre-fill fields */}
                 {useSavedAddress ? (
                   <div>
-                    <FormItem name="address" initialValue={savedAddress}>
+                    <FormItem name="address">
                       <Input placeholder="Saved Address" disabled />
                     </FormItem>
                   </div>
                 ) : (
                   <div>
-                    {/* City, District, and Detailed Address Fields for New Address */}
-                    <FormItem name="city" rules={[{ required: true }]}>
+                    <FormItem
+                      name="city"
+                      rules={[{ required: true, message: "City required" }]}
+                    >
                       <Select
                         placeholder="Select City"
                         onChange={handleCityChange}
@@ -307,8 +321,10 @@ const Checkout = () => {
                         ))}
                       </Select>
                     </FormItem>
-
-                    <FormItem name="district" rules={[{ required: true }]}>
+                    <FormItem
+                      name="district"
+                      rules={[{ required: true, message: "District required" }]}
+                    >
                       <Select placeholder="Select District">
                         {districts.map((district) => (
                           <Option key={district.code} value={district.name}>
@@ -317,10 +333,14 @@ const Checkout = () => {
                         ))}
                       </Select>
                     </FormItem>
-
                     <FormItem
                       name="detailedAddress"
-                      rules={[{ required: true }]}
+                      rules={[
+                        {
+                          required: true,
+                          message: "Detailed address required",
+                        },
+                      ]}
                     >
                       <Input placeholder="Street Address" />
                     </FormItem>
