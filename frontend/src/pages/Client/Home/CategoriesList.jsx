@@ -52,22 +52,22 @@ const CategoriesList = () => {
         responsive={responsive}
         arrows={true}
         infinite={true}
-        className="bg-white rounded-lg"
-        itemClass="carousel-item-padding-40-px" // Add padding between items
+        className="bg-white rounded-lg shadow-md"
+        itemClass="carousel-item-padding-20-px" // Adjust padding for a cleaner layout
       >
         {data.length > 0 &&
           data.map((it) => (
             <Link
               key={`category-item-${it._id}`}
-              className="flex flex-col group gap-2 px-3 py-4 rounded-lg justify-center items-center"
+              className="flex flex-col group gap-3 px-4 py-5 rounded-lg justify-center items-center hover:bg-gray-50 transition-all"
               to={`${ROUTE_PATH.PRODUCTS_LIST}?category=${it._id}`}
             >
               <img
                 src={it.image}
                 alt="Category img"
-                className="h-[100px] w-full object-contain group-hover:scale-110 transition-transform duration-300"
+                className="h-[100px] w-full object-contain group-hover:scale-105 transition-transform duration-300"
               />
-              <p className="font-medium text-center text-sm md:text-base">
+              <p className="font-medium text-center text-sm md:text-base text-gray-800 transition-all">
                 {it.name}
               </p>
             </Link>

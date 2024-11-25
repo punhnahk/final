@@ -30,8 +30,8 @@ const Checkout = () => {
   const [totalDiscount, setTotalDiscount] = useState(0);
   const [districts, setDistricts] = useState([]);
   const [isVoucherApplied, setIsVoucherApplied] = useState(false);
-  const [useSavedAddress, setUseSavedAddress] = useState(true); // New state for address selection
-  const [savedAddress, setSavedAddress] = useState(null); // To store the saved address
+  const [useSavedAddress, setUseSavedAddress] = useState(true);
+  const [savedAddress, setSavedAddress] = useState(null);
 
   const FREE_SHIPPING_THRESHOLD = 5000000;
   const SHIPPING_FEE = 20000;

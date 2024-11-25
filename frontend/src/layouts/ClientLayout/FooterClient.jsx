@@ -7,7 +7,7 @@ const FooterClient = () => {
   return (
     <footer className="bg-gradient-to-r bg-black">
       <WrapperContent>
-        <div className="text-white py-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="text-white py-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* CONNECT WITH US */}
           <div>
             <p className="font-semibold text-base mb-2">CONNECT WITH US</p>
@@ -32,13 +32,14 @@ const FooterClient = () => {
           {/* ABOUT US */}
           <div>
             <p className="font-semibold text-base mb-2">ABOUT US</p>
-            <div className="leading-5 space-y-1">
+            <div className="leading-5 space-y-2">
               <Link
                 className="text-xs text-white hover:text-gray-400 transition-all"
                 to="/overview"
               >
                 Project Overview
               </Link>
+              <br />
               <Link
                 className="text-xs text-white hover:text-gray-400 transition-all"
                 to="/payment-guide"
@@ -51,7 +52,7 @@ const FooterClient = () => {
           {/* POLICIES */}
           <div>
             <p className="font-semibold text-base mb-2">POLICIES</p>
-            <div className="leading-5 space-y-1">
+            <div className="leading-5 space-y-2">
               <Link
                 className="text-xs text-white hover:text-gray-400 transition-all"
                 to="/policies"

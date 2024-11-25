@@ -50,8 +50,9 @@ const ProductDetail = () => {
     }
 
     try {
-      // Fetch the wishlist from the API
-      const response = await wishlistApi.getWishlist();
+      const response = await wishlistApi.getWishlist({
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       const isInWishlist =
         Array.isArray(response.data) &&
@@ -59,12 +60,9 @@ const ProductDetail = () => {
 
       setIsInWishlist(isInWishlist);
     } catch (error) {
-      // Differentiate between an empty wishlist and an actual error
       if (error.response && error.response.status === 500) {
-        // Only show an error message for actual API errors (status 500)
         message.error("Failed to fetch wishlist items");
       } else {
-        // Treat non-existent or empty wishlist as not in the wishlist
         setIsInWishlist(false);
       }
     }

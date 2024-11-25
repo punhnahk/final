@@ -124,9 +124,18 @@ const HeaderClient = () => {
                   className="block p-3 transition-all duration-300 rounded-md hover:bg-[#C9E9D2] hover:text-green-800"
                   onClick={() => setSearchStr("")}
                 >
-                  <span className="block w-full overflow-hidden whitespace-nowrap text-ellipsis text-gray-700 font-medium">
-                    {product.name}
-                  </span>
+                  <div className="flex items-center">
+                    {/* Product Image */}
+                    <img
+                      src={product.image[0]} // Assuming you have the image URL in product.imageURL
+                      alt={product.name}
+                      className="w-12 h-12 object-cover  mr-4" // Small image with rounded corners
+                    />
+                    {/* Product Name */}
+                    <span className="block w-full overflow-hidden whitespace-nowrap text-ellipsis text-gray-700 font-medium">
+                      {product.name}
+                    </span>
+                  </div>
                 </Link>
               ))
             ) : (

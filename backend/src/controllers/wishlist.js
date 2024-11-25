@@ -39,21 +39,20 @@ const wishlistController = {
     try {
       const user = req.user.id;
       const { productId } = req.params;
+
       console.log("Product ID to remove:", productId);
 
-      const wishlist = await Wishlist.findOne({ user }).exec();
-      console.log("Current wishlist:", wishlist);
+      const wishlist = await Wishlist.findOneAndUpdate(
+        { user: user }, // Filter by user
+        { $pull: { products: productId } },
+        { new: true }
+      );
 
       if (!wishlist) {
         return res.status(404).json({ message: "Wishlist not found" });
       }
-      const newProducts = wishlist.products.filter(
-        (item) => item.toString() !== productId
-      );
 
-      wishlist.products = newProducts; // Update the wishlist products
-      await wishlist.save(); // Save the updated wishlist
-
+      // Send the updated wishlist response
       res.status(200).json({ message: "Removed from wishlist", wishlist });
     } catch (error) {
       console.error("Error removing from wishlist:", error);

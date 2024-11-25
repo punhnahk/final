@@ -50,7 +50,7 @@ const ProductItem = ({ className, data }) => {
       {salePrice > 0 && (
         <div>
           <p className="text-xs text-[#059669] mt-1">
-            Discount: {formatPrice(originPrice - salePrice)} VND
+            Discount: {formatPrice(originPrice - salePrice)}
           </p>
         </div>
       )}

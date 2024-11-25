@@ -17,7 +17,7 @@ const statusColors = {
 const OrderCard = ({ data, onCommentSubmit, hasCommentedMap }) => {
   const [showMore, setShowMore] = useState(false);
   const [comments, setComments] = useState({});
-  const [ratings, setRatings] = useState({}); // State for ratings
+  const [ratings, setRatings] = useState({});
 
   const handleToggleProducts = () => {
     setShowMore(!showMore);
@@ -61,7 +61,7 @@ const OrderCard = ({ data, onCommentSubmit, hasCommentedMap }) => {
       }));
       setRatings((prev) => ({
         ...prev,
-        [productId]: undefined, // Reset rating after submit
+        [productId]: undefined,
       }));
     } catch {
       message.error("Failed to submit comment.");
@@ -69,8 +69,8 @@ const OrderCard = ({ data, onCommentSubmit, hasCommentedMap }) => {
   };
 
   return (
-    <div className="pt-4 px-4 md:px-6 pb-6 rounded bg-white [&:not(:last-child)]:mb-4">
-      <div className="flex flex-col md:flex-row items-center justify-between pb-4 border-b border-[#CFCFCF]">
+    <div className="pt-4 px-4 md:px-6 pb-6 rounded bg-white shadow-sm hover:shadow-lg transition-all duration-300 mb-4">
+      <div className="flex flex-col md:flex-row items-center justify-between pb-4 border-b border-gray-200">
         <p
           className={`text-sm md:text-[14px] font-semibold ${
             statusColors[data.status] || "text-gray-500"
@@ -83,7 +83,7 @@ const OrderCard = ({ data, onCommentSubmit, hasCommentedMap }) => {
         </p>
       </div>
 
-      <div className="py-4 mb-3 border-b border-[#CFCFCF]">
+      <div className="py-4 mb-3 border-b border-gray-200">
         {data.products
           .slice(0, showMore ? data.products.length : MAX_PRODUCT)
           .map((it) => {
@@ -94,26 +94,26 @@ const OrderCard = ({ data, onCommentSubmit, hasCommentedMap }) => {
 
             return (
               <div
-                className="flex flex-col md:flex-row items-start md:items-center"
+                className="flex flex-col md:flex-row items-start md:items-center mb-4"
                 key={`order-product-item-${it._id}`}
               >
-                <div className="p-2 w-full md:w-3/4 flex items-center gap-x-2">
+                <div className="p-2 w-full md:w-3/4 flex items-center gap-x-3">
                   <Link
                     to={ROUTE_PATH.PRODUCT_DETAIL(it.product._id)}
                     className="flex items-center w-full"
                   >
-                    <div className="w-[70px] md:w-[90px] h-[70px] md:h-[90px] border border-[#eee] rounded overflow-hidden relative">
+                    <div className="w-[70px] md:w-[90px] h-[70px] md:h-[90px] border border-gray-300 rounded-lg overflow-hidden relative">
                       <img
                         src={it.product.image[0]}
                         alt="Product img"
                         className="block w-full h-full object-cover"
                       />
-                      <p className="absolute bottom-0 right-0 w-6 h-6 bg-[#ececec] rounded-tl flex items-center justify-center text-[10px] md:text-[12px] text-[#6d6e72] font-semibold">
+                      <p className="absolute bottom-0 right-0 w-6 h-6 bg-gray-200 text-xs md:text-sm text-[#6d6e72] font-semibold flex items-center justify-center rounded-tl-full">
                         x{it.quantity}
                       </p>
                     </div>
-                    <div className="flex-1 ml-2 md:ml-5">
-                      <p className="text-sm md:text-[14px] text-[#111] font-semibold">
+                    <div className="flex-1 ml-3">
+                      <p className="text-sm md:text-[14px] text-[#111] font-semibold truncate">
                         {it.product.name}
                       </p>
                     </div>
@@ -121,13 +121,13 @@ const OrderCard = ({ data, onCommentSubmit, hasCommentedMap }) => {
                 </div>
 
                 <div className="w-full md:w-1/4 text-right text-[#111] mt-2 md:mt-0">
-                  <p>
+                  <p className="font-semibold">
                     {formatPrice(
                       salePrice ? totalPriceSale : totalPriceBeforeSale
                     )}
                   </p>
                   {salePrice > 0 && (
-                    <p className="line-through text-[12px] md:text-[14px]">
+                    <p className="line-through text-sm text-gray-500">
                       {formatPrice(totalPriceBeforeSale)}
                     </p>
                   )}
@@ -135,12 +135,12 @@ const OrderCard = ({ data, onCommentSubmit, hasCommentedMap }) => {
 
                 {data.status === "DELIVERED" && (
                   <div className="w-full mt-2">
-                    {hasCommentedMap[`${data._id}_${it.product._id}`] ? (
+                    {hasCommentedMap[`${data._id}_${it._id}`] ? (
                       <p className="text-gray-500 text-xs md:text-sm">
                         You have commented on this product.
                       </p>
                     ) : (
-                      <div className="p-2">
+                      <div className="p-2 space-y-2">
                         <Input.TextArea
                           value={comments[it.product._id] || ""}
                           onChange={(e) =>
@@ -148,10 +148,10 @@ const OrderCard = ({ data, onCommentSubmit, hasCommentedMap }) => {
                           }
                           rows={2}
                           placeholder="Leave a comment..."
-                          className="border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-[#dc2626] transition duration-150 ease-in-out text-xs md:text-sm"
+                          className="border rounded-lg p-2 focus:ring-2 focus:ring-[#dc2626] transition duration-150 ease-in-out text-xs md:text-sm"
                         />
                         <Rate
-                          value={ratings[it.product._id] || 0} // Rating component
+                          value={ratings[it.product._id] || 0}
                           onChange={(value) =>
                             handleRatingChange(it.product._id, value)
                           }
@@ -161,9 +161,9 @@ const OrderCard = ({ data, onCommentSubmit, hasCommentedMap }) => {
                         <Button
                           type="primary"
                           onClick={() => handleCommentSubmit(it.product._id)}
-                          className="mt-2 w-full bg-[#dc2626] hover:bg-[#b91c1c] text-white font-semibold rounded-lg transition duration-150 ease-in-out text-xs md:text-sm"
+                          className="mt-2 w-full bg-[#dc2626] hover:bg-[#b91c1c] text-white font-semibold rounded-lg text-xs md:text-sm"
                         >
-                          Submit Comment and Rating
+                          Submit
                         </Button>
                       </div>
                     )}
@@ -176,7 +176,7 @@ const OrderCard = ({ data, onCommentSubmit, hasCommentedMap }) => {
 
       {data.products.length > MAX_PRODUCT && (
         <Button
-          className="rounded w-full text-xs md:text-sm"
+          className="rounded w-full text-xs md:text-sm text-gray-600 hover:text-gray-800"
           onClick={handleToggleProducts}
         >
           {showMore
@@ -186,16 +186,14 @@ const OrderCard = ({ data, onCommentSubmit, hasCommentedMap }) => {
       )}
 
       <div className="text-right mt-4">
-        <p className="text-sm md:text-base">
+        <p className="text-sm md:text-base font-semibold">
           <span>Total: </span>
-          <span className="text-[#e30019] font-semibold">
-            {formatPrice(data.totalPrice)}
-          </span>
+          <span className="text-[#e30019]">{formatPrice(data.totalPrice)}</span>
         </p>
 
         <Link
           to={ROUTE_PATH.ORDER_HISTORY_DETAIL(data._id)}
-          className="border border-[#1982f9] rounded px-2 md:px-3 h-8 md:h-9 text-xs md:text-[14px] text-[#1982f9] inline-flex items-center mt-2"
+          className="border border-[#1982f9] rounded-md px-3 py-2 text-xs md:text-[14px] text-[#1982f9] inline-flex items-center mt-2"
         >
           View details
         </Link>

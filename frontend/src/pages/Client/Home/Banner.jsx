@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import productApi from "../../../api/productApi";
 import sliderApi from "../../../api/sliderApi";
 import WrapperContent from "../../../components/WrapperContent/WrapperContent";
+import { ROUTE_PATH } from "../../../constants/routes";
 import formatPrice from "../../../utils/formatPrice";
 
 // Banner Component
@@ -48,51 +49,65 @@ const Banner = () => {
     </Carousel>
   );
 };
-
-// Hot Sale Product Component for a list of products
 const HotSaleProductList = ({ products }) => {
-  const limitedProducts = products.slice(0, 3); // Only show the first 3 products
+  const [randomProducts, setRandomProducts] = useState([]);
+
+  useEffect(() => {
+    const getRandomProducts = () => {
+      const shuffledProducts = [...products];
+      for (let i = shuffledProducts.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledProducts[i], shuffledProducts[j]] = [
+          shuffledProducts[j],
+          shuffledProducts[i],
+        ];
+      }
+      return shuffledProducts;
+    };
+    setRandomProducts(getRandomProducts());
+
+    const intervalId = setInterval(() => {
+      setRandomProducts(getRandomProducts());
+    }, 60000);
+
+    return () => clearInterval(intervalId);
+  }, [products]);
+
   return (
     <Card
-      title={<span className="text-xl font-bold pl-32">Hot Sale Products</span>}
+      title={<span className="text-xl font-bold pl-28">Shop's Best Picks</span>}
       bordered={false}
       style={{ width: "100%", height: "auto" }}
-      className="bg-red-200"
+      className="bg-white"
     >
       <Carousel
         dots={false}
         autoplay={true}
+        autoplayInterval={60000}
         effect="fade"
         className="h-[120px] md:h-[122px] rounded-lg"
       >
-        {limitedProducts.map((product) => {
-          const discountPercentage =
-            product.price > 0
-              ? ((product.price - product.salePrice) / product.price) * 100
-              : 0;
-
+        {randomProducts.map((product) => {
           return (
             <div key={product._id}>
-              <div className="flex justify-between items-center text-black rounded-lg p-1">
-                <img
-                  src={product.image[0]} // Assuming product has image array
-                  alt={product.name}
-                  className="w-50 h-[100px] object-cover rounded-lg mb-3"
-                />
-                <div className="flex-grow overflow-hidden text-ellipsis flex-wrap text-center">
-                  <h3 className="font-semibold">{product.name}</h3>
-                  <div className="flex justify-center gap-2 items-center mb-2">
-                    {/* Format the sale price using formatPrice */}
-                    <p className="text-lg text-red-600 font-semibold">
-                      Sale: {formatPrice(product.salePrice)}
-                    </p>
-                    {/* Calculate and display discount percentage */}
-                    <p className="text-xs text-green-500 font-semibold">
-                      ({discountPercentage.toFixed(2)}% OFF)
-                    </p>
+              <Link to={ROUTE_PATH.PRODUCT_DETAIL(product._id)}>
+                <div className="flex justify-between items-center text-black rounded-lg p-1">
+                  <img
+                    src={product.image[0]}
+                    alt={product.name}
+                    className="w-55 h-[100px] object-cover rounded-lg mb-3"
+                  />
+
+                  <div className="flex-grow overflow-hidden text-ellipsis flex-wrap text-center">
+                    <h3 className="font-semibold">{product.name}</h3>
+                    <div className="flex justify-center gap-2 items-center mb-2">
+                      <p className="text-lg text-red-600 font-semibold">
+                        Price: {formatPrice(product.salePrice)}{" "}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             </div>
           );
         })}
@@ -127,14 +142,10 @@ const BannerWithAds = () => {
 
         {/* Hot Sale Product List section */}
         <div className="w-full md:w-[38%]">
-          {bestSaleProducts.length > 0 ? (
-            <HotSaleProductList
-              className="h-[150px] sm:h-[250px] md:h-[300px] rounded-lg"
-              products={bestSaleProducts.slice(0, 3)}
-            />
-          ) : (
-            <p>Loading hot sale products...</p>
-          )}
+          <HotSaleProductList
+            className="h-[150px] sm:h-[250px] md:h-[300px] rounded-lg"
+            products={bestSaleProducts}
+          />
         </div>
       </div>
     </WrapperContent>

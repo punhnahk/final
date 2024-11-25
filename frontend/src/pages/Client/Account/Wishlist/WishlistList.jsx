@@ -52,7 +52,7 @@ const WishlistList = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex justify-center items-center min-h-screen">
         <Spin size="large" /> {/* Show a spinner while loading */}
       </div>
     );
@@ -65,7 +65,9 @@ const WishlistList = () => {
 
   return (
     <WrapperContent className="my-8 px-4">
-      <Title className="text-center my-4">Your Wishlist</Title>
+      <Title level={2} className="text-center my-4">
+        Your Wishlist
+      </Title>
       <List
         grid={{
           gutter: 16,
@@ -75,7 +77,7 @@ const WishlistList = () => {
           lg: 4, // 4 columns on large screens
           xl: 5, // 5 columns on extra large screens
         }}
-        dataSource={Array.isArray(currentItems) ? currentItems : []} // Ensure dataSource is always an array
+        dataSource={currentItems} // Ensure dataSource is always an array
         renderItem={(item) => {
           const images = item?.image || []; // Fallback to an empty array
 
