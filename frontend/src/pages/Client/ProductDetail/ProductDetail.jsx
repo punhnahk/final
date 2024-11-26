@@ -39,13 +39,14 @@ const ProductDetail = () => {
 
   useEffect(() => {
     id && fetchData(id);
-    fetchWishlistStatus();
+    fetchWishlistStatus(id);
   }, [id]);
 
   const fetchWishlistStatus = async (itemId) => {
     const token = localStorage.getItem(TOKEN_STORAGE_KEY);
 
     if (!token) {
+      console.log("No token found, user is not authenticated");
       return;
     }
 
@@ -56,13 +57,15 @@ const ProductDetail = () => {
 
       const isInWishlist =
         Array.isArray(response.data) &&
-        response.data.some((item) => item.id === itemId);
-
+        response.data.some((item) => String(item._id) === String(itemId));
       setIsInWishlist(isInWishlist);
+
+      console.log("Wishlist check completed for productId:", itemId);
     } catch (error) {
       if (error.response && error.response.status === 500) {
         message.error("Failed to fetch wishlist items");
       } else {
+        console.error("Error fetching wishlist status:", error);
         setIsInWishlist(false);
       }
     }

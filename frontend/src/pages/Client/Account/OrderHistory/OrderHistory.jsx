@@ -2,10 +2,10 @@ import { Empty, Input, message, Spin } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import { IoSearchSharp } from "react-icons/io5";
 import { Link } from "react-router-dom";
-import commentApi from "../../../../api/commentApi";
 import orderApi from "../../../../api/orderApi";
 import { ORDER_STATUS } from "../../../../constants";
 import { ROUTE_PATH } from "../../../../constants/routes";
+import useProfile from "../../../../hooks/useProfile";
 import styles from "./index.module.css";
 import OrderList from "./OrderList";
 
@@ -19,24 +19,23 @@ const TABS = [
   { id: 6, label: "Canceled", value: ORDER_STATUS.CANCELED },
 ];
 
-const OrdersHistory = ({ userId }) => {
+const OrdersHistory = () => {
   const [activeTab, setActiveTab] = useState(TABS[0].value);
   const [data, setData] = useState([]);
-  const [hasCommentedMap, setHasCommentedMap] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
+  const { profile } = useProfile();
+  const userId = profile?._id;
 
   useEffect(() => {
     fetchData();
   }, []);
 
-  // Fetch data and check comments
   const fetchData = async () => {
     setLoading(true);
     try {
       const orders = await orderApi.getOrdersHistory();
       setData(orders.data);
-      await checkUserComments(orders.data);
     } catch (error) {
       message.error("Failed to fetch orders");
     } finally {
@@ -44,51 +43,6 @@ const OrdersHistory = ({ userId }) => {
     }
   };
 
-  // Check if the user has commented on products
-  const checkUserComments = async (ordersData) => {
-    const productIds = [
-      ...new Set(
-        ordersData.flatMap((order) =>
-          order.products.map((product) => product.product._id)
-        )
-      ),
-    ];
-    try {
-      const comments = await commentApi.getCommentsByProductIds(productIds);
-      const commentsByProduct = groupCommentsByProduct(comments);
-      const hasCommented = mapHasCommented(ordersData, commentsByProduct);
-      setHasCommentedMap(hasCommented);
-    } catch (error) {
-      console.error("Failed to fetch comments", error);
-    }
-  };
-
-  // Group comments by product ID
-  const groupCommentsByProduct = (comments) => {
-    return comments.reduce((acc, comment) => {
-      if (!acc[comment.productId]) acc[comment.productId] = [];
-      acc[comment.productId].push(comment);
-      return acc;
-    }, {});
-  };
-
-  // Map if the user has commented on the product
-  const mapHasCommented = (ordersData, commentsByProduct) => {
-    return ordersData.reduce((acc, order) => {
-      order.products.forEach((product) => {
-        const productId = product.product._id;
-        const userComments = commentsByProduct[productId] || [];
-        const orderProductKey = `${order._id}_${productId}`;
-        const hasCommented = userComments.some(
-          (comment) => comment.userId === userId
-        );
-        acc[orderProductKey] = hasCommented;
-      });
-      return acc;
-    }, {});
-  };
-
-  // Filter orders based on active tab and search query
   const ordersFilter = useMemo(() => {
     return data.filter(
       (order) =>
@@ -98,22 +52,6 @@ const OrdersHistory = ({ userId }) => {
         )
     );
   }, [data, activeTab, searchQuery]);
-
-  // Handle comment submission
-  const handleCommentSubmit = async (orderId, productId, content, rating) => {
-    try {
-      const finalRating = rating || 0;
-      await commentApi.addComment({
-        orderId,
-        productId,
-        content,
-        rating: finalRating,
-      });
-      message.success("Comment and rating added successfully!");
-    } catch (error) {
-      message.error("You can only comment once on each product.");
-    }
-  };
 
   return (
     <>
@@ -135,7 +73,6 @@ const OrdersHistory = ({ userId }) => {
     </>
   );
 
-  // Render tabs
   function renderTabs() {
     return (
       <div className="flex items-center justify-between mt-3 overflow-x-auto">
@@ -157,7 +94,6 @@ const OrdersHistory = ({ userId }) => {
     );
   }
 
-  // Render orders or empty state
   function renderOrders() {
     if (!ordersFilter.length) {
       return (
@@ -176,13 +112,7 @@ const OrdersHistory = ({ userId }) => {
         </div>
       );
     }
-    return (
-      <OrderList
-        data={ordersFilter}
-        onCommentSubmit={handleCommentSubmit}
-        hasCommentedMap={hasCommentedMap}
-      />
-    );
+    return <OrderList data={ordersFilter} />;
   }
 };
 

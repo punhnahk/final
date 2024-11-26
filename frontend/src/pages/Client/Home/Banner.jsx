@@ -75,10 +75,10 @@ const HotSaleProductList = ({ products }) => {
 
   return (
     <Card
-      title={<span className="text-xl font-bold pl-28">Shop's Best Picks</span>}
+      title={<span className="text-xl font-bold pl-24">Shop's Best Picks</span>}
       bordered={false}
       style={{ width: "100%", height: "auto" }}
-      className="bg-white"
+      className="bg-white border-2 border-red-100"
     >
       <Carousel
         dots={false}

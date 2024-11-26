@@ -1,4 +1,4 @@
-import { Form, Input, message, Radio, Select, Spin } from "antd";
+import { AutoComplete, Form, Input, message, Radio, Spin } from "antd";
 import FormItem from "antd/es/form/FormItem";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
@@ -17,35 +17,22 @@ import useProfile from "../../../hooks/useProfile";
 import { resetCart, selectCart } from "../../../store/cartSlice";
 import formatPrice from "../../../utils/formatPrice";
 
-const { Option } = Select;
-
 const Checkout = () => {
   const cart = useSelector(selectCart);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [form] = Form.useForm();
-  const [selectedCity, setSelectedCity] = useState(null);
-  const [cities, setCities] = useState([]);
   const [voucherCode, setVoucherCode] = useState("");
   const [totalDiscount, setTotalDiscount] = useState(0);
-  const [districts, setDistricts] = useState([]);
   const [isVoucherApplied, setIsVoucherApplied] = useState(false);
   const [useSavedAddress, setUseSavedAddress] = useState(true);
   const [savedAddress, setSavedAddress] = useState(null);
+  const [addressOptions, setAddressOptions] = useState([]);
 
   const FREE_SHIPPING_THRESHOLD = 5000000;
   const SHIPPING_FEE = 20000;
 
   useEffect(() => {
-    const fetchCities = async () => {
-      try {
-        const res = await axios.get("https://provinces.open-api.vn/api/p/");
-        setCities(res.data);
-      } catch (error) {
-        message.error("Failed to fetch cities.");
-      }
-    };
-
     const fetchUserInfo = async () => {
       try {
         const res = await userApi.getProfile();
@@ -62,38 +49,46 @@ const Checkout = () => {
       }
     };
 
-    fetchCities();
     fetchUserInfo();
   }, [form]);
 
-  const handleCityChange = async (cityCode) => {
-    const selectedCity = cities.find((city) => city.code === cityCode);
-    setSelectedCity(selectedCity);
+  const handleAddressSearch = async (searchText) => {
+    if (!searchText) return;
     try {
-      const res = await axios.get(
-        `https://provinces.open-api.vn/api/p/${cityCode}?depth=2`
+      // Fetch address suggestions from Goong API
+      const response = await axios.get(
+        "https://rsapi.goong.io/Place/AutoComplete",
+        {
+          params: {
+            api_key: process.env.REACT_APP_GOONG_API_KEY,
+            input: searchText,
+          },
+        }
       );
-      setDistricts(res.data.districts || []);
-      form.setFieldsValue({ district: undefined }); // Reset district
+
+      // Map the response to format suitable for AutoComplete
+      const options = response.data.predictions.map((prediction) => ({
+        value: prediction.description,
+      }));
+
+      setAddressOptions(options);
     } catch (error) {
-      message.error("Failed to fetch districts.");
+      console.error("Error fetching address suggestions:", error);
     }
   };
 
+  const handleAddressSelect = (value) => {
+    form.setFieldsValue({ address: value });
+  };
+
   const handleAddressChange = (e) => {
-    const value = e.target.value === "saved";
-    setUseSavedAddress(value);
+    setUseSavedAddress(e.target.value === "saved");
   };
 
   const onSubmit = async (values) => {
-    const cityName = selectedCity ? selectedCity.name : values.city;
-    const fullAddress =
-      useSavedAddress && savedAddress
-        ? savedAddress
-        : `${values.detailedAddress}, ${values.district}, ${cityName}`;
-
-    if (!fullAddress || fullAddress.trim() === "undefined") {
-      message.error("Vui lòng nhập địa chỉ hợp lệ.");
+    if (!addressOptions) {
+      message.error("Please enter a valid address.");
+      setUseSavedAddress(false);
       return;
     }
 
@@ -103,13 +98,13 @@ const Checkout = () => {
           name: values.customerName,
           phone: values.customerPhone,
           email: values.customerEmail,
-          address: fullAddress,
+          address: values.address,
         });
       }
 
       const res = await orderApi.createOrder({
         ...values,
-        address: fullAddress,
+        address: values.address,
         voucherCode,
       });
 
@@ -287,7 +282,6 @@ const Checkout = () => {
                   Shipping Information
                 </p>
 
-                {/* Address selection Radio Buttons */}
                 <FormItem name="addressType" className="mb-4">
                   <Radio.Group
                     onChange={handleAddressChange}
@@ -307,42 +301,24 @@ const Checkout = () => {
                 ) : (
                   <div>
                     <FormItem
-                      name="city"
-                      rules={[{ required: true, message: "City required" }]}
-                    >
-                      <Select
-                        placeholder="Select City"
-                        onChange={handleCityChange}
-                      >
-                        {cities.map((city) => (
-                          <Option key={city.code} value={city.code}>
-                            {city.name}
-                          </Option>
-                        ))}
-                      </Select>
-                    </FormItem>
-                    <FormItem
-                      name="district"
-                      rules={[{ required: true, message: "District required" }]}
-                    >
-                      <Select placeholder="Select District">
-                        {districts.map((district) => (
-                          <Option key={district.code} value={district.name}>
-                            {district.name}
-                          </Option>
-                        ))}
-                      </Select>
-                    </FormItem>
-                    <FormItem
-                      name="detailedAddress"
+                      name="address"
+                      className="mb-6"
                       rules={[
                         {
                           required: true,
-                          message: "Detailed address required",
+                          message: "Please enter your address",
                         },
                       ]}
                     >
-                      <Input placeholder="Street Address" />
+                      <AutoComplete
+                        options={addressOptions}
+                        onSearch={handleAddressSearch}
+                        onSelect={handleAddressSelect}
+                        placeholder="Search for your address"
+                        className="rounded w-full"
+                      >
+                        <Input />
+                      </AutoComplete>
                     </FormItem>
                   </div>
                 )}

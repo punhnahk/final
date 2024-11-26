@@ -1,7 +1,9 @@
 import { Button, Input, message, Rate } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import commentApi from "../../../../api/commentApi"; // Import your commentApi
 import { ROUTE_PATH } from "../../../../constants/routes";
+import useProfile from "../../../../hooks/useProfile";
 import formatPrice from "../../../../utils/formatPrice";
 import { getOrderStatus } from "../../../../utils/order";
 
@@ -14,62 +16,73 @@ const statusColors = {
   CANCELED: "text-red-500",
 };
 
-const OrderCard = ({ data, onCommentSubmit, hasCommentedMap }) => {
+const OrderCard = ({ data }) => {
   const [showMore, setShowMore] = useState(false);
-  const [comments, setComments] = useState({});
-  const [ratings, setRatings] = useState({});
+  const [comment, setComment] = useState("");
+  const [rating, setRating] = useState(5); // Rating state for the product
+  const [comments, setComments] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [hasCommented, setHasCommented] = useState(false);
+  const [showComments, setShowComments] = useState(false); // State for toggling comment visibility
+  const { profile } = useProfile();
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const response = await commentApi.getCommentsByOrderId(data._id);
+        setComments(response.data);
+      } catch (error) {
+        console.error("Error fetching comments:", error);
+      }
+    };
+    fetchComments();
+  }, [data._id]);
+
+  const handleAddComment = async (productId, newComment, rating) => {
+    if (!newComment) {
+      message.warning("Comment cannot be empty.");
+      return;
+    }
+
+    const hasCommented = comments.some(
+      (c) => c.userId._id === profile._id && c.productId === productId
+    );
+    if (hasCommented) {
+      message.warning("You have already commented on this product.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const commentData = {
+        content: newComment,
+        orderId: data._id,
+        productId: productId,
+        rating: rating,
+      };
+
+      await commentApi.addComment(commentData);
+      message.success("Comment added successfully!");
+      const updatedComments = await commentApi.getCommentsByOrderId(data._id);
+      setComments(updatedComments.data);
+    } catch (error) {
+      console.error("Error adding comment:", error);
+      message.error("Error adding comment.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleToggleProducts = () => {
     setShowMore(!showMore);
   };
 
-  const handleCommentChange = (productId, e) => {
-    setComments({
-      ...comments,
-      [productId]: e.target.value,
-    });
-  };
-
-  const handleRatingChange = (productId, value) => {
-    setRatings({
-      ...ratings,
-      [productId]: value,
-    });
-  };
-
-  const handleCommentSubmit = async (productId) => {
-    if (!comments[productId]) {
-      message.error("Comment cannot be empty.");
-      return;
-    }
-
-    if (hasCommentedMap[`${data._id}_${productId}`]) {
-      message.error("You have already commented on this product.");
-      return;
-    }
-
-    try {
-      await onCommentSubmit(
-        data._id,
-        productId,
-        comments[productId],
-        ratings[productId]
-      ); // Pass rating too
-      setComments((prev) => ({
-        ...prev,
-        [productId]: "",
-      }));
-      setRatings((prev) => ({
-        ...prev,
-        [productId]: undefined,
-      }));
-    } catch {
-      message.error("Failed to submit comment.");
-    }
+  const handleToggleComments = () => {
+    setShowComments(!showComments);
   };
 
   return (
-    <div className="pt-4 px-4 md:px-6 pb-6 rounded bg-white shadow-sm hover:shadow-lg transition-all duration-300 mb-4">
+    <div className="pt-4 px-4 md:px-6 p-3 rounded bg-white mb-6 border-2 border-gray-200">
       <div className="flex flex-col md:flex-row items-center justify-between pb-4 border-b border-gray-200">
         <p
           className={`text-sm md:text-[14px] font-semibold ${
@@ -83,7 +96,7 @@ const OrderCard = ({ data, onCommentSubmit, hasCommentedMap }) => {
         </p>
       </div>
 
-      <div className="py-4 mb-3 border-b border-gray-200">
+      <div className="py-4 mb-4 border-b border-gray-200">
         {data.products
           .slice(0, showMore ? data.products.length : MAX_PRODUCT)
           .map((it) => {
@@ -94,8 +107,8 @@ const OrderCard = ({ data, onCommentSubmit, hasCommentedMap }) => {
 
             return (
               <div
-                className="flex flex-col md:flex-row items-start md:items-center mb-4"
-                key={`order-product-item-${it._id}`}
+                className="flex flex-col md:flex-row items-start md:items-center mb-6"
+                key={`order-product-item-${it.product._id}`}
               >
                 <div className="p-2 w-full md:w-3/4 flex items-center gap-x-3">
                   <Link
@@ -132,43 +145,6 @@ const OrderCard = ({ data, onCommentSubmit, hasCommentedMap }) => {
                     </p>
                   )}
                 </div>
-
-                {data.status === "DELIVERED" && (
-                  <div className="w-full mt-2">
-                    {hasCommentedMap[`${data._id}_${it._id}`] ? (
-                      <p className="text-gray-500 text-xs md:text-sm">
-                        You have commented on this product.
-                      </p>
-                    ) : (
-                      <div className="p-2 space-y-2">
-                        <Input.TextArea
-                          value={comments[it.product._id] || ""}
-                          onChange={(e) =>
-                            handleCommentChange(it.product._id, e)
-                          }
-                          rows={2}
-                          placeholder="Leave a comment..."
-                          className="border rounded-lg p-2 focus:ring-2 focus:ring-[#dc2626] transition duration-150 ease-in-out text-xs md:text-sm"
-                        />
-                        <Rate
-                          value={ratings[it.product._id] || 0}
-                          onChange={(value) =>
-                            handleRatingChange(it.product._id, value)
-                          }
-                          className="mt-2"
-                          allowHalf
-                        />
-                        <Button
-                          type="primary"
-                          onClick={() => handleCommentSubmit(it.product._id)}
-                          className="mt-2 w-full bg-[#dc2626] hover:bg-[#b91c1c] text-white font-semibold rounded-lg text-xs md:text-sm"
-                        >
-                          Submit
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                )}
               </div>
             );
           })}
@@ -198,23 +174,89 @@ const OrderCard = ({ data, onCommentSubmit, hasCommentedMap }) => {
           View details
         </Link>
       </div>
+
+      {/* Conditionally render the comment section */}
+      {data.status === "DELIVERED" && (
+        <div className="flex flex-col gap-6 mt-4">
+          {/* Button to show/hide all comments */}
+          <Button type="link" onClick={handleToggleComments}>
+            {showComments ? "Show All Comments" : "Hide All Comments"}
+          </Button>
+
+          {/* Render comments for all products if showAllComments is true */}
+          {showComments && (
+            <div className="flex flex-col gap-6 mt-4">
+              {data.products.map((product) => {
+                const productComments = comments.filter(
+                  (comment) => comment.productId === product.product._id
+                );
+
+                return (
+                  <div
+                    key={product.product._id}
+                    className="flex flex-col gap-2"
+                  >
+                    <div className="bg-gray-100 p-3 rounded">
+                      <h3 className="text-lg font-semibold">
+                        Add a Comment for {product.product.name}
+                      </h3>
+                      {productComments.length > 0 ? (
+                        <div>
+                          <p className="text-sm">
+                            {productComments[0].content}
+                          </p>
+                          <Rate value={productComments[0].rating} disabled />
+                        </div>
+                      ) : (
+                        <div>
+                          <Input.TextArea
+                            rows={4}
+                            onChange={(e) => setComment(e.target.value)}
+                            placeholder="Share your thoughts on this product..."
+                            className="mb-2"
+                          />
+                          <div className="flex items-center gap-3">
+                            <Rate
+                              onChange={(value) => setRating(value)}
+                              className="mb-2"
+                            />
+                            <Button
+                              type="primary"
+                              className="ml-auto"
+                              loading={loading}
+                              onClick={() =>
+                                handleAddComment(
+                                  product.product._id,
+                                  comment,
+                                  rating
+                                )
+                              }
+                            >
+                              Add Comment
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
 
-const OrderList = ({ data, onCommentSubmit, hasCommentedMap }) => {
+const OrderHistory = ({ data }) => {
   return (
-    <div className="bg-[#ececec]">
-      {data.map((it) => (
-        <OrderCard
-          key={`order-item-${it._id}`}
-          data={it}
-          onCommentSubmit={onCommentSubmit}
-          hasCommentedMap={hasCommentedMap}
-        />
+    <div className="flex flex-col space-y-5">
+      {data.map((order) => (
+        <OrderCard key={order._id} data={order} />
       ))}
     </div>
   );
 };
 
-export default OrderList;
+export default OrderHistory;
