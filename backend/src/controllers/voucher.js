@@ -125,6 +125,7 @@ const VoucherController = {
     try {
       const { code } = req.params;
       const userId = req.user.id;
+      const MAX_USAGE = 3;
 
       const voucher = await Voucher.findOne({ code }).exec();
 
@@ -147,18 +148,21 @@ const VoucherController = {
       }).exec();
 
       if (voucherUsage) {
-        return res
-          .status(400)
-          .json({ message: "Voucher has already been used by this user." });
+        if (voucherUsage.usageCount >= MAX_USAGE) {
+          return res
+            .status(400)
+            .json({ message: "Voucher usage limit reached." });
+        }
+        voucherUsage.usageCount += 1;
+      } else {
+        voucherUsage = new VoucherUsage({
+          userId,
+          voucherId: voucher._id,
+          usageCount: 1,
+        });
       }
 
-      const newVoucherUsage = new VoucherUsage({
-        userId,
-        voucherId: voucher._id,
-        usedAt: new Date(),
-      });
-
-      await newVoucherUsage.save();
+      await voucherUsage.save();
       res.json(voucher);
     } catch (error) {
       res
