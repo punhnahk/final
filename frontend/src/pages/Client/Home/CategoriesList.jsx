@@ -64,6 +64,7 @@ const CategoriesList = () => {
             >
               <img
                 src={it.image}
+                loading="lazy"
                 alt="Category img"
                 className="h-[100px] w-full object-contain group-hover:scale-105 transition-transform duration-300"
               />

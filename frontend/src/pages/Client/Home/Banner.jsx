@@ -42,6 +42,7 @@ const Banner = () => {
           <img
             src={it.image}
             alt={it.title}
+            loading="lazy"
             className="absolute w-full h-full object-fill top-0 right-0 bottom-0 left-0 rounded-lg"
           />
         </Link>
@@ -95,6 +96,7 @@ const HotSaleProductList = ({ products }) => {
                   <img
                     src={product.image[0]}
                     alt={product.name}
+                    loading="lazy"
                     className="w-55 h-[100px] object-cover rounded-lg mb-3"
                   />
 

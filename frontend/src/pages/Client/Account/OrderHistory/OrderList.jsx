@@ -7,7 +7,7 @@ import useProfile from "../../../../hooks/useProfile";
 import formatPrice from "../../../../utils/formatPrice";
 import { getOrderStatus } from "../../../../utils/order";
 
-const MAX_PRODUCT = 2;
+const MAX_PRODUCT = 1;
 const statusColors = {
   INITIAL: "text-blue-500",
   CONFIRMED: "text-green-500",
@@ -22,7 +22,6 @@ const OrderCard = ({ data }) => {
   const [rating, setRating] = useState(5); // Rating state for the product
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [hasCommented, setHasCommented] = useState(false);
   const [showComments, setShowComments] = useState(false); // State for toggling comment visibility
   const { profile } = useProfile();
 
@@ -80,6 +79,18 @@ const OrderCard = ({ data }) => {
   const handleToggleComments = () => {
     setShowComments(!showComments);
   };
+  const handleCopyOrderId = (orderId) => {
+    // Copy the order ID to the clipboard
+    navigator.clipboard
+      .writeText(orderId.slice(-5))
+      .then(() => {
+        message.success("Order ID copied to clipboard!");
+      })
+      .catch((err) => {
+        message.error("Failed to copy order ID");
+        console.error(err);
+      });
+  };
 
   return (
     <div className="pt-4 px-4 md:px-6 p-3 rounded bg-white mb-6 border-2 border-gray-200">
@@ -91,9 +102,18 @@ const OrderCard = ({ data }) => {
         >
           {getOrderStatus(data.status)}
         </p>
-        <p className="text-sm md:text-[14px] text-[#111] font-semibold mt-2 md:mt-0">
-          #{data._id}
-        </p>
+        <div className="flex flex-col items-start md:items-end">
+          <p
+            className="text-sm md:text-[14px] text-[#111] font-semibold mt-2 md:mt-0 cursor-pointer"
+            onClick={() => handleCopyOrderId(data._id)}
+          >
+            #{data._id.slice(-5)}
+          </p>
+          <p className="text-xs text-gray-500 mt-1">
+            {new Date(data.createdAt).toLocaleString()}{" "}
+            {/* Format the order creation time */}
+          </p>
+        </div>
       </div>
 
       <div className="py-4 mb-4 border-b border-gray-200">
@@ -118,6 +138,7 @@ const OrderCard = ({ data }) => {
                     <div className="w-[70px] md:w-[90px] h-[70px] md:h-[90px] border border-gray-300 rounded-lg overflow-hidden relative">
                       <img
                         src={it.product.image[0]}
+                        loading="lazy"
                         alt="Product img"
                         className="block w-full h-full object-cover"
                       />
@@ -150,7 +171,7 @@ const OrderCard = ({ data }) => {
           })}
       </div>
 
-      {data.products.length > MAX_PRODUCT && (
+      {data.products.length > 1 && (
         <Button
           className="rounded w-full text-xs md:text-sm text-gray-600 hover:text-gray-800"
           onClick={handleToggleProducts}
@@ -175,15 +196,12 @@ const OrderCard = ({ data }) => {
         </Link>
       </div>
 
-      {/* Conditionally render the comment section */}
       {data.status === "DELIVERED" && (
         <div className="flex flex-col gap-6 mt-4">
-          {/* Button to show/hide all comments */}
           <Button type="link" onClick={handleToggleComments}>
             {showComments ? "Show All Comments" : "Hide All Comments"}
           </Button>
 
-          {/* Render comments for all products if showAllComments is true */}
           {showComments && (
             <div className="flex flex-col gap-6 mt-4">
               {data.products.map((product) => {

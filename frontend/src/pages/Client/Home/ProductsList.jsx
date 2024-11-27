@@ -116,6 +116,7 @@ const ProductsList = () => {
                   <img
                     src={topProduct.image[0]}
                     alt={topProduct.name}
+                    loading="lazy"
                     className="w-full max-w-full h-auto sm:h-48 md:h-56 lg:h-64 object-cover rounded-md  transition-all duration-300 transform"
                   />
                 </div>

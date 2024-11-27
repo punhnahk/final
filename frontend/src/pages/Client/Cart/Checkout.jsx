@@ -29,7 +29,7 @@ const Checkout = () => {
   const [savedAddress, setSavedAddress] = useState(null);
   const [addressOptions, setAddressOptions] = useState([]);
 
-  const FREE_SHIPPING_THRESHOLD = 5000000;
+  const FREE_SHIPPING_THRESHOLD = 500000;
   const SHIPPING_FEE = 20000;
 
   useEffect(() => {
@@ -203,6 +203,7 @@ const Checkout = () => {
                         <div className="w-[68px] h-[68px] p-2 border border-[#d1d5db] rounded-lg">
                           <img
                             src={it.product.image[0]}
+                            loading="lazy"
                             alt="Product"
                             className="w-full h-full object-cover rounded"
                           />

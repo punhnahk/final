@@ -59,8 +59,6 @@ const ProductDetail = () => {
         Array.isArray(response.data) &&
         response.data.some((item) => String(item._id) === String(itemId));
       setIsInWishlist(isInWishlist);
-
-      console.log("Wishlist check completed for productId:", itemId);
     } catch (error) {
       if (error.response && error.response.status === 500) {
         message.error("Failed to fetch wishlist items");
@@ -261,6 +259,7 @@ const ProductDetail = () => {
               >
                 <img
                   src={it}
+                  loading="lazy"
                   alt="Product"
                   className="object-contain w-full h-full rounded-lg transition-transform duration-300 ease-in-out transform"
                 />
@@ -271,6 +270,9 @@ const ProductDetail = () => {
 
         {/* Product Info */}
         <div className="col-span-12 lg:col-span-6">
+          <p className="text-sm text-gray-500 mt-2">
+            #{data.brand}_{data._id.slice(-5).toUpperCase()}
+          </p>
           <h1 className="text-[#090d14] font-semibold text-2xl lg:text-3xl break-words">
             {data.name}
           </h1>
@@ -492,6 +494,7 @@ const ProductDetail = () => {
                     comment.userId?.avatar ||
                     "https://icons.veryicon.com/png/o/miscellaneous/common-icons-31/default-avatar-2.png"
                   }
+                  loading="lazy"
                   alt={`${comment.userId?.name || "User"}'s avatar`}
                   className="w-10 h-10 rounded-full"
                 />

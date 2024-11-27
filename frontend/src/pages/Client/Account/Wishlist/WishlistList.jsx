@@ -20,7 +20,6 @@ const WishlistList = () => {
     setLoading(true); // Start loading
     try {
       const response = await wishlistApi.getWishlist();
-      console.log("Fetched wishlist items:", response.data);
       setWishlistItems(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       message.error("Failed to fetch wishlist items");
@@ -76,6 +75,7 @@ const WishlistList = () => {
                     <img
                       alt={item.name}
                       src={images[0]}
+                      loading="lazy"
                       className="object-cover w-16 h-16 rounded-md"
                       style={{
                         objectFit: "contain",

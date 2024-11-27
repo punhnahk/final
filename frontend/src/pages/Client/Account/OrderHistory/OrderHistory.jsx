@@ -1,4 +1,4 @@
-import { Empty, Input, message, Spin } from "antd";
+import { Button, Empty, Input, message, Select, Spin } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import { IoSearchSharp } from "react-icons/io5";
 import { Link } from "react-router-dom";
@@ -24,6 +24,8 @@ const OrdersHistory = () => {
   const [data, setData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
+  const [visibleOrders, setVisibleOrders] = useState(3); // State to control the number of visible orders
+  const [sortOrder, setSortOrder] = useState("newest"); // State to track sorting option (newest or oldest)
   const { profile } = useProfile();
   const userId = profile?._id;
 
@@ -44,33 +46,70 @@ const OrdersHistory = () => {
   };
 
   const ordersFilter = useMemo(() => {
-    return data.filter(
-      (order) =>
+    // Filter orders by active tab and search query
+    const filteredOrders = data.filter((order) => {
+      // Check if searchQuery matches the last 5 characters of order ID
+      const orderIdEndsWithSearchQuery = order._id
+        .slice(-5)
+        .includes(searchQuery);
+
+      // Check if product name matches searchQuery
+      const productMatchesQuery = order.products.some((product) =>
+        product.product.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+
+      // Return orders that match either the order ID (last 5 chars) or product name
+      return (
         (activeTab === "ALL" || order.status === activeTab) &&
-        order.products.some((product) =>
-          product.product.name.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-    );
-  }, [data, activeTab, searchQuery]);
+        (orderIdEndsWithSearchQuery || productMatchesQuery)
+      );
+    });
+
+    // Sort orders based on selected sort option
+    return filteredOrders.sort((a, b) => {
+      if (sortOrder === "newest") {
+        return new Date(b.createdAt) - new Date(a.createdAt); // Sort by newest
+      }
+      return new Date(a.createdAt) - new Date(b.createdAt); // Sort by oldest
+    });
+  }, [data, activeTab, searchQuery, sortOrder]);
+
+  const handleShowMoreOrders = () => {
+    setVisibleOrders((prev) => prev + 4); // Load 4 more orders each time
+  };
 
   return (
-    <>
-      <h2 className="text-[24px] font-semibold px-6 py-4 text-[#333] leading-tight">
-        Order Management
-      </h2>
-      {renderTabs()}
-      <div className="bg-gray-100 p-4">
-        <Input
-          placeholder="Search orders by product name"
-          className="my-3 rounded"
-          size="large"
-          prefix={<IoSearchSharp className="text-[#111] text-[16px]" />}
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto px-4 py-8">
+        <h2 className="text-2xl font-semibold text-gray-800 mb-6">
+          Order Management
+        </h2>
+        {renderTabs()}
+        {ordersFilter.length > 0 && (
+          <div className="flex items-center justify-between bg-red-200 p-3 mb-6 mt-2 rounded-lg shadow-md">
+            <Input
+              placeholder="Search orders by product name or order ID (last 5 chars)"
+              className="w-full sm:w-3/4 md:w-2/3 lg:w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#e30019] transition-all"
+              size="large"
+              prefix={<IoSearchSharp className="text-gray-600 text-xl" />}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <Select
+              defaultValue="newest"
+              onChange={(value) => setSortOrder(value)}
+              className="ml-4 w-auto bg-white border border-gray-300 rounded-lg shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-[#e30019] transition-all"
+              size="large"
+            >
+              <Select.Option value="newest">Newest</Select.Option>
+              <Select.Option value="oldest">Oldest</Select.Option>
+            </Select>
+          </div>
+        )}
+
+        {loading ? <Spin size="large" className="my-4" /> : renderOrders()}
       </div>
-      {loading ? <Spin size="large" /> : renderOrders()}
-    </>
+    </div>
   );
 
   function renderTabs() {
@@ -99,12 +138,14 @@ const OrdersHistory = () => {
       return (
         <div className="py-6">
           <Empty
-            description={<p className="text-[#111]">You have no orders yet.</p>}
+            description={
+              <p className="text-gray-600">You have no orders yet.</p>
+            }
           />
           <div className="text-center mt-4">
             <Link
               to={ROUTE_PATH.PRODUCTS_LIST}
-              className="bg-[#e30019] rounded h-[40px] inline-flex text-white items-center px-3"
+              className="bg-[#e30019] text-white rounded-full py-2 px-6"
             >
               Continue Shopping
             </Link>
@@ -112,7 +153,24 @@ const OrdersHistory = () => {
         </div>
       );
     }
-    return <OrderList data={ordersFilter} />;
+
+    const displayedOrders = ordersFilter.slice(0, visibleOrders); // Show only the visible orders
+
+    return (
+      <>
+        <OrderList data={displayedOrders} />
+        {ordersFilter.length > visibleOrders && (
+          <div className="text-right mt-6">
+            <Button
+              onClick={handleShowMoreOrders}
+              className="text-sm text-[#e30019] bg-transparent border-0 hover:text-[#e30019] transition-all"
+            >
+              Show More
+            </Button>
+          </div>
+        )}
+      </>
+    );
   }
 };
 

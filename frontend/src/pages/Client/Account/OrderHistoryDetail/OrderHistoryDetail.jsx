@@ -130,6 +130,7 @@ const OrderHistoryDetail = () => {
                 <div className="w-3/4 flex gap-x-3 items-center">
                   <img
                     src={it.product.image[0]}
+                    loading="lazy"
                     alt="Product img"
                     className="w-[60px] h-[60px] object-cover"
                   />
