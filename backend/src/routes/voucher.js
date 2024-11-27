@@ -19,11 +19,6 @@ voucherRouter.delete(
   isAdmin,
   VoucherController.deleteVoucher
 );
-voucherRouter.post(
-  "/send/:id",
-  checkLogin,
-  isAdmin,
-  VoucherController.sendVoucher
-);
+voucherRouter.post("/send/:id", VoucherController.sendVoucher);
 
 export default voucherRouter;
