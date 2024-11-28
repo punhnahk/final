@@ -124,8 +124,12 @@ const VoucherController = {
   getVoucherByCode: async (req, res) => {
     try {
       const { code } = req.params;
-      const userId = req.user.id;
+      const userId = req.user?.id;
       const MAX_USAGE = 3;
+
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
 
       const voucher = await Voucher.findOne({ code }).exec();
 
@@ -142,7 +146,7 @@ const VoucherController = {
         return res.status(400).json({ message: "Voucher has expired." });
       }
 
-      const voucherUsage = await VoucherUsage.findOne({
+      let voucherUsage = await VoucherUsage.findOne({
         userId,
         voucherId: voucher._id,
       }).exec();
@@ -165,9 +169,61 @@ const VoucherController = {
       await voucherUsage.save();
       res.json(voucher);
     } catch (error) {
+      console.error("Error fetching voucher:", error);
       res
         .status(500)
         .json({ message: "Error fetching voucher", error: error.message });
+    }
+  },
+
+  deleteVoucherUsage: async (req, res) => {
+    try {
+      const { voucherCode } = req.body;
+      const userId = req.user?.id;
+      console.log(voucherCode, userId);
+
+      // Validate that both the user ID and voucher code are provided
+      if (!userId || !voucherCode) {
+        return res
+          .status(400)
+          .json({ message: "User ID and Voucher Code are required." });
+      }
+
+      // Find the voucher by its code
+      const voucher = await Voucher.findOne({ code: voucherCode }).exec();
+
+      if (!voucher) {
+        return res.status(404).json({ message: "Voucher not found." });
+      }
+
+      // Check if the user has used this voucher before (i.e., find a usage record)
+      const voucherUsage = await VoucherUsage.findOne({
+        userId,
+        voucherId: voucher._id,
+      }).exec();
+
+      if (!voucherUsage) {
+        return res.status(404).json({ message: "Voucher usage not found." });
+      }
+
+      // Decrease the usage count (delete one instance of voucher usage)
+      if (voucherUsage.usageCount > 0) {
+        voucherUsage.usageCount -= 1;
+        await voucherUsage.save(); // Save the updated voucher usage
+        return res.json({
+          message: "Voucher usage count decreased successfully.",
+          updatedVoucherUsage: voucherUsage,
+        });
+      } else {
+        // If usage count is already 0, return an appropriate message
+        return res.status(400).json({ message: "No usage to delete." });
+      }
+    } catch (error) {
+      console.error("Error deleting voucher usage:", error);
+      res.status(500).json({
+        message: "Error deleting voucher usage",
+        error: error.message,
+      });
     }
   },
 

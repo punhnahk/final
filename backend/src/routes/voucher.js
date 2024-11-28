@@ -20,5 +20,10 @@ voucherRouter.delete(
   VoucherController.deleteVoucher
 );
 voucherRouter.post("/send/:id", VoucherController.sendVoucher);
+voucherRouter.post(
+  "/delete-usage",
+  checkLogin,
+  VoucherController.deleteVoucherUsage
+);
 
 export default voucherRouter;
