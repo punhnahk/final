@@ -298,6 +298,7 @@ const AuthController = {
           name,
           email,
           avatar: picture,
+          phone: "",
           password: "", // No password needed for social login
           loginMethod: "google", // Set login method to google
         });
