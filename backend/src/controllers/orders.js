@@ -101,15 +101,13 @@ const OrderController = {
             <table style="width: 100%; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; margin-top: 20px;">
               <tr>
                 <td style="padding: 10px; background-color: #f8f8f8; font-weight: bold;">Order ID</td>
-                <td style="padding: 10px; background-color: #fff;">$${order._id
-                  .slice(-5)
-                  .toUpperCase()}</td>
+                <td style="padding: 10px; background-color: #fff;">${
+                  order._id
+                }</td>
               </tr>
               <tr>
                 <td style="padding: 10px; background-color: #f8f8f8; font-weight: bold;">Total Price</td>
-                <td style="padding: 10px; background-color: #fff;">${finalPrice.toLocaleString(
-                  "vi-VN"
-                )} VND</td>
+                <td style="padding: 10px; background-color: #fff;">${finalPrice} VND</td>
               </tr>
               <tr>
                 <td style="padding: 10px; background-color: #f8f8f8; font-weight: bold;">Shipping Address</td>
