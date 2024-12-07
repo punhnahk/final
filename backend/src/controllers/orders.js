@@ -2,7 +2,11 @@ import crypto from "crypto";
 import moment from "moment-timezone";
 import querystring from "qs";
 import Cart from "../models/carts.js";
-import Order, { PAYMENT_METHOD } from "../models/orders.js";
+import Order, {
+  PAYMENT_METHOD,
+  PAYMENT_STATUS,
+  STATUS_ORDER,
+} from "../models/orders.js";
 import Product from "../models/products.js";
 import Voucher from "../models/voucher.js";
 import sendMail from "../utils/sendMail.js";
@@ -150,7 +154,7 @@ const OrderController = {
           req,
           orderId,
           amount: finalPrice,
-          orderInfo: `Pyament order is ${orderId}`,
+          orderInfo: `Payment order is ${orderId}`,
         });
 
         return res.status(201).json({
@@ -213,23 +217,28 @@ const OrderController = {
 
   updateStatus: async (req, res) => {
     try {
-      const orderId = req.params.id;
-      const { status } = req.body;
+      const { id } = req.params;
+      const { status, paymentStatus } = req.body;
 
-      // Find the order by ID and update its status
-      const order = await Order.findByIdAndUpdate(
-        orderId,
-        { status },
-        { new: true }
-      );
-
-      if (!order) {
-        return res.status(404).json({ message: "Order not found" });
+      if (status && !STATUS_ORDER.includes(status)) {
+        return res.status(400).json({ message: "Status is not valid" });
       }
 
-      res.status(200).json({ message: "Order status updated", order });
+      if (paymentStatus && !PAYMENT_STATUS.includes(paymentStatus)) {
+        return res.status(400).json({ message: "Status is not valid" });
+      }
+
+      const order = await Order.findByIdAndUpdate(
+        id,
+        { status, paymentStatus },
+        { new: true }
+      ).exec();
+
+      res.json(order);
     } catch (error) {
-      res.status(500).json({ message: "Server error", error });
+      res
+        .status(500)
+        .json({ message: "Internal server error", error: error.message });
     }
   },
 };
@@ -245,7 +254,6 @@ const createVNPayPaymentUrl = async ({ req, orderId, amount, orderInfo }) => {
     const secretKey = process.env.VNPAY_SECRET_KEY;
     let vnpUrl = process.env.VNPAY_VNP_URL;
     const returnUrl = process.env.VNPAY_RETURN_URL;
-
     const createDate = moment().tz("Asia/Ho_Chi_Minh").format("YYYYMMDDHHmmss");
     const expiredDate = moment()
       .tz("Asia/Ho_Chi_Minh")
@@ -253,21 +261,20 @@ const createVNPayPaymentUrl = async ({ req, orderId, amount, orderInfo }) => {
       .format("YYYYMMDDHHmmss");
 
     const currCode = "VND";
-    let vnp_Params = {
-      vnp_Version: "2.1.0",
-      vnp_Command: "pay",
-      vnp_TmnCode: tmnCode,
-      vnp_Amount: amount * 100,
-      vnp_CurrCode: currCode,
-      vnp_TxnRef: orderId,
-      vnp_OrderInfo: orderInfo,
-      vnp_OrderType: "other",
-      vnp_ReturnUrl: returnUrl,
-      vnp_IpAddr: ipAddr,
-      vnp_CreateDate: createDate,
-      vnp_ExpireDate: expiredDate,
-      vnp_Locale: "vn",
-    };
+    let vnp_Params = {};
+    vnp_Params["vnp_Version"] = "2.1.0";
+    vnp_Params["vnp_Command"] = "pay";
+    vnp_Params["vnp_TmnCode"] = tmnCode;
+    vnp_Params["vnp_Locale"] = "vn";
+    vnp_Params["vnp_CurrCode"] = currCode;
+    vnp_Params["vnp_TxnRef"] = orderId;
+    vnp_Params["vnp_OrderInfo"] = orderInfo;
+    vnp_Params["vnp_OrderType"] = "other";
+    vnp_Params["vnp_Amount"] = amount * 100;
+    vnp_Params["vnp_ReturnUrl"] = returnUrl;
+    vnp_Params["vnp_IpAddr"] = ipAddr;
+    vnp_Params["vnp_CreateDate"] = createDate;
+    vnp_Params["vnp_ExpireDate"] = expiredDate;
 
     vnp_Params = sortObject(vnp_Params);
 
