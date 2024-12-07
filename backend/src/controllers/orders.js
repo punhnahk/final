@@ -23,6 +23,13 @@ const OrderController = {
         voucherCode,
       } = req.body;
 
+      if (!address || address.trim() === "") {
+        return res.status(400).json({
+          status: false,
+          message: "Address is required for placing an order",
+        });
+      }
+
       const cart = await Cart.findOne({ user: orderBy }).exec();
 
       const productsOrder = [];

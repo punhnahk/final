@@ -69,6 +69,7 @@ const AuthController = {
         phone,
         password: hashedPassword,
         role,
+        address: "",
         loginMethod: "password",
       }).save();
 
@@ -91,6 +92,7 @@ const AuthController = {
           phone: newUser.phone,
           role: newUser.role,
           loginMethod: newUser.loginMethod,
+          address: newUser.address,
         },
         token,
       });
@@ -169,6 +171,13 @@ const AuthController = {
       if (!user) {
         return res.status(404).json({
           message: "User not found",
+        });
+      }
+
+      const isSamePassword = await bcrypt.compare(newPassword, user.password);
+      if (isSamePassword) {
+        return res.status(400).json({
+          message: "New password cannot be the same as the old password",
         });
       }
 
@@ -256,6 +265,13 @@ const AuthController = {
       if (isExpired) {
         return res.status(400).json({
           message: "OTP has expired",
+        });
+      }
+
+      const isSamePassword = await bcrypt.compare(newPassword, user.password);
+      if (isSamePassword) {
+        return res.status(400).json({
+          message: "New password cannot be the same as the old password",
         });
       }
 
