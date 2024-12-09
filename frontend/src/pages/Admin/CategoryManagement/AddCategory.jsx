@@ -16,7 +16,7 @@ const AddCategory = () => {
       const imageUrl = await uploadImage(image.file.originFileObj);
       await categoryApi.addCategory({ ...rest, image: imageUrl });
 
-      message.success("Thêm danh mục SP thành công");
+      message.success("Adding Successfully");
       navigate(ROUTE_PATH.CATEGORY_MANAGEMENT);
     } catch (error) {
       message.error("Failed to submit");

@@ -76,17 +76,21 @@ const HotSaleProductList = ({ products }) => {
 
   return (
     <Card
-      title={<span className="text-xl font-bold pl-24">Shop's Best Picks</span>}
+      title={
+        <div className="text-center">
+          <span className="text-xl font-bold ">💡 Recommended for You</span>
+        </div>
+      }
       bordered={false}
       style={{ width: "100%", height: "auto" }}
-      className="bg-white border-2 border-red-100"
+      className="bg-white border-2"
     >
       <Carousel
         dots={false}
         autoplay={true}
         autoplayInterval={60000}
         effect="fade"
-        className="h-[120px] md:h-[122px] rounded-lg"
+        className="h-[100px] md:h-[120px] rounded-lg"
       >
         {randomProducts.map((product) => {
           return (
@@ -97,14 +101,15 @@ const HotSaleProductList = ({ products }) => {
                     src={product.image[0]}
                     alt={product.name}
                     loading="lazy"
-                    className="w-55 h-[100px] object-cover rounded-lg mb-3"
+                    className="w-55 h-[100px] object-cover mb-3 transition-transform duration-300 hover:scale-105"
                   />
-
                   <div className="flex-grow overflow-hidden text-ellipsis flex-wrap text-center">
-                    <h3 className="font-semibold">{product.name}</h3>
+                    <h3 className="font-semibold text-tech-blue">
+                      {product.name}
+                    </h3>
                     <div className="flex justify-center gap-2 items-center mb-2">
                       <p className="text-lg text-red-600 font-semibold">
-                        Price: {formatPrice(product.salePrice)}{" "}
+                        Price: {formatPrice(product.salePrice)}
                       </p>
                     </div>
                   </div>

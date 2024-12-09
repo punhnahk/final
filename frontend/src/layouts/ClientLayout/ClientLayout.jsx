@@ -1,4 +1,3 @@
-import { Analytics } from "@vercel/analytics/react";
 import React, { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { Outlet } from "react-router-dom";
@@ -12,21 +11,17 @@ const ClientLayout = () => {
   const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
-    // Get the timestamp of the last popup show time from localStorage
     const lastPopupTime = localStorage.getItem("lastPopupTime");
-    const currentTime = new Date().getTime(); // Current time in milliseconds
+    const currentTime = new Date().getTime();
 
-    // Check if the popup has been shown before and if 15 minutes have passed
     if (!lastPopupTime || currentTime - lastPopupTime >= 15 * 60 * 1000) {
-      setShowPopup(true); // Show the popup if no popup has been shown or if 15 minutes have passed
+      setShowPopup(true);
     }
 
-    // Set an event listener to track user activity
     const resetPopupTimer = () => {
-      localStorage.setItem("lastPopupTime", currentTime); // Update the timestamp in localStorage
+      localStorage.setItem("lastPopupTime", currentTime);
     };
 
-    // Add event listeners for user interaction to reset the timer
     const events = ["mousemove", "keydown", "scroll"];
     events.forEach((event) => {
       window.addEventListener(event, resetPopupTimer);
@@ -54,7 +49,6 @@ const ClientLayout = () => {
       <main className={`flex-grow overflow-hidden`}>
         <Outlet />
       </main>
-      <Analytics />
       <FooterClient />
       {isMobile && <BottomNavigation />}
       {showPopup && <AdvertisementPopup onClose={handleClosePopup} />}

@@ -15,7 +15,7 @@ const AdvertisementPopup = ({ onClose }) => {
         const currentDate = new Date();
 
         const nearestVoucher = data.reduce((closest, current) => {
-          const currentExpiry = new Date(current.expirationDate); // Voucher expiration date
+          const currentExpiry = new Date(current.expirationDate);
           if (currentExpiry > currentDate) {
             if (!closest || currentExpiry < new Date(closest.expirationDate)) {
               return current;

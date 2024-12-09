@@ -94,24 +94,26 @@ const OrderCard = ({ data }) => {
 
   return (
     <div className="pt-4 px-4 md:px-6 p-3 rounded bg-white mb-6 border-2 border-gray-200">
-      <div className="flex flex-col md:flex-row items-center justify-between pb-4 border-b border-gray-200">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-4 border-b border-gray-200 gap-2">
+        {/* Order Status */}
         <p
-          className={`text-sm md:text-[14px] font-semibold ${
+          className={`w-full sm:w-auto text-sm md:text-[14px] font-semibold ${
             statusColors[data.status] || "text-gray-500"
           }`}
         >
           {getOrderStatus(data.status)}
         </p>
-        <div className="flex flex-col items-start md:items-end">
+
+        {/* Order Info */}
+        <div className="flex flex-col items-start sm:items-end w-full sm:w-auto">
           <p
-            className="text-sm md:text-[14px] text-[#111] font-semibold mt-2 md:mt-0 cursor-pointer"
+            className="text-sm md:text-[14px] text-[#111] font-semibold cursor-pointer hover:underline break-words"
             onClick={() => handleCopyOrderId(data._id)}
           >
-            #{data._id.slice(-5)}
+            #{data._id.slice(-5).toUpperCase()}
           </p>
           <p className="text-xs text-gray-500 mt-1">
-            {new Date(data.createdAt).toLocaleString()}{" "}
-            {/* Format the order creation time */}
+            {new Date(data.createdAt).toLocaleString()}
           </p>
         </div>
       </div>
@@ -130,12 +132,12 @@ const OrderCard = ({ data }) => {
                 className="flex flex-col md:flex-row items-start md:items-center mb-6"
                 key={`order-product-item-${it.product._id}`}
               >
-                <div className="p-2 w-full md:w-3/4 flex items-center gap-x-3">
+                <div className="p-2 w-full md:w-3/4 flex flex-wrap items-start gap-3">
                   <Link
                     to={ROUTE_PATH.PRODUCT_DETAIL(it.product._id)}
                     className="flex items-center w-full"
                   >
-                    <div className="w-[70px] md:w-[90px] h-[70px] md:h-[90px] border border-gray-300 rounded-lg overflow-hidden relative">
+                    <div className="w-[70px] md:w-[90px] h-[70px] md:h-[90px] border border-gray-300 rounded-lg overflow-hidden relative flex-shrink-0">
                       <img
                         src={it.product.image[0]}
                         loading="lazy"
@@ -146,8 +148,8 @@ const OrderCard = ({ data }) => {
                         x{it.quantity}
                       </p>
                     </div>
-                    <div className="flex-1 ml-3">
-                      <p className="text-sm md:text-[14px] text-[#111] font-semibold truncate">
+                    <div className="flex-1 ml-3 min-w-0">
+                      <p className="text-sm md:text-base text-[#111] font-semibold truncate">
                         {it.product.name}
                       </p>
                     </div>

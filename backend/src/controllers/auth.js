@@ -174,13 +174,6 @@ const AuthController = {
         });
       }
 
-      const isSamePassword = await bcrypt.compare(newPassword, user.password);
-      if (isSamePassword) {
-        return res.status(400).json({
-          message: "New password cannot be the same as the old password",
-        });
-      }
-
       const expireMinutes = 15;
       const otp = crypto.randomInt(100000, 999999).toString();
       const otpExpires = new Date(Date.now() + expireMinutes * 60 * 1000);
@@ -265,13 +258,6 @@ const AuthController = {
       if (isExpired) {
         return res.status(400).json({
           message: "OTP has expired",
-        });
-      }
-
-      const isSamePassword = await bcrypt.compare(newPassword, user.password);
-      if (isSamePassword) {
-        return res.status(400).json({
-          message: "New password cannot be the same as the old password",
         });
       }
 

@@ -46,16 +46,36 @@ const OrdersHistory = () => {
   };
 
   const ordersFilter = useMemo(() => {
+    if (!searchQuery || searchQuery.trim().length < 2) {
+      // If no search query or query too short, return all orders for the active tab
+      return data
+        .filter((order) => activeTab === "ALL" || order.status === activeTab)
+        .sort((a, b) => {
+          if (sortOrder === "newest") {
+            return new Date(b.createdAt) - new Date(a.createdAt); // Sort by newest
+          }
+          return new Date(a.createdAt) - new Date(b.createdAt); // Sort by oldest
+        });
+    }
+
+    const normalizeText = (text) =>
+      text
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase();
+
     // Filter orders by active tab and search query
     const filteredOrders = data.filter((order) => {
+      const searchQueryNormalized = normalizeText(searchQuery);
+
       // Check if searchQuery matches the last 5 characters of order ID
-      const orderIdEndsWithSearchQuery = order._id
-        .slice(-5)
-        .includes(searchQuery);
+      const orderIdEndsWithSearchQuery = normalizeText(
+        order._id.slice(-5)
+      ).includes(searchQueryNormalized);
 
       // Check if product name matches searchQuery
       const productMatchesQuery = order.products.some((product) =>
-        product.product.name.toLowerCase().includes(searchQuery.toLowerCase())
+        normalizeText(product.product.name).includes(searchQueryNormalized)
       );
 
       // Return orders that match either the order ID (last 5 chars) or product name
@@ -68,9 +88,9 @@ const OrdersHistory = () => {
     // Sort orders based on selected sort option
     return filteredOrders.sort((a, b) => {
       if (sortOrder === "newest") {
-        return new Date(b.createdAt) - new Date(a.createdAt); // Sort by newest
+        return new Date(b.createdAt) - new Date(a.createdAt);
       }
-      return new Date(a.createdAt) - new Date(b.createdAt); // Sort by oldest
+      return new Date(a.createdAt) - new Date(b.createdAt);
     });
   }, [data, activeTab, searchQuery, sortOrder]);
 

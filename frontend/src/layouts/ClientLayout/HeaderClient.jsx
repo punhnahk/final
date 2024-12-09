@@ -41,9 +41,9 @@ const HeaderClient = () => {
       fetchData(); // Fetch categories only if not on mobile
     }
     fetchOrders(); // Fetch orders to get notifications
-    const storedNotifications =
-      JSON.parse(localStorage.getItem("orderNotifications")) || [];
-    setOrderNotifications(storedNotifications);
+    const notifications =
+      JSON.parse(localStorage.getItem(`orderNotifications_${profile}`)) || [];
+    setOrderNotifications(notifications);
   }, [isMobile]);
 
   // Fetch categories data
@@ -167,23 +167,21 @@ const HeaderClient = () => {
   );
 
   // Dropdown for order notifications
-  const orderMenu = () => {
+  const orderMenu = (userId) => {
     const handleOrderNotificationClick = (id) => {
-      const updatedNotifications = orderNotifications.map((notification) => {
-        if (notification._id === id) {
-          return { ...notification, isRead: true };
-        }
-        return notification;
-      });
+      const updatedNotifications = orderNotifications.map((notification) =>
+        notification._id === id
+          ? { ...notification, isRead: true }
+          : notification
+      );
 
       setOrderNotifications(updatedNotifications);
       localStorage.setItem(
-        "orderNotifications",
+        `orderNotifications_${userId}`,
         JSON.stringify(updatedNotifications)
-      ); // Store updates
+      );
     };
 
-    // Handle marking all notifications as read
     const handleMarkAllAsRead = () => {
       const updatedNotifications = orderNotifications.map((notification) => ({
         ...notification,
@@ -192,9 +190,9 @@ const HeaderClient = () => {
 
       setOrderNotifications(updatedNotifications);
       localStorage.setItem(
-        "orderNotifications",
+        `orderNotifications_${userId}`,
         JSON.stringify(updatedNotifications)
-      ); // Store updates
+      );
     };
 
     return (
@@ -239,9 +237,9 @@ const HeaderClient = () => {
               >
                 <List.Item.Meta
                   title={
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-between left-0">
                       <span className="text-xs font-medium text-gray-700 mx-auto text-left">
-                        Order #{_id}
+                        Order #{_id.slice(-5).toUpperCase()}
                       </span>
                       <span className="text-xs text-gray-400 mx-auto">
                         {new Date(updatedAt).toLocaleString()}

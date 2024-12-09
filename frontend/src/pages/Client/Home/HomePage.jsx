@@ -7,6 +7,7 @@ const HomePage = () => {
   return (
     <div className="bg-[#f3f4f6] min-h-screen">
       <Banner />
+      {/* <FlashSale /> */}
       <CategoriesList />
       <ProductsList />
     </div>

@@ -29,7 +29,7 @@ const ProductItem = ({ className, data }) => {
           src={data.image[0]}
           loading="lazy"
           alt="Product"
-          className="block absolute w-full h-full top-0 right-0 bottom-0 left-0 object-cover group-hover:scale-105 transition-all"
+          className="block absolute w-full h-full top-0 right-0 bottom-0 left-0 object-cover transition-all"
         />
 
         {/* Display the discount percentage in the top-left corner */}

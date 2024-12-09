@@ -1,5 +1,6 @@
 import { AutoComplete, Form, Input, message, Radio, Spin } from "antd";
 import FormItem from "antd/es/form/FormItem";
+import TextArea from "antd/es/input/TextArea";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { FaTimes } from "react-icons/fa";
@@ -28,6 +29,7 @@ const Checkout = () => {
   const [useSavedAddress, setUseSavedAddress] = useState(true);
   const [savedAddress, setSavedAddress] = useState(null);
   const [addressOptions, setAddressOptions] = useState([]);
+  const { profile } = useProfile();
 
   const FREE_SHIPPING_THRESHOLD = 500000;
   const SHIPPING_FEE = 20000;
@@ -133,7 +135,7 @@ const Checkout = () => {
     }
 
     try {
-      const userId = useProfile;
+      const userId = profile._id;
       const response = await voucherApi.getVoucherByCode(voucherCode, userId);
       const voucher = response.data;
 
@@ -166,11 +168,34 @@ const Checkout = () => {
     totalPriceWithoutShipping < FREE_SHIPPING_THRESHOLD ? SHIPPING_FEE : 0;
   const total = totalPriceWithoutShipping + shippingCost;
 
-  const clearVoucherCode = () => {
-    setVoucherCode(""); // Clear the voucher code state
-    setTotalDiscount(0);
-    setIsVoucherApplied(false); // Reset voucher applied state
+  const clearVoucherCode = async () => {
+    try {
+      if (!profile || !profile._id) {
+        console.error("User profile not found or user is not logged in.");
+        return;
+      }
+
+      const userId = profile._id;
+
+      if (voucherCode) {
+        await voucherApi.deleteVoucherUsage({ voucherCode, userId });
+        console.log("Voucher usage deleted successfully.");
+      }
+
+      // Clear states after deletion
+      setVoucherCode(""); // Clear the voucher code state
+      setTotalDiscount(0); // Reset discount
+      setIsVoucherApplied(false); // Reset voucher applied state
+      message.success("Voucher code cleared successfully.");
+    } catch (error) {
+      console.error(
+        "Error clearing voucher usage:",
+        error.response?.data || error.message
+      );
+      message.error("Failed to clear voucher code.");
+    }
   };
+
   return (
     <div className="bg-gray-100">
       <WrapperContent className="py-4">
@@ -324,6 +349,13 @@ const Checkout = () => {
                   </div>
                 )}
               </div>
+
+              <FormItem className="mb-3" name="message">
+                <TextArea
+                  placeholder="Notes (Example: Call me when the goods are ready)"
+                  rows={4}
+                />
+              </FormItem>
 
               <div className="bg-white rounded-xl p-4 mb-3">
                 <p className="text-[#090d14] font-semibold mb-4">
