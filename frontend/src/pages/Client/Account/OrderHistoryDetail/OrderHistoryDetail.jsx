@@ -42,7 +42,7 @@ const OrderHistoryDetail = () => {
     <>
       <div className="px-6 py-4 flex items-center justify-between gap-x-8 flex-wrap">
         <p className="text-[24px] font-semibold text-[#333]">
-          <p>Order details #{data._id}</p>
+          <p>Order details #{data._id.slice(-5).toUpperCase()}</p>
         </p>
 
         <p className="text-[#111] whitespace-nowrap">
@@ -87,6 +87,10 @@ const OrderHistoryDetail = () => {
               <p className="w-1/3">Shipping Address:</p>
               <p className="flex-1">{data.address}</p>
             </div>
+            <div className="flex items-center mb-3 gap-x-3">
+              <p className="w-1/3">Note:</p>
+              <p className="flex-1">{data.message}</p>
+            </div>
 
             {data.status === ORDER_STATUS.DELIVERED && (
               <div className="flex items-center mb-3 gap-x-3">
@@ -130,6 +134,7 @@ const OrderHistoryDetail = () => {
                 <div className="w-3/4 flex gap-x-3 items-center">
                   <img
                     src={it.product.image[0]}
+                    loading="lazy"
                     alt="Product img"
                     className="w-[60px] h-[60px] object-cover"
                   />

@@ -1,6 +1,15 @@
-import { Button, DatePicker, Form, Input, message, Radio } from "antd";
+import {
+  AutoComplete,
+  Button,
+  DatePicker,
+  Form,
+  Input,
+  message,
+  Radio,
+} from "antd";
+import axios from "axios";
 import dayjs from "dayjs";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import userApi from "../../../../api/userApi";
 import UploadFormItem from "../../../../components/UploadFormItem/UploadFormItem";
 import { DEFAULT_AVATAR_PATH } from "../../../../constants";
@@ -8,11 +17,13 @@ import useProfile from "../../../../hooks/useProfile";
 import useProfileInitial from "../../../../hooks/useProfileInitial";
 import uploadImage from "../../../../utils/uploadImage";
 
+const goongApiKey = process.env.REACT_APP_GOONG_API_KEY; // Replace with your Goong API Key
+
 const UpdateInformation = () => {
   const { fetchProfile } = useProfileInitial();
   const { profile } = useProfile();
-
   const [form] = Form.useForm();
+  const [addressOptions, setAddressOptions] = useState([]); // Options for AutoComplete
 
   useEffect(() => {
     if (!profile) return;
@@ -22,7 +33,7 @@ const UpdateInformation = () => {
         previewUrl: profile.avatar || DEFAULT_AVATAR_PATH,
       },
       name: profile.name,
-      phone: profile.phone || "", // Ensure phone is initialized as an empty string if undefined
+      phone: profile.phone || "",
       email: profile.email,
       address: profile.address,
       gender: profile.gender,
@@ -47,6 +58,37 @@ const UpdateInformation = () => {
     } catch (error) {
       message.error("Failed to update profile");
     }
+  };
+
+  // Handle address search input change
+  const handleAddressSearch = async (searchText) => {
+    if (!searchText) return;
+    try {
+      // Fetch address suggestions from Goong API
+      const response = await axios.get(
+        "https://rsapi.goong.io/Place/AutoComplete",
+        {
+          params: {
+            api_key: goongApiKey,
+            input: searchText,
+          },
+        }
+      );
+
+      // Map the response to format suitable for AutoComplete
+      const options = response.data.predictions.map((prediction) => ({
+        value: prediction.description,
+      }));
+
+      setAddressOptions(options);
+    } catch (error) {
+      console.error("Error fetching address suggestions:", error);
+    }
+  };
+
+  // Handle address selection
+  const handleAddressSelect = (value) => {
+    form.setFieldsValue({ address: value });
   };
 
   return (
@@ -104,7 +146,15 @@ const UpdateInformation = () => {
           className="mb-6"
           rules={[{ required: true, message: "Please enter your address" }]}
         >
-          <Input placeholder="Enter Address" className="rounded" />
+          <AutoComplete
+            options={addressOptions}
+            onSearch={handleAddressSearch}
+            onSelect={handleAddressSelect}
+            placeholder="Search for your address"
+            className="rounded w-full"
+          >
+            <Input />
+          </AutoComplete>
         </Form.Item>
 
         <Form.Item

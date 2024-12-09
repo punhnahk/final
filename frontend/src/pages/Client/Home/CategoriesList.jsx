@@ -27,15 +27,15 @@ const CategoriesList = () => {
   const responsive = {
     superLargeDesktop: {
       breakpoint: { max: 4000, min: 3000 },
-      items: 4,
+      items: 5,
     },
     desktop: {
       breakpoint: { max: 3000, min: 1024 },
-      items: 4,
+      items: 5,
     },
     tablet: {
       breakpoint: { max: 1024, min: 464 },
-      items: 2,
+      items: 3,
     },
     mobile: {
       breakpoint: { max: 464, min: 0 },
@@ -52,22 +52,24 @@ const CategoriesList = () => {
         responsive={responsive}
         arrows={true}
         infinite={true}
-        className="bg-white rounded-lg"
-        itemClass="carousel-item-padding-40-px" // Add padding between items
+        className="bg-white rounded-lg shadow-md"
+        itemClass="carousel-item-padding-10-px" // Reduced padding between items
       >
         {data.length > 0 &&
           data.map((it) => (
             <Link
               key={`category-item-${it._id}`}
-              className="flex flex-col group gap-2 px-3 py-4 rounded-lg justify-center items-center"
+              className="flex flex-col group gap-2 px-3 py-4 rounded-lg justify-center items-center hover:bg-gray-50 transition-all"
               to={`${ROUTE_PATH.PRODUCTS_LIST}?category=${it._id}`}
             >
               <img
                 src={it.image}
+                loading="lazy"
                 alt="Category img"
-                className="h-[100px] w-full object-contain group-hover:scale-110 transition-transform duration-300"
+                className="h-[80px] w-full object-contain group-hover:scale-105 transition-transform duration-300" // Reduced image size
               />
-              <p className="font-medium text-center text-sm md:text-base">
+              <p className="font-medium text-center text-xs md:text-sm text-gray-800 transition-all">
+                {" "}
                 {it.name}
               </p>
             </Link>

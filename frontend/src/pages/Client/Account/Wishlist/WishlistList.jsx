@@ -1,14 +1,7 @@
-import {
-  Button,
-  Card,
-  List,
-  message,
-  Pagination,
-  Spin,
-  Typography,
-} from "antd";
+import { DeleteOutlined } from "@ant-design/icons"; // Import icon
+import { Button, message, Pagination, Spin, Typography } from "antd";
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom"; // Import Link for navigation
+import { Link } from "react-router-dom";
 import wishlistApi from "../../../../api/wishlistApi";
 import WrapperContent from "../../../../components/WrapperContent/WrapperContent";
 import { ROUTE_PATH } from "../../../../constants/routes";
@@ -27,7 +20,6 @@ const WishlistList = () => {
     setLoading(true); // Start loading
     try {
       const response = await wishlistApi.getWishlist();
-      console.log("Fetched wishlist items:", response.data);
       setWishlistItems(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       message.error("Failed to fetch wishlist items");
@@ -52,7 +44,7 @@ const WishlistList = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex justify-center items-center min-h-screen">
         <Spin size="large" /> {/* Show a spinner while loading */}
       </div>
     );
@@ -65,69 +57,64 @@ const WishlistList = () => {
 
   return (
     <WrapperContent className="my-8 px-4">
-      <Title className="text-center my-4">Your Wishlist</Title>
-      <List
-        grid={{
-          gutter: 16,
-          xs: 1, // 1 column on extra small screens
-          sm: 2, // 2 columns on small screens
-          md: 3, // 3 columns on medium screens
-          lg: 4, // 4 columns on large screens
-          xl: 5, // 5 columns on extra large screens
-        }}
-        dataSource={Array.isArray(currentItems) ? currentItems : []} // Ensure dataSource is always an array
-        renderItem={(item) => {
-          const images = item?.image || []; // Fallback to an empty array
-
+      <Title level={2} className="text-center my-4">
+        Your Wishlist
+      </Title>
+      <div className="space-y-4">
+        {currentItems.map((item) => {
+          const images = item?.image || [];
           return (
-            <List.Item>
-              <Link to={ROUTE_PATH.PRODUCT_DETAIL(item._id)}>
-                {/* Use Link to navigate to product details */}
-                <Card
-                  hoverable
-                  className="shadow-lg rounded-lg transition-transform transform"
-                >
-                  <Card.Meta
-                    title={item?.name || "Unnamed Product"}
-                    description={formatPrice(item.salePrice)}
-                  />
-                  <div className="flex justify-center items-center mt-2">
-                    {/* Display product image horizontally */}
-                    {images.length > 0 ? (
-                      <img
-                        alt={item.name}
-                        src={images[0]} // Use the first image
-                        className="object-cover w-full" // Make the image width 100% of the card
-                        style={{
-                          maxWidth: "100%", // Ensure the image fits within the card
-                          maxHeight: "120px", // Limit the image height to fit horizontally
-                          objectFit: "contain", // Preserve aspect ratio
-                        }}
-                      />
-                    ) : (
-                      <div className="h-48 w-full flex items-center justify-center bg-gray-200">
-                        <span>No Image Available</span>
-                      </div>
-                    )}
-                  </div>
-                </Card>
+            <div className="relative">
+              <Link
+                to={ROUTE_PATH.PRODUCT_DETAIL(item._id)}
+                key={item._id}
+                className="flex items-center bg-white rounded-lg shadow-sm border-red-50 border-2 p-4 space-x-6 transition-transform transform hover:shadow-lg hover:bg-red-100 mb-2"
+              >
+                <div className="flex-shrink-0">
+                  {images.length > 0 ? (
+                    <img
+                      alt={item.name}
+                      src={images[0]}
+                      loading="lazy"
+                      className="object-cover w-16 h-16 rounded-md"
+                      style={{
+                        objectFit: "contain",
+                      }}
+                    />
+                  ) : (
+                    <div className="w-16 h-16 bg-gray-200 flex items-center justify-center rounded-md">
+                      <span className="text-xs text-gray-500">No Image</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex-1">
+                  <h3 className="font-semibold text-lg text-gray-800 break-words">
+                    {item?.name || "Unnamed Product"}
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    {formatPrice(item.salePrice)}
+                  </p>
+                </div>
               </Link>
-              <div className="flex justify-center pt-2">
+
+              {/* Nút xóa */}
+              <div className="absolute top-2 right-2">
                 <Button
-                  type="primary"
+                  type="text"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleRemoveFromWishlist(item._id);
                   }}
-                  className="w-full sm:w-auto" // Make button full width on small screens
-                >
-                  Remove
-                </Button>
+                  icon={<DeleteOutlined className="text-gray-600" />}
+                  className="p-0"
+                />
               </div>
-            </List.Item>
+            </div>
           );
-        }}
-      />
+        })}
+      </div>
+
       <Pagination
         current={currentPage} // Current page
         pageSize={itemsPerPage} // Items per page

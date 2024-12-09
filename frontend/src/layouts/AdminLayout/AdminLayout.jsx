@@ -200,10 +200,6 @@ const AdminLayout = () => {
     setIsDarkMode((prev) => !prev);
   };
 
-  const toggleCollapse = () => {
-    setCollapsed((prev) => !prev); // Toggle the collapsed state
-  };
-
   return (
     <Layout hasSider className={`min-h-screen ${isDarkMode ? "dark" : ""}`}>
       <Sider
@@ -251,9 +247,6 @@ const AdminLayout = () => {
           } px-6 text-right shadow-md`}
         >
           <div className="inline-flex items-center ml-auto gap-x-3 justify-end">
-            {/* <Button onClick={toggleCollapse} style={{ marginRight: "16px" }}>
-              {collapsed ? "Expand" : "Collapse"}
-            </Button> */}
             <p
               className={`text-${
                 isDarkMode ? "white" : "gray-600"
@@ -274,7 +267,12 @@ const AdminLayout = () => {
                 items: [
                   {
                     key: "1",
-                    label: <p>Log Out</p>,
+                    label: (
+                      <div className="flex items-center gap-2">
+                        <i className="fas fa-sign-out-alt"></i>
+                        <span>Log Out</span>
+                      </div>
+                    ),
                     onClick: onSignOut,
                   },
                 ],
@@ -283,7 +281,7 @@ const AdminLayout = () => {
               <img
                 src={profile.avatar || DEFAULT_AVATAR_PATH}
                 alt="Avatar"
-                className="size-11 rounded-full cursor-pointer object-cover"
+                className="w-10 h-10 rounded-full cursor-pointer object-cover"
               />
             </Dropdown>
             <Switch
@@ -295,6 +293,7 @@ const AdminLayout = () => {
             />
           </div>
         </Header>
+
         <Content
           className={`p-6 ${
             isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-black"

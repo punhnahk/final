@@ -70,9 +70,7 @@ const OrderDetail = () => {
           console.error(error); // Log the error for debugging
         }
       },
-      onCancel() {
-        // Optional: You can handle cancellation here if needed
-      },
+      onCancel() {},
     });
   };
 

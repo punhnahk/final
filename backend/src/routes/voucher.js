@@ -5,7 +5,7 @@ import { checkLogin, isAdmin } from "../middlewares/auth.js";
 const voucherRouter = express.Router();
 
 voucherRouter.post("/", checkLogin, isAdmin, VoucherController.createVoucher);
-voucherRouter.get("/", checkLogin, isAdmin, VoucherController.getAllVouchers);
+voucherRouter.get("/", VoucherController.getAllVouchers);
 voucherRouter.get("/:id", checkLogin, VoucherController.getVoucher);
 voucherRouter.put("/:id", checkLogin, isAdmin, VoucherController.updateVoucher);
 voucherRouter.get(
@@ -19,11 +19,11 @@ voucherRouter.delete(
   isAdmin,
   VoucherController.deleteVoucher
 );
+voucherRouter.post("/send/:id", VoucherController.sendVoucher);
 voucherRouter.post(
-  "/send/:id",
+  "/delete-usage",
   checkLogin,
-  isAdmin,
-  VoucherController.sendVoucher
+  VoucherController.deleteVoucherUsage
 );
 
 export default voucherRouter;

@@ -69,6 +69,7 @@ const AuthController = {
         phone,
         password: hashedPassword,
         role,
+        address: "",
         loginMethod: "password",
       }).save();
 
@@ -91,6 +92,7 @@ const AuthController = {
           phone: newUser.phone,
           role: newUser.role,
           loginMethod: newUser.loginMethod,
+          address: newUser.address,
         },
         token,
       });
@@ -298,6 +300,7 @@ const AuthController = {
           name,
           email,
           avatar: picture,
+          phone: "",
           password: "", // No password needed for social login
           loginMethod: "google", // Set login method to google
         });

@@ -12,6 +12,7 @@ const VoucherUsageSchema = new Schema(
       ref: "vouchers",
       required: true,
     },
+    usageCount: { type: Number, default: 1 },
     usedAt: { type: Date, default: Date.now },
   },
   { timestamps: true }

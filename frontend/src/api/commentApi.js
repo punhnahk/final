@@ -4,16 +4,6 @@ const commentApi = {
   getCommentsByOrderId: (orderId) => {
     return apiClient.get(`/comments/order/${orderId}`);
   },
-  getCommentsByProductIds: async (productIds) => {
-    try {
-      const response = await apiClient.post("/comments/multiple", {
-        productIds,
-      });
-      return response.data;
-    } catch (error) {
-      throw new Error("Failed to fetch comments");
-    }
-  },
   getCommentsByProductId: (productId) => {
     return apiClient.get(`/comments/product/${productId}`);
   },

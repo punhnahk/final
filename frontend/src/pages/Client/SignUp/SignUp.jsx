@@ -1,6 +1,7 @@
-import { Button, Form, Input, message } from "antd";
-import React from "react";
+import { Button, Form, Input, message, Progress } from "antd";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import zxcvbn from "zxcvbn";
 import authApi from "../../../api/authApi";
 import WrapperContent from "../../../components/WrapperContent/WrapperContent";
 import { PHONE_REG } from "../../../constants/reg";
@@ -8,6 +9,16 @@ import { ROUTE_PATH } from "../../../constants/routes";
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const [passwordStrength, setPasswordStrength] = useState(null);
+  const [password, setPassword] = useState("");
+
+  const handlePasswordChange = (e) => {
+    const value = e.target.value;
+    setPassword(value);
+
+    const result = zxcvbn(value);
+    setPasswordStrength(result);
+  };
 
   const onSubmit = async ({ confirm, ...values }) => {
     try {
@@ -74,8 +85,42 @@ const SignUp = () => {
             <Input.Password
               placeholder="Enter password"
               className="h-12 rounded-md"
+              value={password}
+              onChange={handlePasswordChange}
             />
           </Form.Item>
+
+          {passwordStrength && (
+            <Form.Item colon={false}>
+              <div className="flex justify-between text-xs text-gray-600">
+                <span>Weak</span>
+                <span>Strong</span>
+              </div>
+              <Progress
+                percent={passwordStrength.score * 25} // Score from 0 to 4, each score corresponds to 25%
+                status={
+                  passwordStrength.score >= 3
+                    ? "success"
+                    : passwordStrength.score === 2
+                    ? "active"
+                    : "exception"
+                }
+                strokeColor={
+                  passwordStrength.score >= 3
+                    ? "green"
+                    : passwordStrength.score === 2
+                    ? "blue"
+                    : "red"
+                }
+                showInfo={false}
+              />
+              <div className="mt-2 text-sm text-gray-600">
+                {passwordStrength.feedback.suggestions.length > 0
+                  ? passwordStrength.feedback.suggestions.join(" ")
+                  : ""}
+              </div>
+            </Form.Item>
+          )}
 
           <Form.Item
             name="confirm"

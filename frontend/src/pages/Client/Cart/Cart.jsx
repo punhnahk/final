@@ -1,4 +1,4 @@
-import { message, Popconfirm } from "antd";
+import { InputNumber, message, Popconfirm } from "antd";
 import React from "react";
 import { FaMinus, FaPlus, FaRegTrashAlt } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
@@ -116,16 +116,9 @@ const Cart = () => {
                         {/* Quantity and actions section */}
                         <div className="flex items-center gap-x-1 justify-center">
                           <button
-                            onClick={() => {
-                              if (it.quantity > 1) {
-                                onQuantityUpdate(
-                                  it.product._id,
-                                  it.quantity - 1
-                                );
-                              } else {
-                                onDeleteProduct(it.product._id); // Function to remove the product
-                              }
-                            }}
+                            onClick={() =>
+                              onQuantityUpdate(it.product._id, it.quantity - 1)
+                            }
                             disabled={it.quantity <= 1}
                             className="p-2 bg-white rounded-full hover:bg-red-200 disabled"
                           >
@@ -133,9 +126,16 @@ const Cart = () => {
                           </button>
 
                           <div className="flex items-center justify-center w-[45px]">
-                            <div className="text-lg font-semibold text-center">
-                              {it.quantity}
-                            </div>
+                            <InputNumber
+                              value={it.quantity}
+                              size="large"
+                              // onKeyDown={(e) => e.preventDefault()}
+                              min={0}
+                              className="max-w-[45px] w-[45px] pl-1.5"
+                              onChange={(val) =>
+                                onQuantityUpdate(it.product._id, val)
+                              }
+                            />
                           </div>
 
                           <button
